@@ -1,0 +1,13 @@
+# Raw instrument data (large, local only)
+For Jose/
+
+# Nested project — lives in its own repo (scholi/pySPM)
+pySPM/
+
+# Pipeline output (regenerable via `make data proc`)
+processed/
+
+# Python
+.venv/
+__pycache__/
+*.pyc
