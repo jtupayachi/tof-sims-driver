@@ -35,3 +35,35 @@ make inspect     # list all raw_*/calc_* files
 
 The Makefile auto-detects its own directory; override the data folder with
 `make data DATA=/path/to/raw/files` if your raw data lives elsewhere.
+
+
+
+```
+
+                         raw_spectrum.parquet
+                                  |
+                 +----------------+----------------+
+                 |                |                |
+                 v                v                v
+          Numerical peaks    pyOpenMS          matchms
+                 |          centroid/isotope    reference
+                 |                |             matching
+                 +----------------+----------------+
+                                  |
+                                  v
+                            Qwen TEXT ONLY
+                                  |
+              +-------------------+-------------------+
+              |                   |                   |
+           1–10                11–20                21–30
+        peak/ion             compound/library      final
+        validation            disagreement        consensus
+              |                   |                   |
+              +-------------------+-------------------+
+                                  |
+                                  v
+                         final_analysis JSON
+                                  |
+                                  v
+                         annotated PNG
+```             

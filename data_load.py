@@ -4,9 +4,9 @@ Every output file starts with raw_ :
 
   raw_spectrum.parquet   channel, mass, counts        (ITM/ITA/ITAX)
   raw_summary.json       metadata                     (ITM/ITA/ITAX)
-  raw_peaks.parquet      id, name, SN, lmass/cmass/umass   (ITA/ITAX)
+  raw_peaks.parquet      name, SN, (group), lmass/cmass/umass   (ITA/ITAX/ITM/ITMX)
   raw_images.npz         summed image per peak        (ITA)
-  raw_profiles.parquet   intensity vs scan per peak   (ITAX; ITA if per-scan data exists)
+  raw_profiles.parquet   intensity vs scan per peak   (ITAX, ITM; ITA if per-scan data exists)
   raw_snapshots.npz      camera images                (ITAX)
 
 Usage: python data_load.py <input_dir> <output_dir>
@@ -103,7 +103,16 @@ def do_itm_ita(path, out):
         print(f"  summary failed: {e}")
     ch, s = obj.get_spectrum(time=True)
     save_spectrum(obj.channel2mass(ch), s, ch, out)
-    if not (is_ita and getattr(obj, "Nimg", 0)):
+    if not is_ita:                     # .itm: no images, but the expert peak list is stored
+        try:
+            rows = read_mass_intervals(obj.root)
+            if rows:
+                pd.DataFrame(rows).to_parquet(out / "raw_peaks.parquet")
+                print(f"  raw_peaks: {len(rows)} mass intervals")
+        except Exception as e:
+            print(f"  peak list failed: {type(e).__name__}: {e}")
+        return
+    if not getattr(obj, "Nimg", 0):
         return
 
     pk = peak_table(obj.peaks)
@@ -124,6 +133,48 @@ def do_itm_ita(path, out):
         print(f"  no per-scan data in this file, skipping raw_profiles ({type(e).__name__})")
 
 
+def _s(v, k):
+    return v.get(k, {}).get("utf16", "").strip("\x00")
+
+
+def _f(v, k):
+    x = v.get(k, {}).get("float")
+    return float(x) if x is not None else np.nan
+
+
+def collect_mi(blk, group=""):
+    """Yield every mass interval, recursing into 'mig' groups (where the expert-identified
+    peak lists live; the top-level block only holds the 'total' entry)."""
+    for x in blk:
+        if x.name == "mi":
+            v = x.dictList()
+            yield dict(name=_s(v, "assign") or _s(v, "desc"), SN=_s(v, "SN"), group=group,
+                       lmass=_f(v, "lmass"), cmass=_f(v, "cmass"), umass=_f(v, "umass"))
+        elif x.name == "mig":
+            yield from collect_mi(x, _s(x.dictList(), "Name"))
+
+
+MI_PATHS = [
+    "CommonDataObjects/MeasurementOptions/*/massintervals",   # .itax
+    "CommonDataObjects/MeasurementOptions/massintervals",     # .itmx (no GUID level)
+    "Options/massintervals",                                  # .itm
+]
+
+
+def read_mass_intervals(root):
+    """Expert-identified peaks, wherever this file flavour stores them."""
+    for p in MI_PATHS:
+        try:
+            blk = root.goto(p)
+        except Exception:
+            continue
+        rows = list(collect_mi(blk))
+        if rows:
+            print(f"  mass intervals read from '{p}'")
+            return rows
+    return []
+
+
 def do_itax(path, out):
     obj = pySPM.ITAX(str(path))
     r = obj.root
@@ -137,17 +188,15 @@ def do_itax(path, out):
     (out / "raw_summary.json").write_text(json.dumps(
         {"size": obj.size, "meas_options": obj.meas_options}, default=str, indent=2))
 
-    rows, prof = [], {}
-    for x in obj.root.goto("CommonDataObjects/MeasurementOptions/*/massintervals"):
-        if x.name != "mi":
-            continue
-        v = x.dictList()
-        name = v["assign"]["utf16"] or v["desc"]["utf16"]
-        rows.append(dict(name=name, SN=v["SN"]["utf16"]))
+    rows, prof = read_mass_intervals(obj.root), {}
+    for r in rows:
+        name = r["name"]
         try:
             prof[name] = np.array(obj.getProfile(name))
         except Exception as e:
             print(f"  profile '{name}' failed: {e}")
+    print(f"  raw_peaks: {len(rows)} mass intervals "
+          f"({sum(1 for r in rows if r['group'])} in expert groups)")
     if rows:
         pd.DataFrame(rows).to_parquet(out / "raw_peaks.parquet")
     if prof:
@@ -156,6 +205,155 @@ def do_itax(path, out):
     snaps = obj.getSnapshots()
     if snaps:
         np.savez_compressed(out / "raw_snapshots.npz", *snaps)
+
+
+# ----------------------------------------------------------------------------- .itm (raw events)
+
+@contextlib.contextmanager
+def open_root(path):
+    """Open an IONTOF block file: skip the 8-byte 'ITStrF01' header, yield the root Block."""
+    with open(path, "rb") as f:
+        f.read(8)
+        yield Block(f)
+
+
+def _f64(b):
+    return struct.unpack("<d", b[:8])[0]
+
+
+def peak_windows(rows, sf, k0):
+    """Expert peaks -> (name, first_channel, last_channel) in raw 50 ps channels.
+    Channel <-> mass:  m = ((t - k0) / sf)**2   =>   t = sf*sqrt(m) + k0"""
+    out, seen = [], set()
+    for r in rows:
+        l, u = r["lmass"], r["umass"]
+        if not (np.isfinite(l) and np.isfinite(u) and l > 0):
+            continue
+        name = r["name"] or f"m{r['cmass']:.2f}"
+        while name in seen:
+            name += "'"
+        seen.add(name)
+        out.append((name, sf * np.sqrt(l) + k0, sf * np.sqrt(u) + k0))
+    return out
+
+
+def decode_itm_rawdata(root, windows):
+    """Read every '  14' block of /rawdata (zlib-compressed uint32 stream, see pySPM.ITM docs):
+    a word with any of the top two bits set is a marker (x, y, pixel-id triplet); every other
+    word is one detected ion, given as a raw time-of-flight channel (50 ps).
+    Returns histogram (2 raw channels per bin, like the .ita/.itax spectra), events per scan,
+    events per scan inside each expert peak window, and some statistics."""
+    f = root.f
+    lst = root.goto("rawdata").get_list()
+    hist = np.zeros(1 << 20, np.int64)
+    scan_counts = [0]
+    prof = {n: [0] for n, _, _ in windows}
+    st = dict(chunks=0, events=0, markers=0, bad=0)
+    scan, seen6, pend, npend = 0, False, [], 0
+
+    def flush():
+        nonlocal hist, pend, npend
+        if not pend:
+            return
+        v = np.concatenate(pend) >> 1
+        pend, npend = [], 0
+        mx = int(v.max())
+        if mx >= hist.size:
+            hist = np.concatenate([hist, np.zeros(mx + 1 - hist.size, np.int64)])
+        hist += np.bincount(v, minlength=hist.size)
+
+    for n, x in enumerate(lst):
+        nm = x["name"].strip()
+        if nm == "6":                                # start of a new scan
+            if seen6:
+                scan += 1
+                scan_counts.append(0)
+                for k in prof:
+                    prof[k].append(0)
+            seen6 = True
+        elif nm == "14":
+            f.seek(x["bidx"])
+            child = Block(f)
+            try:
+                buf = zlib.decompress(child.value)
+            except Exception:
+                st["bad"] += 1
+                continue
+            w = np.frombuffer(buf[: len(buf) // 4 * 4], dtype="<u4")
+            is_ev = (w & 0xC0000000) == 0
+            ev = w[is_ev]
+            st["chunks"] += 1
+            st["events"] += ev.size
+            st["markers"] += int(w.size - ev.size)
+            scan_counts[scan] += ev.size
+            for name, c0, c1 in windows:
+                prof[name][scan] += int(np.count_nonzero((ev >= c0) & (ev < c1)))
+            pend.append(ev)
+            npend += ev.size
+            if npend > 20_000_000:
+                flush()
+        if n and n % 5000 == 0:
+            print(f"    ... {n}/{len(lst)} rawdata blocks")
+    flush()
+    return hist, scan_counts, prof, st
+
+
+def do_itm_raw(path, out):
+    """.itm has no stored spectrum: rebuild it from the raw ion events (uncorrected counts,
+    no dead-time / field-of-view correction)."""
+    with open_root(path) as root:
+        sf = _f64(root.goto("MassScale/sf").value)
+        k0 = _f64(root.goto("MassScale/k0").value)
+        rows = read_mass_intervals(root)
+        hist, scan_counts, prof, st = decode_itm_rawdata(root, peak_windows(rows, sf, k0))
+    n = int(np.flatnonzero(hist)[-1]) + 1
+    s = hist[:n].astype(np.float64)
+    ch = 2 * np.arange(n)
+    m = pySPM.utils.time2mass(ch, sf, k0)
+    save_spectrum(m, s, ch, out)
+    print(f"  events={st['events']:,} in {st['chunks']} chunks, {st['markers']:,} marker words, "
+          f"{len(scan_counts)} scans, {st['bad']} undecodable chunks")
+    (out / "raw_summary.json").write_text(json.dumps(
+        dict(sf=sf, k0=k0, source="rebuilt from rawdata events (uncorrected)", **st,
+             events_per_scan=scan_counts), default=str, indent=2))
+    if rows:
+        pd.DataFrame(rows).to_parquet(out / "raw_peaks.parquet")
+        print(f"  raw_peaks: {len(rows)} mass intervals")
+        print("  sanity check (expert centre mass vs. apex of the rebuilt spectrum):")
+        for r in rows:
+            if np.isfinite(r["lmass"]) and r["umass"] > r["lmass"]:
+                sel = (m >= r["lmass"]) & (m <= r["umass"])
+                if sel.any():
+                    print(f"    {r['name'] or '-':<16} cmass {r['cmass']:8.3f}  "
+                          f"apex {m[np.argmax(s * sel)]:8.3f}  counts {s[sel].sum():,.0f}")
+    if prof:
+        pd.DataFrame(prof).rename_axis("scan").to_parquet(out / "raw_profiles.parquet")
+        print(f"  raw_profiles: {list(prof)}")
+
+
+# ----------------------------------------------------------------------------- .itmx
+
+def do_itmx(path, out):
+    """Peaks + metadata only for now: the SIMSData blob is not decoded yet."""
+    info = {}
+    with open_root(path) as root:
+        base = "CommonDataObjects/SIMSDataSet"
+        for k in ("sizeX", "sizeY", "sizeZ", "sizeChannel"):
+            try:
+                info[k] = struct.unpack("<i", root.goto(f"{base}/{k}").value[:4])[0]
+            except Exception:
+                pass
+        for k in ("sf", "k0", "channelwidth"):
+            try:
+                info[k] = _f64(root.goto(f"{base}/MassScale/{k}").value)
+            except Exception:
+                pass
+        rows = read_mass_intervals(root)
+    (out / "raw_summary.json").write_text(json.dumps(info, indent=2))
+    if rows:
+        pd.DataFrame(rows).to_parquet(out / "raw_peaks.parquet")
+        print(f"  raw_peaks: {len(rows)} mass intervals; dims {info}")
+    raise NotImplementedError("itmx SIMSData blob not decoded yet - run probe_itmx_simsdata.py")
 
 
 def main(indir, outdir):
@@ -168,14 +366,16 @@ def main(indir, outdir):
         out = Path(outdir) / p.stem.replace(" ", "_") / ext.lstrip(".")
         out.mkdir(parents=True, exist_ok=True)
         print(f"[{p.name}]")
-        # .itmx has no official pySPM reader: try the ITAX-style reader, then the ITM one
-        readers = {".itax": [do_itax], ".itmx": [do_itax, do_itm_ita]}.get(ext, [do_itm_ita])
+        # .itm: rebuilt from raw events; .itmx: no pySPM reader (peaks only so far)
+        readers = {".itax": [do_itax], ".itm": [do_itm_raw], ".itmx": [do_itmx]}.get(ext, [do_itm_ita])
         for n, fn in enumerate(readers):
             try:
                 fn(p, out)
                 break
             except Exception as e:
                 print(f"  {fn.__name__} failed: {type(e).__name__}: {e}")
+                if not isinstance(e, NotImplementedError):
+                    traceback.print_exc(limit=-4)
         else:
             print("  -> no reader worked")
             if ext not in probed:          # one structure dump per extension is enough
