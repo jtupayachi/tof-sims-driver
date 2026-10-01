@@ -27,7 +27,7 @@ export PATH := $(JAVA_HOME)/bin:$(PATH)
 # Targets
 # ------------------------------------------------------------
 
-.PHONY: all venv java data proc probe inspect clean clean-calc plots serve
+.PHONY: all venv java data proc probe inspect clean clean-calc plots serve gpu
 
 all: data plots proc
 
@@ -51,10 +51,15 @@ java:
 $(VENV)/.ok: java
 	python3 -m venv "$(VENV)"
 	"$(PY)" -m pip install -U pip
-	"$(PY)" -m pip install -e "$(PYSPM)" pandas pyarrow scipy parquet-tools pyspark requests pyopenms matchms
+	"$(PY)" -m pip install -e "$(PYSPM)" pandas pyarrow scipy scikit-learn parquet-tools pyspark requests pyopenms matchms
 	touch $@
 
 venv: $(VENV)/.ok
+
+# Optional GPU acceleration for the PCA in the Statistical methods tab (needs an NVIDIA GPU +
+# ~2 GB disk). Without it the server falls back to scikit-learn automatically.
+gpu: venv
+	"$(PY)" -m pip install --extra-index-url=https://pypi.nvidia.com "cuml-cu12==25.*"
 
 
 # Spaces in $(DATA) break make prerequisites, so the scripts loop

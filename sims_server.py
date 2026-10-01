@@ -57,6 +57,7 @@ class Store:
         self.lock = threading.Lock()
         self.samples = {}
         self.truepeaks = {}                      # sample -> list (lazy, cached)
+        self.veccache = {}                       # (name, bin, mass_max) -> coarse spectrum vector (PCA)
         self.pk_file = self.root / "user_peaks.json"
         for p in sorted(self.root.rglob("raw_events_ch.npy")):
             d = p.parent
@@ -128,6 +129,17 @@ class Store:
         y = np.bincount(bi[ok], weights=hist[ok], minlength=nb)[:nb].astype(np.int64)
         return dict(x0=width / 2, dx=width, y=y.tolist(), events=events, roi=box is not None)
 
+    def coarse_vector(self, name, width, mass_max):
+        """Whole-sample spectrum on a coarse mass grid, used as a PCA feature vector (cached)."""
+        key = (name, round(width, 4), round(mass_max, 2))
+        with self.lock:
+            if key in self.veccache:
+                return self.veccache[key]
+        y = np.asarray(self.spectrum(name, None, width, mass_max)["y"], np.float64)
+        with self.lock:
+            self.veccache[key] = y
+        return y
+
     def true_peaks(self, name):
         if name in self.truepeaks:
             return self.truepeaks[name]
@@ -180,6 +192,68 @@ def plotly_js():
             _PLOTLY = ("document.write('<script src=\"https://cdn.plot.ly/"
                        "plotly-2.35.2.min.js\"><\\/script>');")
     return _PLOTLY
+
+
+# --------------------------------------------------------------------------- PCA
+
+def _tohost(a):
+    for attr in ("get", "to_numpy"):                 # cupy / cudf -> numpy
+        f = getattr(a, attr, None)
+        if callable(f):
+            try:
+                return np.asarray(f())
+            except Exception:
+                pass
+    return np.asarray(a)
+
+
+def run_pca(X, ncomp):
+    """PCA on the host matrix X. Prefer cuML (GPU), fall back to scikit-learn, then numpy SVD.
+    Returns (scores, explained_variance_ratio, components, backend_name)."""
+    X = np.ascontiguousarray(X, dtype=np.float32)
+    try:
+        from cuml import PCA as cuPCA
+        m = cuPCA(n_components=ncomp)
+        scores = _tohost(m.fit_transform(X))
+        return scores, _tohost(m.explained_variance_ratio_), _tohost(m.components_), "cuML (GPU)"
+    except Exception as e:
+        cuml_err = f"{type(e).__name__}: {e}"
+    try:
+        from sklearn.decomposition import PCA as skPCA
+        m = skPCA(n_components=ncomp)
+        scores = m.fit_transform(X)
+        return scores, m.explained_variance_ratio_, m.components_, f"scikit-learn (CPU; cuML: {cuml_err})"
+    except Exception:
+        Xc = X - X.mean(0)
+        U, S, Vt = np.linalg.svd(Xc, full_matrices=False)
+        var = S ** 2 / max(1, len(X) - 1)
+        return U[:, :ncomp] * S[:ncomp], (var / var.sum())[:ncomp], Vt[:ncomp], "numpy SVD"
+
+
+def compute_pca(store, names, labels, width, mass_max, ncomp, normalize, standardize):
+    X = np.vstack([store.coarse_vector(n, width, mass_max) for n in names]).astype(np.float64)
+    nfeat = X.shape[1]
+    if normalize == "tic":                           # total-ion normalisation per sample
+        s = X.sum(1, keepdims=True)
+        s[s == 0] = 1.0
+        X = X / s
+    keep = X.std(0) > 0                              # drop empty / constant m/z bins
+    Xk = X[:, keep]
+    masses = (np.flatnonzero(keep) + 0.5) * width
+    if Xk.shape[1] == 0:
+        raise ValueError("no signal in the selected samples")
+    if standardize:
+        Xk = (Xk - Xk.mean(0)) / Xk.std(0)
+    ncomp = max(1, min(int(ncomp), Xk.shape[0] - 1, Xk.shape[1]))
+    scores, evr, comps, backend = run_pca(Xk, ncomp)
+    scores, evr, comps = np.asarray(scores), np.asarray(evr), np.asarray(comps)
+    loadings = []
+    for c in range(comps.shape[0]):
+        idx = np.argsort(-np.abs(comps[c]))[:10]
+        loadings.append([{"mz": float(masses[i]), "w": float(comps[c][i])} for i in idx])
+    return dict(backend=backend, names=names, labels=labels,
+               scores=scores[:, :ncomp].tolist(), explained=evr[:ncomp].tolist(),
+               n_features=int(Xk.shape[1]), n_components=int(ncomp), loadings=loadings)
 
 
 def make_handler(store):
@@ -268,7 +342,10 @@ def make_handler(store):
             return self._send(200, f.read_bytes(), mimetypes.guess_type(f.name)[0] or "application/octet-stream")
 
         def do_POST(self):
-            if urlparse(self.path).path != "/api/peaks":
+            path = urlparse(self.path).path
+            if path == "/api/pca":
+                return self._do_pca()
+            if path != "/api/peaks":
                 return self._json({"error": "not found"}, 404)
             try:
                 body = json.loads(self.rfile.read(int(self.headers.get("Content-Length", 0))) or b"{}")
@@ -284,6 +361,29 @@ def make_handler(store):
                 lst.append(p)
                 store.save_peaks(lst)
             self._json(p, 201)
+
+        def _do_pca(self):
+            try:
+                body = json.loads(self.rfile.read(int(self.headers.get("Content-Length", 0))) or b"{}")
+                items = body.get("samples", [])
+                names = [str(it["sample"]) for it in items]
+                labels = [str(it.get("label", "")) for it in items]
+                if len(names) < 2:
+                    return self._json({"error": "add at least 2 subsamples"}, 400)
+                for n in names:
+                    if n not in store.samples:
+                        return self._json({"error": f"unknown sample {n}"}, 400)
+                width = float(body.get("bin", 1.0))
+                mass_max = float(body.get("mass", MASS_MAX))
+                ncomp = int(body.get("n_components", 2))
+                normalize = str(body.get("normalize", "tic"))
+                standardize = bool(body.get("standardize", True))
+            except Exception as e:
+                return self._json({"error": f"bad request: {e}"}, 400)
+            try:
+                self._json(compute_pca(store, names, labels, width, mass_max, ncomp, normalize, standardize))
+            except Exception as e:
+                self._json({"error": f"{type(e).__name__}: {e}"}, 500)
 
         def do_DELETE(self):
             u = urlparse(self.path)
@@ -382,7 +482,8 @@ APP_HTML = r"""<!DOCTYPE html>
         <div class="imgwrap"><div><b>Total</b> (all ions)</div>
           <canvas id="cv_total" width="128" height="128" style="width:180px"></canvas>
           <div class="cap" id="cap_total"></div></div>
-        <div class="imgwrap"><div><b>Selection</b></div>
+        <div class="imgwrap"><div><b>Selection</b>
+            <button id="dl_sel" class="sm" title="download a high-resolution PNG of this image">⬇ PNG</button></div>
           <canvas id="cv_sel" width="128" height="128" style="width:180px"></canvas>
           <div class="cap" id="cap_sel"></div></div>
       </div>
@@ -411,18 +512,36 @@ APP_HTML = r"""<!DOCTYPE html>
 </section>
 
 <section id="pane_stats" class="pane">
-  <div class="placeholder">
-    <h2>Statistical methods</h2>
-    <div class="soon">coming soon</div>
-    <p>Quantitative comparison across subsamples and polarities, built on the same raw-count
-       spectra, peaks and ROIs used in the first tab. Planned:</p>
-    <ul>
-      <li>Per-peak count tables and normalisation (total ion / peak-of-interest).</li>
-      <li>Replicate statistics across spots (mean, SD, CV) with error bars.</li>
-      <li>Group comparisons (positive vs negative, spot vs spot): t-test / Mann–Whitney.</li>
-      <li>Peak–peak correlation matrix and co-localisation on the 2D images.</li>
-      <li>Export of the computed tables as CSV.</li>
-    </ul>
+  <div style="padding:14px;max-width:1150px;margin:auto">
+    <h2 style="margin:4px 0">PCA of subsample spectra</h2>
+    <p class="muted">Add subsamples, give each a label (group), then run PCA on their raw-count
+       spectra. GPU-accelerated with cuML when available.</p>
+    <div style="display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start">
+      <div class="card" style="flex:0 0 440px">
+        <h3>Subsamples &amp; labels</h3>
+        <div style="margin-bottom:6px;display:flex;gap:6px;flex-wrap:wrap">
+          <button id="pca_add" class="sm">+ add</button>
+          <button id="pca_add_pos" class="sm">+ all positive</button>
+          <button id="pca_add_neg" class="sm">+ all negative</button>
+          <button id="pca_clear" class="sm">clear</button>
+        </div>
+        <table id="pca_rows"><tbody></tbody></table>
+        <h3 style="margin-top:12px">Parameters</h3>
+        <div style="display:grid;grid-template-columns:auto auto;gap:7px 10px;align-items:center;max-width:320px">
+          <label>components</label><input id="pca_nc" type="number" min="2" max="10" value="2" style="width:70px">
+          <label>feature bin (u)</label><select id="pca_bin"><option>0.5</option><option selected>1</option><option>2</option><option>5</option></select>
+          <label>normalize</label><select id="pca_norm"><option value="tic">total-ion</option><option value="none">none</option></select>
+          <label>standardize (z-score)</label><input id="pca_std" type="checkbox" checked>
+        </div>
+        <button id="pca_run" style="margin-top:12px">Run PCA</button>
+        <span id="pca_msg" class="muted" style="margin-left:8px"></span>
+      </div>
+      <div style="flex:1 1 520px;min-width:440px">
+        <div id="pca_scores" style="height:430px"></div>
+        <div id="pca_scree" style="height:230px"></div>
+        <div id="pca_load" style="font-size:12px;color:#333"></div>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -543,6 +662,7 @@ function wireSpec(){
 const LUT = []; for (let i = 0; i < 256; i++){ const x = i / 255, c = v => Math.round(255 * Math.min(1, Math.max(0, v)));
   LUT.push([c(2 * x), c(2 * x - 0.5), c(2 * x - 1)]); }     // afmhot
 let TOTAL = null;    // {arr, w, h}
+let selMeta = null;  // last Selection image {lo, hi, label} for the download button
 
 async function fetchImage(params, key){
   const r = await fetch('/api/image?' + params, key ? {signal: sig(key)} : undefined);
@@ -583,10 +703,24 @@ async function updateSelection(lo, hi, label){
   try { img = await fetchImage('sample=' + encodeURIComponent(SAMPLE) + '&lo=' + lo + '&hi=' + hi, 'sel'); }
   catch (e) { if (isAbort(e)) return; $('cap_sel').textContent = 'image error'; return; }
   if (tok !== selToken) return;
+  selMeta = {lo, hi, label: label || ''};
   drawImage($('cv_sel'), img, $('scale').value);
   const [mx, tc] = stats(img.arr);
   $('cap_sel').textContent = (label ? label + ' | ' : '') + 'm/z ' + lo.toFixed(2) + '–' + hi.toFixed(2)
     + ' | MC ' + fmt(mx) + ' | TC ' + fmt(tc);
+}
+function downloadSelection(){
+  const cv = $('cv_sel');
+  if (!cv._img) return;
+  const scale = 8;                                   // 128 px -> 1024 px, crisp (no smoothing)
+  const big = document.createElement('canvas');
+  big.width = cv._img.w * scale; big.height = cv._img.h * scale;
+  const ctx = big.getContext('2d'); ctx.imageSmoothingEnabled = false;
+  ctx.drawImage(cv, 0, 0, big.width, big.height);
+  const tag = selMeta ? 'mz' + selMeta.lo.toFixed(2) + '-' + selMeta.hi.toFixed(2) : 'sel';
+  big.toBlob(b => { const a = document.createElement('a'); a.href = URL.createObjectURL(b);
+    a.download = ((SAMPLE || 'sample') + '_' + tag + '.png').replace(/[^\w.-]+/g, '_');
+    a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000); }, 'image/png');
 }
 
 // ---- ROI drawing on the Total image --------------------------------------
@@ -732,15 +866,81 @@ $('reset_2d').onclick = reset2D;
 $('pk_add').onclick = addPeak;
 $('pk_fill').onclick = () => { $('pk_lo').value = lastX[0].toFixed(3); $('pk_hi').value = lastX[1].toFixed(3); };
 
+// ---- PCA (Statistical methods tab) ----------------------------------------
+let pcaRows = [];
+function sampleOptions(sel){
+  return SAMPLES.map(s => '<option value="' + s.sample + '"' + (s.sample === sel ? ' selected' : '') + '>'
+    + s.sample + '</option>').join('');
+}
+function renderPcaRows(){
+  const tb = $('pca_rows').querySelector('tbody');
+  if (!pcaRows.length){ tb.innerHTML = '<tr><td class="muted">no subsamples yet — use the buttons above</td></tr>'; return; }
+  tb.innerHTML = pcaRows.map((r, i) =>
+    '<tr><td><select data-i="' + i + '" class="pca_s">' + sampleOptions(r.sample) + '</select></td>'
+    + '<td><input data-i="' + i + '" class="pca_l" value="' + (r.label || '').replace(/"/g, '&quot;')
+    + '" placeholder="label" style="width:110px"></td>'
+    + '<td><button class="sm" data-del="' + i + '">\u2715</button></td></tr>').join('');
+  tb.querySelectorAll('.pca_s').forEach(s => s.onchange = e => pcaRows[+e.target.dataset.i].sample = e.target.value);
+  tb.querySelectorAll('.pca_l').forEach(s => s.oninput = e => pcaRows[+e.target.dataset.i].label = e.target.value);
+  tb.querySelectorAll('button[data-del]').forEach(b => b.onclick = () => { pcaRows.splice(+b.dataset.del, 1); renderPcaRows(); });
+}
+function pcaAdd(){ pcaRows.push({sample: SAMPLES[0] && SAMPLES[0].sample, label: ''}); renderPcaRows(); }
+function pcaAddPol(pol){ SAMPLES.filter(s => s.polarity === pol).forEach(s => pcaRows.push({sample: s.sample, label: pol})); renderPcaRows(); }
+
+const PAL = ['#2b6cb0','#c53030','#2f855a','#b7791f','#6b46c1','#319795','#d53f8c','#718096'];
+async function runPCA(){
+  if (pcaRows.length < 2){ $('pca_msg').textContent = 'add at least 2 subsamples'; return; }
+  $('pca_msg').textContent = 'running… (first run loads cuML, ~10 s)';
+  let res;
+  try {
+    const r = await fetch('/api/pca', {method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({samples: pcaRows, n_components: +$('pca_nc').value, bin: +$('pca_bin').value,
+        normalize: $('pca_norm').value, standardize: $('pca_std').checked})});
+    res = await r.json();
+    if (!r.ok){ $('pca_msg').textContent = res.error || 'error'; return; }
+  } catch (e) { $('pca_msg').textContent = 'error: ' + e.message; return; }
+  $('pca_msg').textContent = res.backend + '  |  ' + res.n_features + ' features';
+  renderPCA(res);
+}
+function renderPCA(res){
+  const labels = res.labels.map((l, i) => l || res.names[i]);
+  const groups = {};
+  res.scores.forEach((sc, i) => { const g = labels[i] || '?'; (groups[g] = groups[g] || []).push({sc, name: res.names[i]}); });
+  const ev = res.explained.map(v => (100 * v).toFixed(1));
+  const traces = Object.keys(groups).map((g, k) => ({
+    x: groups[g].map(p => p.sc[0]), y: groups[g].map(p => p.sc[1] != null ? p.sc[1] : 0),
+    text: groups[g].map(p => p.name), mode: 'markers+text', textposition: 'top center', name: g,
+    marker: {size: 12, color: PAL[k % PAL.length]}, type: 'scatter'}));
+  Plotly.newPlot('pca_scores', traces, {
+    title: 'PCA scores (' + res.backend + ')', margin: {t: 40},
+    xaxis: {title: 'PC1 (' + ev[0] + '%)', zeroline: true},
+    yaxis: {title: 'PC2 (' + (ev[1] || '0') + '%)', zeroline: true},
+    legend: {title: {text: 'label'}}}, {displaylogo: false, responsive: true});
+  Plotly.newPlot('pca_scree', [{x: res.explained.map((_, i) => 'PC' + (i + 1)),
+    y: res.explained.map(v => 100 * v), type: 'bar', marker: {color: '#2b6cb0'}}],
+    {title: 'Explained variance (%)', margin: {t: 40}, yaxis: {title: '%'}}, {displaylogo: false, responsive: true});
+  $('pca_load').innerHTML = res.loadings.slice(0, 2).map((ld, c) => '<b>PC' + (c + 1) + '</b> top m/z: '
+    + ld.slice(0, 6).map(e => e.mz.toFixed(1) + ' (' + e.w.toFixed(2) + ')').join(', ')).join('<br>');
+}
+
 // ---- tabs -----------------------------------------------------------------
 document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => {
   document.querySelectorAll('.tabs button').forEach(x => x.classList.toggle('on', x === b));
   document.querySelectorAll('.pane').forEach(p => p.classList.toggle('on', p.id === 'pane_' + b.dataset.pane));
-  if (b.dataset.pane === 'spectra' && window.Plotly) Plotly.Plots.resize('spec');
+  if (!window.Plotly) return;
+  if (b.dataset.pane === 'spectra') Plotly.Plots.resize('spec');
+  if (b.dataset.pane === 'stats') ['pca_scores', 'pca_scree'].forEach(id => { if ($(id) && $(id).data) Plotly.Plots.resize(id); });
 });
 
+$('dl_sel').onclick = downloadSelection;
+$('pca_add').onclick = pcaAdd;
+$('pca_add_pos').onclick = () => pcaAddPol('pos');
+$('pca_add_neg').onclick = () => pcaAddPol('neg');
+$('pca_clear').onclick = () => { pcaRows = []; renderPcaRows(); };
+$('pca_run').onclick = runPCA;
+
 initRoi();
-API('/api/samples').then(s => { SAMPLES = s; fillSamples(); });
+API('/api/samples').then(s => { SAMPLES = s; fillSamples(); renderPcaRows(); });
 </script>
 </body>
 </html>
