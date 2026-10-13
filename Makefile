@@ -3,8 +3,9 @@ ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
 
 PYSPM ?= $(ROOT)/pySPM
 
-DATA ?= $(ROOT)/data
-OUT  ?= $(ROOT)/processed
+# Change here base on space and input output files!
+DATA ?= /mnt/ceph_drive/Proj. Tire Additives
+OUT  ?= /mnt/ceph_drive/processed
 
 VENV := $(ROOT)/.venv
 PY   := $(VENV)/bin/python
@@ -29,7 +30,7 @@ export PATH := $(JAVA_HOME)/bin:$(PATH)
 
 .PHONY: all venv java data proc probe inspect clean clean-calc plots serve gpu
 
-all: data plots proc
+all: data plots proc # Piepieline without serve!
 
 
 # Check Java installation

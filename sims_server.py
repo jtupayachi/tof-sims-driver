@@ -26,6 +26,7 @@ APIs:
   GET  /api/image?sample=S&lo=&hi=   2D image, lo <= m/z < hi   (uint32 LE, headers X-W, X-H)
   GET  /api/image?sample=S&all=1     2D image of every ion
   GET  /api/peaks                    user peaks  [{id, name, lo, hi}]
+  GET  /api/featurepeaks?samples=a,b available PCA peaks (true + mine)  [{name, lo, hi, kind}]
   POST /api/peaks                    {name, lo, hi} -> create
   DELETE /api/peaks?id=N             remove
 """
@@ -140,6 +141,48 @@ class Store:
             self.veccache[key] = y
         return y
 
+    def peak_counts(self, name, windows):
+        """Integrated raw counts over each (lo, hi) m/z window, read straight from the sorted
+        ion-event channels (one feature value per window, used as a PCA feature vector)."""
+        s = self.samples[name]
+        ch, sf, k0 = s["ch"], s["sf"], s["k0"]
+        out = np.zeros(len(windows), np.float64)
+        for i, (lo, hi) in enumerate(windows):
+            c0 = math.ceil(sf * math.sqrt(max(lo, 0.0)) + k0)
+            c1 = math.ceil(sf * math.sqrt(max(hi, 0.0)) + k0)
+            a, b = (int(v) for v in np.searchsorted(ch, [c0, c1]))
+            out[i] = max(0, b - a)
+        return out
+
+    def available_peaks(self, names):
+        """All identified peaks across the selected samples: expert 'true' peaks + user 'mine'
+        peaks, deduped by name. Each entry: {name, lo, hi, kind}."""
+        feats, seen = [], set()
+
+        def add(name, lo, hi, kind):
+            key = (name or "").strip()
+            if not key or key.lower() in seen:
+                return
+            seen.add(key.lower())
+            feats.append(dict(name=key, lo=float(lo), hi=float(hi), kind=kind))
+
+        for n in names:
+            for p in self.true_peaks(n):
+                add(p["name"], p["lo"], p["hi"], "true")
+        for p in self.peaks():                       # user peaks are global (apply to every sample)
+            add(p.get("name", ""), p["lo"], p["hi"], "mine")
+        feats.sort(key=lambda p: (p["lo"] + p["hi"]) / 2)
+        return feats
+
+    def feature_peaks(self, names, selected=None):
+        """Peaks used as PCA features. If `selected` (list of names) is given keep only those;
+        otherwise use every available identified peak. Matched by name only."""
+        feats = self.available_peaks(names)
+        if selected:
+            want = {str(s).strip().lower() for s in selected}
+            feats = [p for p in feats if p["name"].lower() in want]
+        return feats
+
     def true_peaks(self, name):
         if name in self.truepeaks:
             return self.truepeaks[name]
@@ -230,27 +273,35 @@ def run_pca(X, ncomp):
         return U[:, :ncomp] * S[:ncomp], (var / var.sum())[:ncomp], Vt[:ncomp], "numpy SVD"
 
 
-def compute_pca(store, names, labels, width, mass_max, ncomp, normalize, standardize):
-    X = np.vstack([store.coarse_vector(n, width, mass_max) for n in names]).astype(np.float64)
-    nfeat = X.shape[1]
+def compute_pca(store, names, labels, ncomp, normalize, sqrt=True, selected=None):
+    feats = store.feature_peaks(names, selected)      # features = chosen identified peaks
+    if not feats:
+        raise ValueError("no peaks selected")
+    windows = [(f["lo"], f["hi"]) for f in feats]
+    X = np.vstack([store.peak_counts(n, windows) for n in names]).astype(np.float64)
+    masses = np.array([(f["lo"] + f["hi"]) / 2 for f in feats], dtype=np.float64)
+    feat_names = [f["name"] for f in feats]
     if normalize == "tic":                           # total-ion normalisation per sample
         s = X.sum(1, keepdims=True)
         s[s == 0] = 1.0
         X = X / s
-    keep = X.std(0) > 0                              # drop empty / constant m/z bins
+    if sqrt:                                          # Yang et al.: square-root transform
+        X = np.sqrt(np.clip(X, 0.0, None))
+    keep = X.std(0) > 0                              # drop empty / constant features
     Xk = X[:, keep]
-    masses = (np.flatnonzero(keep) + 0.5) * width
+    masses = masses[keep]
+    feat_names = [feat_names[i] for i in np.flatnonzero(keep)]
     if Xk.shape[1] == 0:
         raise ValueError("no signal in the selected samples")
-    if standardize:
-        Xk = (Xk - Xk.mean(0)) / Xk.std(0)
+    Xk = Xk - Xk.mean(0)                             # mean centering (Yang et al.)
     ncomp = max(1, min(int(ncomp), Xk.shape[0] - 1, Xk.shape[1]))
     scores, evr, comps, backend = run_pca(Xk, ncomp)
     scores, evr, comps = np.asarray(scores), np.asarray(evr), np.asarray(comps)
     loadings = []
     for c in range(comps.shape[0]):
         idx = np.argsort(-np.abs(comps[c]))[:10]
-        loadings.append([{"mz": float(masses[i]), "w": float(comps[c][i])} for i in idx])
+        loadings.append([{"mz": float(masses[i]), "w": float(comps[c][i]),
+                          "name": feat_names[i]} for i in idx])
     return dict(backend=backend, names=names, labels=labels,
                scores=scores[:, :ncomp].tolist(), explained=evr[:ncomp].tolist(),
                n_features=int(Xk.shape[1]), n_components=int(ncomp), loadings=loadings)
@@ -303,6 +354,14 @@ def make_handler(store):
                     return self._json(store.true_peaks(name))
                 if u.path == "/api/peaks":
                     return self._json(store.peaks())
+                if u.path == "/api/featurepeaks":
+                    names = [s for s in q.get("samples", "").split(",") if s in store.samples]
+                    if not names:
+                        return self._json({"error": "need ?samples=a,b,c"}, 400)
+                    groups = [dict(sample=n, peaks=[dict(name=p["name"], lo=p["lo"], hi=p["hi"])
+                                                    for p in store.true_peaks(n)]) for n in names]
+                    mine = [dict(name=p.get("name", ""), lo=p["lo"], hi=p["hi"]) for p in store.peaks()]
+                    return self._json(dict(groups=groups, mine=mine))
                 if u.path == "/api/spectrum":
                     name = q.get("sample", "")
                     if name not in store.samples:
@@ -373,15 +432,14 @@ def make_handler(store):
                 for n in names:
                     if n not in store.samples:
                         return self._json({"error": f"unknown sample {n}"}, 400)
-                width = float(body.get("bin", 1.0))
-                mass_max = float(body.get("mass", MASS_MAX))
                 ncomp = int(body.get("n_components", 2))
                 normalize = str(body.get("normalize", "tic"))
-                standardize = bool(body.get("standardize", True))
+                sqrt = bool(body.get("sqrt", True))
+                selected = body.get("peaks") or None
             except Exception as e:
                 return self._json({"error": f"bad request: {e}"}, 400)
             try:
-                self._json(compute_pca(store, names, labels, width, mass_max, ncomp, normalize, standardize))
+                self._json(compute_pca(store, names, labels, ncomp, normalize, sqrt, selected))
             except Exception as e:
                 self._json({"error": f"{type(e).__name__}: {e}"}, 500)
 
@@ -514,8 +572,10 @@ APP_HTML = r"""<!DOCTYPE html>
 <section id="pane_stats" class="pane">
   <div style="padding:14px;max-width:1150px;margin:auto">
     <h2 style="margin:4px 0">PCA of subsample spectra</h2>
-    <p class="muted">Add subsamples, give each a label (group), then run PCA on their raw-count
-       spectra. GPU-accelerated with cuML when available.</p>
+    <p class="muted">Add subsamples, give each a label (group), then run PCA on the integrated
+       intensities of their identified peaks (expert "true" peaks + your own). Preprocessing
+       follows Yang et al. 2019: total-ion normalize → square-root → mean-center.
+       GPU-accelerated with cuML when available.</p>
     <div style="display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start">
       <div class="card" style="flex:0 0 440px">
         <h3>Subsamples &amp; labels</h3>
@@ -526,20 +586,33 @@ APP_HTML = r"""<!DOCTYPE html>
           <button id="pca_clear" class="sm">clear</button>
         </div>
         <table id="pca_rows"><tbody></tbody></table>
+        <h3 style="margin-top:12px">Peaks (features)</h3>
+        <div style="margin-bottom:5px;display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+          <button id="pca_pk_load" class="sm">load peaks</button>
+          <button id="pca_pk_all" class="sm">all</button>
+          <button id="pca_pk_none" class="sm">none</button>
+          <span id="pca_pk_msg" class="muted"></span>
+        </div>
+        <div id="pca_pk_tags" style="display:flex;gap:5px;flex-wrap:wrap;max-height:160px;overflow:auto;
+             padding:4px;border:1px solid #ddd;border-radius:6px;min-height:30px">
+          <span class="muted">click “load peaks” after adding subsamples</span>
+        </div>
         <h3 style="margin-top:12px">Parameters</h3>
-        <div style="display:grid;grid-template-columns:auto auto;gap:7px 10px;align-items:center;max-width:320px">
-          <label>components</label><input id="pca_nc" type="number" min="2" max="10" value="2" style="width:70px">
-          <label>feature bin (u)</label><select id="pca_bin"><option>0.5</option><option selected>1</option><option>2</option><option>5</option></select>
+        <div style="display:grid;grid-template-columns:auto auto;gap:7px 10px;align-items:center;max-width:340px">
+          <label>components</label><input id="pca_nc" type="number" min="2" max="10" value="3" style="width:70px">
           <label>normalize</label><select id="pca_norm"><option value="tic">total-ion</option><option value="none">none</option></select>
-          <label>standardize (z-score)</label><input id="pca_std" type="checkbox" checked>
+          <label>sqrt transform</label><input id="pca_sqrt" type="checkbox" checked>
         </div>
         <button id="pca_run" style="margin-top:12px">Run PCA</button>
+        <button id="pca_csv" class="sm" style="margin-top:12px" disabled>⬇ CSV</button>
         <span id="pca_msg" class="muted" style="margin-left:8px"></span>
       </div>
       <div style="flex:1 1 520px;min-width:440px">
         <div id="pca_scores" style="height:430px"></div>
         <div id="pca_scree" style="height:230px"></div>
+        <div id="pca_loadfig" style="height:300px"></div>
         <div id="pca_load" style="font-size:12px;color:#333"></div>
+        <div id="pca_interp" style="margin-top:14px;font-size:12.5px;color:#333;line-height:1.5"></div>
       </div>
     </div>
   </div>
@@ -887,40 +960,151 @@ function renderPcaRows(){
 function pcaAdd(){ pcaRows.push({sample: SAMPLES[0] && SAMPLES[0].sample, label: ''}); renderPcaRows(); }
 function pcaAddPol(pol){ SAMPLES.filter(s => s.polarity === pol).forEach(s => pcaRows.push({sample: s.sample, label: pol})); renderPcaRows(); }
 
+// ---- peak picker (PCA features), grouped by subsample ---------------------
+let pcaGroups = [];                // [{sample, peaks:[{name,lo,hi}]}]
+let pcaMine = [];                  // user peaks [{name,lo,hi}]
+let pcaPick = new Set();           // selected peak names (shared across subsamples)
+let pcaNpeaks = 0;                 // total distinct peak names available
+function tagHtml(name, col){
+  const on = pcaPick.has(name);
+  return '<span data-n="' + (name || '').replace(/"/g, '&quot;') + '" style="cursor:pointer;user-select:none;'
+    + 'border:1px solid ' + col + ';border-radius:12px;padding:2px 9px;font-size:12px;margin:1px;'
+    + (on ? 'background:' + col + ';color:#fff' : 'background:#fff;color:' + col) + '">' + (name || '—') + '</span>';
+}
+function renderPcaTags(){
+  const box = $('pca_pk_tags');
+  if (!pcaGroups.length && !pcaMine.length){ box.innerHTML = '<span class="muted">click “load peaks” after adding subsamples</span>'; return; }
+  let html = '';
+  pcaGroups.forEach(g => {
+    html += '<div style="width:100%;margin:3px 0 1px"><b style="font-size:12px">' + g.sample
+      + '</b> <span class="muted">(' + g.peaks.length + ' true)</span></div>';
+    html += g.peaks.length ? g.peaks.map(p => tagHtml(p.name, '#2f855a')).join('')
+      : '<span class="muted" style="font-size:12px">— none —</span>';
+  });
+  if (pcaMine.length){
+    html += '<div style="width:100%;margin:3px 0 1px"><b style="font-size:12px">mine</b> '
+      + '<span class="muted">(' + pcaMine.length + ')</span></div>';
+    html += pcaMine.map(p => tagHtml(p.name, '#b7791f')).join('');
+  }
+  box.innerHTML = html;
+  box.querySelectorAll('span[data-n]').forEach(s => s.onclick = () => {
+    const n = s.dataset.n; pcaPick.has(n) ? pcaPick.delete(n) : pcaPick.add(n); renderPcaTags(); });
+  $('pca_pk_msg').textContent = pcaPick.size + ' / ' + pcaNpeaks + ' selected';
+}
+function allPeakNames(){
+  const s = new Set();
+  pcaGroups.forEach(g => g.peaks.forEach(p => s.add(p.name)));
+  pcaMine.forEach(p => s.add(p.name));
+  return s;
+}
+async function loadPcaPeaks(){
+  if (pcaRows.length < 1){ $('pca_pk_msg').textContent = 'add subsamples first'; return; }
+  const samples = pcaRows.map(r => r.sample).join(',');
+  let res;
+  try {
+    res = await API('/api/featurepeaks?samples=' + encodeURIComponent(samples));
+  } catch (e) { $('pca_pk_msg').textContent = 'error: ' + e.message; return; }
+  pcaGroups = res.groups || []; pcaMine = res.mine || [];
+  const all = allPeakNames(); pcaNpeaks = all.size;
+  pcaPick = new Set(all);                            // default: all selected
+  renderPcaTags();
+}
+
 const PAL = ['#2b6cb0','#c53030','#2f855a','#b7791f','#6b46c1','#319795','#d53f8c','#718096'];
+let PCA_RES = null;
 async function runPCA(){
   if (pcaRows.length < 2){ $('pca_msg').textContent = 'add at least 2 subsamples'; return; }
-  $('pca_msg').textContent = 'running… (first run loads cuML, ~10 s)';
+  if (!pcaPick.size){ $('pca_msg').textContent = 'select at least 1 peak (load peaks)'; return; }
+  $('pca_msg').textContent = 'running…';
   let res;
   try {
     const r = await fetch('/api/pca', {method: 'POST', headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({samples: pcaRows, n_components: +$('pca_nc').value, bin: +$('pca_bin').value,
-        normalize: $('pca_norm').value, standardize: $('pca_std').checked})});
+      body: JSON.stringify({samples: pcaRows, n_components: +$('pca_nc').value,
+        normalize: $('pca_norm').value, sqrt: $('pca_sqrt').checked, peaks: [...pcaPick]})});
     res = await r.json();
     if (!r.ok){ $('pca_msg').textContent = res.error || 'error'; return; }
   } catch (e) { $('pca_msg').textContent = 'error: ' + e.message; return; }
-  $('pca_msg').textContent = res.backend + '  |  ' + res.n_features + ' features';
-  renderPCA(res);
+  $('pca_msg').textContent = res.backend + '  |  ' + res.n_features + ' peaks';
+  PCA_RES = res;
+  $('pca_csv').disabled = false;
+  renderPCA();
 }
-function renderPCA(res){
+function renderPCA(){
+  const res = PCA_RES; if (!res) return;
+  const ax = 0, ay = res.explained.length > 1 ? 1 : 0;
   const labels = res.labels.map((l, i) => l || res.names[i]);
+  const ev = res.explained.map(v => (100 * v).toFixed(1));
   const groups = {};
   res.scores.forEach((sc, i) => { const g = labels[i] || '?'; (groups[g] = groups[g] || []).push({sc, name: res.names[i]}); });
-  const ev = res.explained.map(v => (100 * v).toFixed(1));
   const traces = Object.keys(groups).map((g, k) => ({
-    x: groups[g].map(p => p.sc[0]), y: groups[g].map(p => p.sc[1] != null ? p.sc[1] : 0),
+    x: groups[g].map(p => p.sc[ax]), y: groups[g].map(p => p.sc[ay] != null ? p.sc[ay] : 0),
     text: groups[g].map(p => p.name), mode: 'markers+text', textposition: 'top center', name: g,
     marker: {size: 12, color: PAL[k % PAL.length]}, type: 'scatter'}));
   Plotly.newPlot('pca_scores', traces, {
     title: 'PCA scores (' + res.backend + ')', margin: {t: 40},
-    xaxis: {title: 'PC1 (' + ev[0] + '%)', zeroline: true},
-    yaxis: {title: 'PC2 (' + (ev[1] || '0') + '%)', zeroline: true},
+    xaxis: {title: 'PC' + (ax + 1) + ' (' + ev[ax] + '%)', zeroline: true},
+    yaxis: {title: 'PC' + (ay + 1) + ' (' + (ev[ay] || '0') + '%)', zeroline: true},
     legend: {title: {text: 'label'}}}, {displaylogo: false, responsive: true});
   Plotly.newPlot('pca_scree', [{x: res.explained.map((_, i) => 'PC' + (i + 1)),
     y: res.explained.map(v => 100 * v), type: 'bar', marker: {color: '#2b6cb0'}}],
     {title: 'Explained variance (%)', margin: {t: 40}, yaxis: {title: '%'}}, {displaylogo: false, responsive: true});
-  $('pca_load').innerHTML = res.loadings.slice(0, 2).map((ld, c) => '<b>PC' + (c + 1) + '</b> top m/z: '
-    + ld.slice(0, 6).map(e => e.mz.toFixed(1) + ' (' + e.w.toFixed(2) + ')').join(', ')).join('<br>');
+  // loadings bar chart: which peaks drive PC1
+  const ld = res.loadings[ax] || [];
+  const lab = ld.map(e => (e.name ? e.name + ' ' : '') + e.mz.toFixed(2));
+  Plotly.newPlot('pca_loadfig', [{x: ld.map(e => e.w), y: lab, type: 'bar', orientation: 'h',
+    marker: {color: ld.map(e => e.w >= 0 ? '#2f855a' : '#c53030')}}],
+    {title: 'PC' + (ax + 1) + ' loadings (top peaks by |weight|)', margin: {t: 40, l: 140},
+     xaxis: {title: 'weight', zeroline: true}, yaxis: {autorange: 'reversed'}},
+    {displaylogo: false, responsive: true});
+  $('pca_load').innerHTML = res.loadings.slice(0, 2).map((ld, c) => '<b>PC' + (c + 1) + '</b> top peaks: '
+    + ld.slice(0, 6).map(e => (e.name ? e.name + ' ' : '') + 'm/z ' + e.mz.toFixed(2) + ' (' + e.w.toFixed(2) + ')').join(', ')).join('<br>');
+  renderInterp(res, ev);
+}
+function renderInterp(res, ev){
+  const nTop = (res.loadings[0] || []).slice(0, 3).map(e => (e.name || ('m/z ' + e.mz.toFixed(1)))).join(', ');
+  $('pca_interp').innerHTML =
+    '<h3 style="margin:6px 0">How to read these plots</h3>'
+    + '<p><b>PCA scores</b> (top): each marker is one subsample, coloured by its label. Axes PC1/PC2 are '
+    + 'the directions of largest variation across subsamples (not m/z). PC1 explains <b>' + ev[0] + '%</b>'
+    + (ev[1] != null ? ' and PC2 <b>' + ev[1] + '%</b>' : '') + ' of the variance. '
+    + 'Markers that sit close together are chemically similar; groups that separate differ in their peak intensities.</p>'
+    + '<p><b>Explained variance / scree</b> (middle): the share of total variance each component captures. '
+    + 'Use it to judge how many PCs are meaningful — a big drop after PC1 or PC2 means the later PCs carry little signal.</p>'
+    + '<p><b>PC1 loadings</b> (bottom): the peaks that build the PC1 axis, ranked by |weight|. Green = positive, '
+    + 'red = negative. Subsamples on the positive side of PC1 are richer in the green peaks; the negative side in the red. '
+    + 'Here PC1 is driven mostly by <b>' + (nTop || '—') + '</b>.</p>'
+    + '<p class="muted">Pipeline: ' + res.n_features + ' peaks '
+    + '→ total-ion normalize → square-root → mean-center → PCA (' + res.backend + '). '
+    + 'Use “⬇ CSV” to download scores, explained variance and loadings.</p>';
+}
+function toCsv(rows){ return rows.map(r => r.map(v => {
+  const s = (v == null ? '' : String(v));
+  return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; }).join(',')).join('\n'); }
+function downloadPcaCsv(){
+  const res = PCA_RES; if (!res) return;
+  const nc = res.n_components;
+  const rows = [];
+  rows.push(['# PCA results']);
+  rows.push(['# backend', res.backend, 'n_peaks', res.n_features, 'n_components', nc]);
+  rows.push([]);
+  rows.push(['# scores']);
+  rows.push(['subsample', 'label'].concat(Array.from({length: nc}, (_, i) => 'PC' + (i + 1))));
+  res.scores.forEach((sc, i) => rows.push([res.names[i], res.labels[i] || ''].concat(sc.map(v => v.toFixed(6)))));
+  rows.push([]);
+  rows.push(['# explained variance (fraction and %)']);
+  rows.push(['component', 'explained', 'percent']);
+  res.explained.forEach((v, i) => rows.push(['PC' + (i + 1), v.toFixed(6), (100 * v).toFixed(3)]));
+  rows.push([]);
+  rows.push(['# loadings (top peaks per component)']);
+  rows.push(['component', 'rank', 'peak', 'mz', 'weight']);
+  res.loadings.forEach((ld, c) => ld.forEach((e, r) =>
+    rows.push(['PC' + (c + 1), r + 1, e.name || '', e.mz.toFixed(4), e.w.toFixed(6)])));
+  const blob = new Blob([toCsv(rows)], {type: 'text/csv'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'pca_results.csv';
+  a.click();
+  URL.revokeObjectURL(a.href);
 }
 
 // ---- tabs -----------------------------------------------------------------
@@ -929,15 +1113,19 @@ document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => {
   document.querySelectorAll('.pane').forEach(p => p.classList.toggle('on', p.id === 'pane_' + b.dataset.pane));
   if (!window.Plotly) return;
   if (b.dataset.pane === 'spectra') Plotly.Plots.resize('spec');
-  if (b.dataset.pane === 'stats') ['pca_scores', 'pca_scree'].forEach(id => { if ($(id) && $(id).data) Plotly.Plots.resize(id); });
+  if (b.dataset.pane === 'stats') ['pca_scores', 'pca_scree', 'pca_loadfig'].forEach(id => { if ($(id) && $(id).data) Plotly.Plots.resize(id); });
 });
 
 $('dl_sel').onclick = downloadSelection;
 $('pca_add').onclick = pcaAdd;
 $('pca_add_pos').onclick = () => pcaAddPol('pos');
 $('pca_add_neg').onclick = () => pcaAddPol('neg');
-$('pca_clear').onclick = () => { pcaRows = []; renderPcaRows(); };
+$('pca_clear').onclick = () => { pcaRows = []; pcaGroups = []; pcaMine = []; pcaPick = new Set(); pcaNpeaks = 0; renderPcaRows(); renderPcaTags(); };
+$('pca_pk_load').onclick = loadPcaPeaks;
+$('pca_pk_all').onclick = () => { pcaPick = allPeakNames(); renderPcaTags(); };
+$('pca_pk_none').onclick = () => { pcaPick = new Set(); renderPcaTags(); };
 $('pca_run').onclick = runPCA;
+$('pca_csv').onclick = downloadPcaCsv;
 
 initRoi();
 API('/api/samples').then(s => { SAMPLES = s; fillSamples(); renderPcaRows(); });

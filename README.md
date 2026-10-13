@@ -18,7 +18,18 @@ spectrum inspection, peak picking, ROI analysis, and PCA.
 | `Makefile` | Orchestration: venv setup, data loading, processing, probing, serving. |
 | `pySPM/` | Nested clone of [scholi/pySPM](https://github.com/scholi/pySPM) (has its own repo; git-ignored here). |
 | `data/` | Raw instrument files (git-ignored). |
-| `processed/` | Pipeline output (git-ignored, regenerable). |
+| `processed/` | Pipeline output (git-ignored, regenerable). The Makefile default `OUT` is now `/mnt/ceph_drive/processed`. |
+
+### Data storage (symlinked)
+
+The raw data lives on the Ceph drive and is linked into `data/` with `ln -s`, not copied:
+
+```bash
+ln -s "/mnt/ceph_drive/For Jose" "/home/cloud/tof_sims_driver/data/For Jose"
+ln -s "/mnt/ceph_drive/Proj. Tire Additives" "/home/cloud/tof_sims_driver/data/Proj. Tire Additives"
+```
+
+Check the links with `ls -l data/`. If `/mnt/ceph_drive` is not mounted the links dangle and `make data` finds no files.
 
 ## Requirements
 

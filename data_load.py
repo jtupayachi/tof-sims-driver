@@ -492,7 +492,7 @@ Every output file starts with raw_ :
 
 Usage: python data_load.py <input_dir> <output_dir> [--no-events]
 """
-import json, struct, sys, traceback, warnings, zlib, contextlib
+import json, os, struct, sys, traceback, warnings, zlib, contextlib
 from pathlib import Path
 import numpy as np
 import pandas as pd
@@ -943,7 +943,9 @@ def do_itmx(path, out):
 
 def main(indir, outdir):
     indir = Path(indir)
-    files = sorted(p for p in indir.rglob("*") if p.suffix.lower() in EXTS)   # sweep subfolders too
+    # Path.rglob does not descend into symlinked dirs (data/ holds ln -s links), so walk manually.
+    files = sorted(Path(d, f) for d, _, fs in os.walk(indir, followlinks=True)
+                   for f in fs if Path(f).suffix.lower() in EXTS)
     if not files:
         sys.exit(f"No {sorted(EXTS)} files under {indir} (searched recursively)")
     print(f"Found {len(files)} IONTOF files under {indir}")
