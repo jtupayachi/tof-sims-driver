@@ -118,5 +118,7 @@ HOST ?= 0.0.0.0
 PORT ?= 8765
 
 serve plots: venv
+	@# [s] keeps pkill from matching this recipe's own shell command line.
+	-@pkill -f "[s]ims_server.py .*--port $(PORT)" && echo "Stopped previous server on port $(PORT)" && sleep 1
 	@echo "Serving on http://$(HOST):$(PORT)/  (reachable at http://`hostname -I | awk '{print $$1}'`:$(PORT)/ )"
 	"$(PY)" sims_server.py "$(OUT)" --host $(HOST) --port $(PORT)

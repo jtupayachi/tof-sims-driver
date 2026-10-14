@@ -297,6 +297,10 @@ def compute_pca(store, names, labels, ncomp, normalize, sqrt=True, selected=None
     ncomp = max(1, min(int(ncomp), Xk.shape[0] - 1, Xk.shape[1]))
     scores, evr, comps, backend = run_pca(Xk, ncomp)
     scores, evr, comps = np.asarray(scores), np.asarray(evr), np.asarray(comps)
+    if Xk.shape[1] == 1:                             # peak-peak correlation across subsamples
+        corr = np.array([[1.0]])
+    else:
+        corr = np.nan_to_num(np.corrcoef(Xk, rowvar=False))
     loadings = []
     for c in range(comps.shape[0]):
         idx = np.argsort(-np.abs(comps[c]))[:10]
@@ -304,7 +308,9 @@ def compute_pca(store, names, labels, ncomp, normalize, sqrt=True, selected=None
                           "name": feat_names[i]} for i in idx])
     return dict(backend=backend, names=names, labels=labels,
                scores=scores[:, :ncomp].tolist(), explained=evr[:ncomp].tolist(),
-               n_features=int(Xk.shape[1]), n_components=int(ncomp), loadings=loadings)
+               n_features=int(Xk.shape[1]), n_components=int(ncomp), loadings=loadings,
+               peak_mz=[float(m) for m in masses], peak_names=list(feat_names),
+               comps=comps[:ncomp].tolist(), corr=corr.tolist())
 
 
 def make_handler(store):
@@ -468,41 +474,41 @@ APP_HTML = r"""<!DOCTYPE html>
 <title>TOF-SIMS browser</title>
 <script src="/plotly.js"></script>
 <style>
-  body{margin:0;font:13px/1.4 system-ui,Arial,sans-serif;color:#1a1a1a}
+  body{margin:0;font:16px/1.45 system-ui,Arial,sans-serif;color:#1a1a1a}
   .tabs{display:flex;gap:4px;padding:6px 10px 0;background:#e6e6ea;border-bottom:1px solid #bbb;
         position:sticky;top:0;z-index:40}
   .tabs button{padding:7px 18px;border:1px solid #bbb;border-bottom:none;background:#f3f3f6;
-               cursor:pointer;border-radius:7px 7px 0 0;font-size:13px}
+               cursor:pointer;border-radius:7px 7px 0 0;font-size:16px}
   .tabs button.on{background:#fff;font-weight:bold;border-color:#8a8a8a}
   .pane{display:none}
   .pane.on{display:block}
   .placeholder{max-width:760px;margin:30px auto;padding:0 20px;color:#333}
   .placeholder h2{margin:0 0 6px}
   .placeholder .soon{display:inline-block;background:#edf2fb;color:#2b6cb0;border:1px solid #c4d4ee;
-                     border-radius:4px;padding:1px 8px;font-size:12px;margin-bottom:12px}
+                     border-radius:4px;padding:1px 8px;font-size:14px;margin-bottom:12px}
   .placeholder ul{line-height:1.7}
   header{display:flex;flex-wrap:wrap;gap:14px;align-items:center;padding:10px 14px;
-         background:#f5f5f7;border-bottom:1px solid #ccc;position:sticky;top:39px;z-index:30}
-  header b{font-size:15px}
+         background:#f5f5f7;border-bottom:1px solid #ccc;position:sticky;top:44px;z-index:30}
+  header b{font-size:18px}
   select,input,button{font:inherit;padding:3px 6px}
   .pol button{padding:4px 12px;border:1px solid #888;background:#fff;cursor:pointer}
   .pol button.on{background:#2b6cb0;color:#fff;border-color:#2b6cb0}
   main{display:flex;gap:14px;align-items:flex-start;padding:12px}
-  #spec{flex:1 1 640px;min-width:420px}
-  aside{flex:0 0 420px;display:flex;flex-direction:column;gap:12px}
+  #spec{flex:1 1 640px;min-width:420px;height:min(760px,calc(100vh - 150px));min-height:520px}
+  aside{flex:0 0 480px;display:flex;flex-direction:column;gap:12px}
   .card{border:1px solid #d0d0d0;border-radius:6px;padding:10px}
-  .card h3{margin:0 0 8px;font-size:13px}
+  .card h3{margin:0 0 8px;font-size:16px}
   .imgs{display:flex;gap:14px;flex-wrap:wrap}
   .imgwrap{text-align:center}
   .imgwrap canvas{image-rendering:pixelated;border:1px solid #999;background:#000;cursor:crosshair}
-  .cap{font-size:11px;color:#444;max-width:180px;margin-top:2px}
-  table{width:100%;border-collapse:collapse;font-size:12px}
+  .cap{font-size:13px;color:#444;max-width:210px;margin-top:2px}
+  table{width:100%;border-collapse:collapse;font-size:14.5px}
   td,th{padding:2px 4px;border-bottom:1px solid #eee;text-align:left}
   .peaklist{max-height:200px;overflow:auto}
   .muted{color:#777}
-  .tag{display:inline-block;padding:0 5px;border-radius:3px;font-size:11px;color:#fff}
+  .tag{display:inline-block;padding:0 5px;border-radius:3px;font-size:13px;color:#fff}
   .tag.true{background:#2b6cb0}.tag.user{background:#c53030}
-  button.sm{padding:1px 6px;font-size:11px}
+  button.sm{padding:2px 8px;font-size:13.5px}
   .roi{color:#c53030;font-weight:bold}
   label.inl{display:inline-flex;gap:4px;align-items:center}
 </style>
@@ -538,11 +544,11 @@ APP_HTML = r"""<!DOCTYPE html>
       </div>
       <div class="imgs">
         <div class="imgwrap"><div><b>Total</b> (all ions)</div>
-          <canvas id="cv_total" width="128" height="128" style="width:180px"></canvas>
+          <canvas id="cv_total" width="128" height="128" style="width:220px"></canvas>
           <div class="cap" id="cap_total"></div></div>
         <div class="imgwrap"><div><b>Selection</b>
             <button id="dl_sel" class="sm" title="download a high-resolution PNG of this image">⬇ PNG</button></div>
-          <canvas id="cv_sel" width="128" height="128" style="width:180px"></canvas>
+          <canvas id="cv_sel" width="128" height="128" style="width:220px"></canvas>
           <div class="cap" id="cap_sel"></div></div>
       </div>
     </div>
@@ -599,7 +605,7 @@ APP_HTML = r"""<!DOCTYPE html>
         </div>
         <h3 style="margin-top:12px">Parameters</h3>
         <div style="display:grid;grid-template-columns:auto auto;gap:7px 10px;align-items:center;max-width:340px">
-          <label>components</label><input id="pca_nc" type="number" min="2" max="10" value="3" style="width:70px">
+          <label>components</label><input id="pca_nc" type="number" min="2" max="20" value="10" title="computes up to this many PCs (auto-capped at subsamples − 1)" style="width:70px">
           <label>normalize</label><select id="pca_norm"><option value="tic">total-ion</option><option value="none">none</option></select>
           <label>sqrt transform</label><input id="pca_sqrt" type="checkbox" checked>
         </div>
@@ -609,10 +615,15 @@ APP_HTML = r"""<!DOCTYPE html>
       </div>
       <div style="flex:1 1 520px;min-width:440px">
         <div id="pca_scores" style="height:430px"></div>
+        <div id="pca_biplot2d" style="height:470px"></div>
+        <div id="pca_scores3d" style="height:470px"></div>
+        <div id="pca_biplot3d" style="height:490px"></div>
+        <div id="pca_splom" style="height:470px"></div>
         <div id="pca_scree" style="height:230px"></div>
-        <div id="pca_loadfig" style="height:300px"></div>
-        <div id="pca_load" style="font-size:12px;color:#333"></div>
-        <div id="pca_interp" style="margin-top:14px;font-size:12.5px;color:#333;line-height:1.5"></div>
+        <div id="pca_loadfig" style="height:330px"></div>
+        <div id="pca_corr" style="height:470px"></div>
+        <div id="pca_load" style="font-size:14.5px;color:#333"></div>
+        <div id="pca_interp" style="margin-top:14px;font-size:15px;color:#333;line-height:1.5"></div>
       </div>
     </div>
   </div>
@@ -671,7 +682,7 @@ function markerTrace(list, color, name){
   list.forEach(p => { const c = p.cmass != null ? p.cmass : (p.lo + p.hi) / 2;
     xs.push(c); ys.push(peakHeight(p.lo, p.hi)); tx.push(sub(p.name) || c.toFixed(2)); });
   return {x: xs, y: ys, text: tx, mode: 'markers+text', name, textposition: 'top center',
-          textfont: {size: 9, color}, cliponaxis: false,
+          textfont: {size: 12, color}, cliponaxis: false,
           marker: {symbol: 'triangle-down', size: 9, color},
           hovertemplate: '<b>%{text}</b><br>m/z %{x:.3f}<br>%{y:,}<extra>' + name + '</extra>'};
 }
@@ -691,10 +702,10 @@ function renderSpectrum(keepX){
 
   const x = keepX ? lastX : [SPEC.roi ? SPEC.x0 : 0, MASSMAX];
   const layout = {
-    margin: {t: 36, r: 12, b: 60, l: 70}, hovermode: 'x', dragmode: 'zoom', showlegend: false,
+    font: {size: 15}, margin: {t: 40, r: 12, b: 64, l: 80}, hovermode: 'x', dragmode: 'zoom', showlegend: false,
     title: {text: SAMPLE + (SPEC.roi ? '  —  ROI (' + SPEC.events.toLocaleString() + ' ions)'
                                      : '  —  whole spectrum (' + SPEC.events.toLocaleString() + ' ions)'),
-            x: 0.01, font: {size: 15}},
+            x: 0.01, font: {size: 18}},
     xaxis: {title: 'm/z (u)', range: x.slice(), rangeslider: {visible: true, thickness: 0.07, range: [0, MASSMAX]},
             showspikes: true, spikemode: 'across', spikethickness: 1, spikedash: 'dot', spikecolor: '#999'},
     yaxis: {title: 'Counts (raw)', rangemode: 'tozero', range: [0, ymaxIn(x[0], x[1]) * 1.25]},
@@ -965,26 +976,27 @@ let pcaGroups = [];                // [{sample, peaks:[{name,lo,hi}]}]
 let pcaMine = [];                  // user peaks [{name,lo,hi}]
 let pcaPick = new Set();           // selected peak names (shared across subsamples)
 let pcaNpeaks = 0;                 // total distinct peak names available
-function tagHtml(name, col){
+function tagHtml(name, col, mz){
   const on = pcaPick.has(name);
+  const mzlab = (mz != null && isFinite(mz)) ? ' <span style="opacity:.7;font-size:12px">m/z ' + mz.toFixed(2) + '</span>' : '';
   return '<span data-n="' + (name || '').replace(/"/g, '&quot;') + '" style="cursor:pointer;user-select:none;'
-    + 'border:1px solid ' + col + ';border-radius:12px;padding:2px 9px;font-size:12px;margin:1px;'
-    + (on ? 'background:' + col + ';color:#fff' : 'background:#fff;color:' + col) + '">' + (name || '—') + '</span>';
+    + 'border:1px solid ' + col + ';border-radius:12px;padding:2px 9px;font-size:14px;margin:1px;'
+    + (on ? 'background:' + col + ';color:#fff' : 'background:#fff;color:' + col) + '">' + (name || '—') + mzlab + '</span>';
 }
 function renderPcaTags(){
   const box = $('pca_pk_tags');
   if (!pcaGroups.length && !pcaMine.length){ box.innerHTML = '<span class="muted">click “load peaks” after adding subsamples</span>'; return; }
   let html = '';
   pcaGroups.forEach(g => {
-    html += '<div style="width:100%;margin:3px 0 1px"><b style="font-size:12px">' + g.sample
+    html += '<div style="width:100%;margin:3px 0 1px"><b style="font-size:14px">' + g.sample
       + '</b> <span class="muted">(' + g.peaks.length + ' true)</span></div>';
-    html += g.peaks.length ? g.peaks.map(p => tagHtml(p.name, '#2f855a')).join('')
-      : '<span class="muted" style="font-size:12px">— none —</span>';
+    html += g.peaks.length ? g.peaks.map(p => tagHtml(p.name, '#2f855a', (p.lo + p.hi) / 2)).join('')
+      : '<span class="muted" style="font-size:14px">— none —</span>';
   });
   if (pcaMine.length){
-    html += '<div style="width:100%;margin:3px 0 1px"><b style="font-size:12px">mine</b> '
+    html += '<div style="width:100%;margin:3px 0 1px"><b style="font-size:14px">mine</b> '
       + '<span class="muted">(' + pcaMine.length + ')</span></div>';
-    html += pcaMine.map(p => tagHtml(p.name, '#b7791f')).join('');
+    html += pcaMine.map(p => tagHtml(p.name, '#b7791f', (p.lo + p.hi) / 2)).join('');
   }
   box.innerHTML = html;
   box.querySelectorAll('span[data-n]').forEach(s => s.onclick = () => {
@@ -1031,48 +1043,171 @@ async function runPCA(){
 }
 function renderPCA(){
   const res = PCA_RES; if (!res) return;
-  const ax = 0, ay = res.explained.length > 1 ? 1 : 0;
+  const nc = res.n_components;
   const labels = res.labels.map((l, i) => l || res.names[i]);
   const ev = res.explained.map(v => (100 * v).toFixed(1));
+  const BASE = {font: {family: 'system-ui, Arial, sans-serif', size: 15, color: '#222'},
+    template: 'plotly_white', paper_bgcolor: '#ffffff', plot_bgcolor: '#ffffff',
+    colorway: PAL, legend: {title: {text: 'label'}}};
+  const OPT = {displaylogo: false, responsive: true};
   const groups = {};
   res.scores.forEach((sc, i) => { const g = labels[i] || '?'; (groups[g] = groups[g] || []).push({sc, name: res.names[i]}); });
-  const traces = Object.keys(groups).map((g, k) => ({
-    x: groups[g].map(p => p.sc[ax]), y: groups[g].map(p => p.sc[ay] != null ? p.sc[ay] : 0),
+  const gkeys = Object.keys(groups);
+
+  // --- 2D scores: PC1 vs PC2 ---
+  const t2 = gkeys.map((g, k) => ({
+    x: groups[g].map(p => p.sc[0]), y: groups[g].map(p => p.sc[1] != null ? p.sc[1] : 0),
     text: groups[g].map(p => p.name), mode: 'markers+text', textposition: 'top center', name: g,
-    marker: {size: 12, color: PAL[k % PAL.length]}, type: 'scatter'}));
-  Plotly.newPlot('pca_scores', traces, {
-    title: 'PCA scores (' + res.backend + ')', margin: {t: 40},
-    xaxis: {title: 'PC' + (ax + 1) + ' (' + ev[ax] + '%)', zeroline: true},
-    yaxis: {title: 'PC' + (ay + 1) + ' (' + (ev[ay] || '0') + '%)', zeroline: true},
-    legend: {title: {text: 'label'}}}, {displaylogo: false, responsive: true});
+    marker: {size: 13, color: PAL[k % PAL.length], line: {width: 1, color: '#fff'}}, type: 'scatter'}));
+  Plotly.newPlot('pca_scores', t2, Object.assign({}, BASE, {
+    title: 'PCA scores — PC1 vs PC2 (' + res.backend + ')', margin: {t: 44},
+    xaxis: {title: 'PC1 (' + ev[0] + '%)', zeroline: true},
+    yaxis: {title: 'PC2 (' + (ev[1] || '0') + '%)', zeroline: true}}), OPT);
+
+  // top loading peaks (by radius in the shown PC space), used by the biplots
+  function topPeaks(ndim, n){
+    const r = res.peak_names.map((_, i) => {
+      let s = 0; for (let c = 0; c < ndim; c++) s += Math.pow(res.comps[c][i] || 0, 2); return {i, r: Math.sqrt(s)};
+    });
+    return r.sort((a, b) => b.r - a.r).slice(0, n).map(o => o.i);
+  }
+  function scaleFactor(ndim){
+    let sR = 0, lR = 0;
+    res.scores.forEach(s => { for (let c = 0; c < ndim; c++) sR = Math.max(sR, Math.abs(s[c])); });
+    res.peak_names.forEach((_, i) => { for (let c = 0; c < ndim; c++) lR = Math.max(lR, Math.abs(res.comps[c][i])); });
+    return lR > 0 ? 0.9 * sR / lR : 1;
+  }
+
+  // --- 2D biplot: scores + loading vectors (PC1/PC2) ---
+  if (nc >= 2){
+    $('pca_biplot2d').style.display = '';
+    const f = scaleFactor(2), idx = topPeaks(2, Math.min(res.peak_names.length, 15));
+    const sc = gkeys.map((g, k) => ({
+      x: groups[g].map(p => p.sc[0]), y: groups[g].map(p => p.sc[1]), name: g,
+      text: groups[g].map(p => p.name), mode: 'markers', type: 'scatter',
+      marker: {size: 11, color: PAL[k % PAL.length], line: {width: 1, color: '#fff'}}}));
+    const vx = [], vy = [];
+    idx.forEach(i => { vx.push(0, res.comps[0][i] * f, null); vy.push(0, res.comps[1][i] * f, null); });
+    const vec = {x: vx, y: vy, mode: 'lines', type: 'scatter', name: 'loadings',
+      line: {color: 'rgba(120,120,120,0.7)', width: 1.4}, hoverinfo: 'skip', showlegend: false};
+    const tip = {x: idx.map(i => res.comps[0][i] * f), y: idx.map(i => res.comps[1][i] * f),
+      text: idx.map(i => res.peak_names[i]), mode: 'markers+text', type: 'scatter', name: 'peaks',
+      textposition: 'top center', textfont: {size: 12, color: '#444'},
+      marker: {size: 5, color: '#444', symbol: 'diamond'},
+      hovertemplate: '%{text}<extra></extra>', showlegend: false};
+    Plotly.newPlot('pca_biplot2d', sc.concat([vec, tip]), Object.assign({}, BASE, {
+      title: 'Biplot 2D — scores + loadings (PC1·PC2)', margin: {t: 44},
+      xaxis: {title: 'PC1 (' + ev[0] + '%)', zeroline: true},
+      yaxis: {title: 'PC2 (' + (ev[1] || '0') + '%)', zeroline: true}}), OPT);
+  } else { $('pca_biplot2d').style.display = 'none'; Plotly.purge('pca_biplot2d'); }
+
+  // --- 3D scores: PC1/PC2/PC3 ---
+  if (nc >= 3){
+    $('pca_scores3d').style.display = '';
+    const t3 = gkeys.map((g, k) => ({
+      x: groups[g].map(p => p.sc[0]), y: groups[g].map(p => p.sc[1]), z: groups[g].map(p => p.sc[2]),
+      text: groups[g].map(p => p.name), mode: 'markers', name: g, type: 'scatter3d',
+      marker: {size: 5, color: PAL[k % PAL.length], line: {width: 0.5, color: '#fff'}}}));
+    Plotly.newPlot('pca_scores3d', t3, Object.assign({}, BASE, {
+      title: 'PCA scores — 3D (PC1 · PC2 · PC3)', margin: {t: 44, l: 0, r: 0, b: 0},
+      scene: {xaxis: {title: 'PC1 (' + ev[0] + '%)'}, yaxis: {title: 'PC2 (' + ev[1] + '%)'},
+              zaxis: {title: 'PC3 (' + ev[2] + '%)'}}}), OPT);
+  } else { $('pca_scores3d').style.display = 'none'; Plotly.purge('pca_scores3d'); }
+
+  // --- 3D biplot: scores + loading vectors (PC1/PC2/PC3) ---
+  if (nc >= 3){
+    $('pca_biplot3d').style.display = '';
+    const f = scaleFactor(3), idx = topPeaks(3, Math.min(res.peak_names.length, 12));
+    const sc = gkeys.map((g, k) => ({
+      x: groups[g].map(p => p.sc[0]), y: groups[g].map(p => p.sc[1]), z: groups[g].map(p => p.sc[2]),
+      text: groups[g].map(p => p.name), mode: 'markers', name: g, type: 'scatter3d',
+      marker: {size: 5, color: PAL[k % PAL.length], line: {width: 0.5, color: '#fff'}}}));
+    const vx = [], vy = [], vz = [];
+    idx.forEach(i => { vx.push(0, res.comps[0][i] * f, null); vy.push(0, res.comps[1][i] * f, null); vz.push(0, res.comps[2][i] * f, null); });
+    const vec = {x: vx, y: vy, z: vz, mode: 'lines', type: 'scatter3d', name: 'loadings',
+      line: {color: 'rgba(120,120,120,0.75)', width: 3}, hoverinfo: 'skip', showlegend: false};
+    const tip = {x: idx.map(i => res.comps[0][i] * f), y: idx.map(i => res.comps[1][i] * f),
+      z: idx.map(i => res.comps[2][i] * f), text: idx.map(i => res.peak_names[i]),
+      mode: 'markers+text', type: 'scatter3d', name: 'peaks', textfont: {size: 12, color: '#444'},
+      marker: {size: 3, color: '#444', symbol: 'diamond'}, hovertemplate: '%{text}<extra></extra>', showlegend: false};
+    Plotly.newPlot('pca_biplot3d', sc.concat([vec, tip]), Object.assign({}, BASE, {
+      title: 'Biplot 3D — scores + loadings (PC1·PC2·PC3)', margin: {t: 44, l: 0, r: 0, b: 0},
+      scene: {xaxis: {title: 'PC1 (' + ev[0] + '%)'}, yaxis: {title: 'PC2 (' + ev[1] + '%)'},
+              zaxis: {title: 'PC3 (' + ev[2] + '%)'}}}), OPT);
+  } else { $('pca_biplot3d').style.display = 'none'; Plotly.purge('pca_biplot3d'); }
+
+  // --- pairwise matrix (splom) over all PCs ---
+  if (nc >= 2){
+    $('pca_splom').style.display = '';
+    const dims = Array.from({length: nc}, (_, i) => ({label: 'PC' + (i + 1) + ' (' + ev[i] + '%)'}));
+    const sp = gkeys.map((g, k) => ({
+      type: 'splom', name: g,
+      dimensions: dims.map((d, i) => ({label: d.label, values: groups[g].map(p => p.sc[i])})),
+      text: groups[g].map(p => p.name), marker: {size: 7, color: PAL[k % PAL.length],
+        line: {width: 0.5, color: '#fff'}}, diagonal: {visible: false}, showupperhalf: false}));
+    Plotly.newPlot('pca_splom', sp, Object.assign({}, BASE, {
+      title: 'Pairwise PC comparison (PC1·PC2·PC3·…)', margin: {t: 44}}), OPT);
+  } else { $('pca_splom').style.display = 'none'; Plotly.purge('pca_splom'); }
+
+  // --- scree ---
   Plotly.newPlot('pca_scree', [{x: res.explained.map((_, i) => 'PC' + (i + 1)),
-    y: res.explained.map(v => 100 * v), type: 'bar', marker: {color: '#2b6cb0'}}],
-    {title: 'Explained variance (%)', margin: {t: 40}, yaxis: {title: '%'}}, {displaylogo: false, responsive: true});
-  // loadings bar chart: which peaks drive PC1
-  const ld = res.loadings[ax] || [];
-  const lab = ld.map(e => (e.name ? e.name + ' ' : '') + e.mz.toFixed(2));
-  Plotly.newPlot('pca_loadfig', [{x: ld.map(e => e.w), y: lab, type: 'bar', orientation: 'h',
-    marker: {color: ld.map(e => e.w >= 0 ? '#2f855a' : '#c53030')}}],
-    {title: 'PC' + (ax + 1) + ' loadings (top peaks by |weight|)', margin: {t: 40, l: 140},
-     xaxis: {title: 'weight', zeroline: true}, yaxis: {autorange: 'reversed'}},
-    {displaylogo: false, responsive: true});
-  $('pca_load').innerHTML = res.loadings.slice(0, 2).map((ld, c) => '<b>PC' + (c + 1) + '</b> top peaks: '
+    y: res.explained.map(v => 100 * v), type: 'bar', marker: {color: '#2b6cb0'},
+    text: res.explained.map(v => (100 * v).toFixed(1) + '%'), textposition: 'outside'}],
+    Object.assign({}, BASE, {title: 'Explained variance (scree)', margin: {t: 44},
+      yaxis: {title: '% variance'}, showlegend: false}), OPT);
+
+  // --- loadings: m/z on x axis, loading on y axis (all components) ---
+  const lt = [];
+  for (let c = 0; c < nc; c++){
+    lt.push({x: res.peak_mz, y: res.comps[c], type: 'bar', name: 'PC' + (c + 1),
+      text: res.peak_names, hovertemplate: '%{text}<br>m/z %{x:.2f}<br>PC' + (c + 1) + ' %{y:.3f}<extra></extra>',
+      marker: {color: PAL[c % PAL.length]}});
+  }
+  Plotly.newPlot('pca_loadfig', lt, Object.assign({}, BASE, {
+    title: 'PCA loadings — m/z vs loading (all ' + nc + ' PCs)', margin: {t: 44}, barmode: 'group', bargap: 0.35,
+    xaxis: {title: 'm/z'}, yaxis: {title: 'loading (weight)', zeroline: true}}), OPT);
+
+  // --- correlation matrix of the peaks (loadings) ---
+  const names = res.peak_names;
+  Plotly.newPlot('pca_corr', [{z: res.corr, x: names, y: names, type: 'heatmap',
+    colorscale: 'RdBu', reversescale: true, zmid: 0, zmin: -1, zmax: 1,
+    colorbar: {title: 'r', len: 0.8}, hovertemplate: '%{y} · %{x}<br>r %{z:.2f}<extra></extra>'}],
+    Object.assign({}, BASE, {title: 'Peak correlation matrix (co-variation across subsamples)',
+      margin: {t: 44, l: 110, b: 110},
+      xaxis: {tickangle: -60, automargin: true, tickfont: {size: 12}},
+      yaxis: {automargin: true, autorange: 'reversed', tickfont: {size: 12}}}), OPT);
+
+  $('pca_load').innerHTML = res.loadings.map((ld, c) => '<b>PC' + (c + 1) + '</b> ('
+    + (100 * res.explained[c]).toFixed(1) + '%) top peaks: '
     + ld.slice(0, 6).map(e => (e.name ? e.name + ' ' : '') + 'm/z ' + e.mz.toFixed(2) + ' (' + e.w.toFixed(2) + ')').join(', ')).join('<br>');
   renderInterp(res, ev);
 }
 function renderInterp(res, ev){
   const nTop = (res.loadings[0] || []).slice(0, 3).map(e => (e.name || ('m/z ' + e.mz.toFixed(1)))).join(', ');
+  const has3 = res.n_components >= 3;
   $('pca_interp').innerHTML =
     '<h3 style="margin:6px 0">How to read these plots</h3>'
-    + '<p><b>PCA scores</b> (top): each marker is one subsample, coloured by its label. Axes PC1/PC2 are '
+    + '<p><b>1. PCA scores — PC1 vs PC2</b>: each marker is one subsample, coloured by its label. Axes PC1/PC2 are '
     + 'the directions of largest variation across subsamples (not m/z). PC1 explains <b>' + ev[0] + '%</b>'
     + (ev[1] != null ? ' and PC2 <b>' + ev[1] + '%</b>' : '') + ' of the variance. '
-    + 'Markers that sit close together are chemically similar; groups that separate differ in their peak intensities.</p>'
-    + '<p><b>Explained variance / scree</b> (middle): the share of total variance each component captures. '
-    + 'Use it to judge how many PCs are meaningful — a big drop after PC1 or PC2 means the later PCs carry little signal.</p>'
-    + '<p><b>PC1 loadings</b> (bottom): the peaks that build the PC1 axis, ranked by |weight|. Green = positive, '
-    + 'red = negative. Subsamples on the positive side of PC1 are richer in the green peaks; the negative side in the red. '
-    + 'Here PC1 is driven mostly by <b>' + (nTop || '—') + '</b>.</p>'
+    + 'Markers close together are chemically similar; groups that separate differ in their peak intensities.</p>'
+    + '<p><b>2. Biplot 2D</b>: the same scores with the peak <i>loading vectors</i> overlaid. An arrow points toward the '
+    + 'subsamples richer in that peak; its length is the peak’s influence on PC1/PC2, and arrows pointing the same way are '
+    + 'correlated peaks. Only the top peaks are drawn to stay readable.</p>'
+    + (has3 ? '<p><b>3. PCA scores — 3D</b> and <b>4. Biplot 3D</b>: the subsamples (and loading vectors) in PC1·PC2·PC3 space '
+        + '(PC3 explains ' + ev[2] + '%). Rotate to see separation hidden in the flat view.</p>'
+      : '<p class="muted"><b>3–4. 3D score plot & 3D biplot</b>: need ≥3 components (so ≥4 subsamples).</p>')
+    + '<p><b>5. Pairwise PC comparison</b>: a scatter-matrix of every PC pair (PC1 vs PC2, PC1 vs PC3, PC2 vs PC3, …) to '
+    + 'find which pair best separates your groups.</p>'
+    + '<p><b>6. Explained variance (scree)</b>: the share of total variance each component captures. '
+    + 'A big drop after PC1 or PC2 means later PCs carry little signal.</p>'
+    + '<p><b>7. Loadings — m/z vs loading</b>: horizontal axis is m/z, vertical axis is each peak’s contribution '
+    + '(weight) to every component (one coloured series per PC). Loadings are signed eigenvector weights in '
+    + '[−1, 1] (their squares sum to 1 per PC) — <i>not</i> percentages; the sign tells which side of the PC a '
+    + 'peak pushes samples toward. Peaks far from zero drive that axis. PC1 is driven mostly by <b>' + (nTop || '—') + '</b>.</p>'
+    + '<p><b>8. Peak correlation matrix</b>: Pearson correlation of each peak pair across the subsamples '
+    + '(red = positively correlated, blue = anti-correlated). Blocks of red mark groups of peaks that rise and fall together — '
+    + 'these tend to load on the same PC in the biplot.</p>'
     + '<p class="muted">Pipeline: ' + res.n_features + ' peaks '
     + '→ total-ion normalize → square-root → mean-center → PCA (' + res.backend + '). '
     + 'Use “⬇ CSV” to download scores, explained variance and loadings.</p>';
@@ -1113,7 +1248,7 @@ document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => {
   document.querySelectorAll('.pane').forEach(p => p.classList.toggle('on', p.id === 'pane_' + b.dataset.pane));
   if (!window.Plotly) return;
   if (b.dataset.pane === 'spectra') Plotly.Plots.resize('spec');
-  if (b.dataset.pane === 'stats') ['pca_scores', 'pca_scree', 'pca_loadfig'].forEach(id => { if ($(id) && $(id).data) Plotly.Plots.resize(id); });
+  if (b.dataset.pane === 'stats') ['pca_scores', 'pca_biplot2d', 'pca_scores3d', 'pca_biplot3d', 'pca_splom', 'pca_scree', 'pca_loadfig', 'pca_corr'].forEach(id => { if ($(id) && $(id).data) Plotly.Plots.resize(id); });
 });
 
 $('dl_sel').onclick = downloadSelection;

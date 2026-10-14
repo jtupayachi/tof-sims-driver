@@ -124,6 +124,28 @@ A single-page app with three tabs:
 
 3. **ML / DL** — placeholder for future machine-learning workflows.
 
+## Screenshots
+
+Captured at 100% browser zoom (1600×1000) against `6PPD` / `6PPD-Q` negative-polarity samples.
+
+**Spectra & 2D** — raw-count spectrum with expert peaks, total-ion image, and a per-peak selection image.
+
+![Spectra & 2D tab](docs/screenshots/01_spectra_2d.png)
+
+**Peak → 2D image** — click `2D` on any peak to map its m/z window.
+
+![Peak selection](docs/screenshots/02_peak_selection.png)
+
+**ROI spectrum** — drag a box on the *Total* image to get the spectrum of just that region (down to one pixel).
+
+![ROI spectrum](docs/screenshots/03_roi_spectrum.png)
+
+**Statistical methods** — subsample/label table, peak picker, and PCA scores + biplot.
+
+![PCA tab](docs/screenshots/04_pca.png)
+
+![PCA 3D scores and biplot](docs/screenshots/05_pca_3d.png)
+
 ### HTTP API
 
 | Endpoint | Description |
