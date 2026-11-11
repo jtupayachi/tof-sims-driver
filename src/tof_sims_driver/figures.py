@@ -149,7 +149,6 @@ def make_figures(res):
     matplotlib.use("Agg")
     from matplotlib.figure import Figure
     from matplotlib.lines import Line2D
-    from matplotlib.patches import Rectangle
     from matplotlib.ticker import MaxNLocator
     nc = res["n_components"]
     n_lab = max(0, int(res.get("n_labels", 12)))
@@ -533,90 +532,6 @@ def make_figures(res):
                  r"6. dot height $= |d_{gj}|$, triangle = sign of $d_{gj}$, colour = PC $k$ with the largest $|\bar t_{gk}\, p_{kj}|$",
                  r"7. example: " + ex_tex,
                  r"share of PC $k$ $= \bar t_{gk}^2\ /\ \sum_l \bar t_{gl}^2$"], fig)
-        # 7 - nearest centroid: which reference label is every file closest to (leave-one-out)
-        NC = res.get("centroid")
-        if NC and nc >= 2 and len(NC.get("pred", [])) == n:
-            t = "Nearest centroid"
-            refs, pl = NC["refs"], NC["plane"]
-            Dm = np.array([[np.inf if v is None else v for v in r] for r in NC["dist"]], float)
-            cen = np.asarray(NC["centroids"], float)
-            order = sorted(range(n), key=lambda i: (glabels[i] not in refs, glabels[i], i))
-            hit = lambda i: NC["pred"][i] == glabels[i]
-            ev_ = [i for i in range(n) if NC["evaluated"][i]]
-            unk = [i for i in range(n) if not NC["is_ref"][i]]
-            fig = Figure(figsize=(21, max(6.0, 0.28 * n + 2.5)), layout="constrained")
-            ax1, ax2, ax3 = fig.subplots(1, 3, gridspec_kw={"width_ratios": [1.15, 1.0, 0.7]})
-            for g in groups:                                  # files: reference files filled, unknown files hollow
-                ii = [i for i in range(n) if glabels[i] == g]
-                solid = g in refs
-                ax1.scatter(scores[ii, 0], scores[ii, 1], s=70, marker=gmark[g], zorder=3,
-                            c=gcol[g] if solid else "none", edgecolor=gcol[g], lw=1.4, label=f"{g} (n={len(ii)})" + ("" if solid else ", unknown"))
-            for q, g in enumerate(refs):
-                ax1.scatter(cen[q, 0], cen[q, 1], s=420, marker="*", c=gcol[g], edgecolor="black", lw=1.2, zorder=5)
-                ax1.annotate(f"centroid {g}", (cen[q, 0], cen[q, 1]), textcoords="offset points", xytext=(8, 8), fontsize=10, fontweight="bold")
-            for i in range(n):                                # a line to the assigned centroid: red when a reference file is wrong
-                q = refs.index(NC["pred"][i])
-                bad = NC["evaluated"][i] and not hit(i)
-                if bad or not NC["is_ref"][i]:
-                    ax1.plot([scores[i, 0], cen[q, 0]], [scores[i, 1], cen[q, 1]], ls="--", lw=1.0, zorder=2,
-                             color="#c53030" if bad else "#888")
-            ax1.axhline(0, color="#999", lw=0.6)
-            ax1.axvline(0, color="#999", lw=0.6)
-            ax1.set_xlabel(f"PC1 ({ev[0]:.1f}%)", fontsize=11)
-            ax1.set_ylabel(f"PC2 ({ev[1]:.1f}%)", fontsize=11)
-            ax1.grid(alpha=0.3)
-            ax1.legend(fontsize=8, loc="best")
-            ax1.set_title("Scores, centroids (stars) and assignments", fontsize=11, fontweight="bold")
-
-            Dp = Dm[order]
-            fin = Dp[np.isfinite(Dp)]
-            im = ax2.imshow(np.where(np.isfinite(Dp), Dp, np.nan), cmap="viridis_r", aspect="auto",
-                            vmin=0, vmax=float(fin.max()) if fin.size else 1.0)
-            ax2.set_xticks(range(len(refs)), [f"{g}" for g in refs], fontsize=10, rotation=20, ha="right")
-            ax2.set_yticks(range(n), [("\u2714 " if NC["evaluated"][i] and hit(i) else "\u2718 " if NC["evaluated"][i] else "? ")
-                                      + f"{names[i]} [{glabels[i]}]" for i in order], fontsize=8)
-            for r_, i in enumerate(order):
-                ax2.add_patch(Rectangle((refs.index(NC["pred"][i]) - 0.5, r_ - 0.5), 1, 1, fill=False,
-                                                                        ec="#c53030" if NC["evaluated"][i] and not hit(i) else "white", lw=2.2))
-                if len(refs) <= 6:
-                    for q in range(len(refs)):
-                        if np.isfinite(Dp[r_, q]):
-                            ax2.text(q, r_, f"{Dp[r_, q]:.2g}", ha="center", va="center", fontsize=7, color="white" if Dp[r_, q] > 0.5 * fin.max() else "#222")
-            fig.colorbar(im, ax=ax2, label=f"distance to the centroid in PC1\u2013PC{pl} (smaller = closer)", shrink=0.8)
-            ax2.set_title("Distance of every file to each reference centroid", fontsize=11, fontweight="bold")
-
-            ks = np.arange(1, nc + 1)
-            accv = [np.nan if a is None else 100 * a for a in NC["acc"]]
-            ax3.plot(ks, accv, color=PAL[0], marker="o", ms=8, lw=1.2)
-            ax3.axvline(pl, color="#c53030", ls=":", lw=1.2)
-            for k_, a_ in zip(ks, accv):
-                ax3.annotate(f"{a_:.0f}%", (k_, a_), textcoords="offset points", xytext=(0, 8), ha="center", fontsize=9)
-            ax3.set_xticks(ks[::1 if nc <= 12 else 2], [f"1\u2013{k}" if k > 1 else "1" for k in ks[::1 if nc <= 12 else 2]], fontsize=9)
-            ax3.set_ylim(0, 112)
-            ax3.set_xlabel("PCs used for the distance", fontsize=11)
-            ax3.set_ylabel("Leave-one-out accuracy of the reference files (%)", fontsize=11)
-            ax3.grid(alpha=0.3)
-            ax3.set_title("Accuracy vs number of PCs", fontsize=11, fontweight="bold")
-            nok = sum(hit(i) for i in ev_)
-            fig.suptitle(f"{t}: {nok}/{len(ev_)} reference files assigned to their own label in PC1\u2013PC{pl}"
-                         + (f";  mean margin {NC['sep']:+.2f}" if NC.get("sep") is not None else "")
-                         + (f";  {len(unk)} unknown file(s) assigned" if unk else ""), fontweight="bold", fontsize=13)
-            wrong = [names[i] for i in ev_ if not hit(i)]
-            add("centroid", t, f"Reference labels: {', '.join(refs)}. The centroid (star) of a reference label is the average score of its files. "
-                "Every file is assigned to the nearest centroid by Euclidean distance in the first PCs; a reference file is first removed "
-                "from its own centroid (leave-one-out), so it cannot vote for itself. Left: the scores with the centroids; a dashed line joins a "
-                "file to the centroid it was assigned to (red = a reference file that landed on the wrong label; grey = an unknown file, drawn hollow, "
-                "that was not used to build any centroid). Middle: the distance of each file to each centroid; the white box marks the assigned "
-                "centroid (red when wrong), \u2714 / \u2718 = right / wrong, ? = unknown file. Right: the same leave-one-out accuracy when 1, 1\u20132, "
-                "1\u20133, \u2026 PCs are used; the red dotted line is the plane shown on the left. "
-                "The margin is the mean of (d_other \u2212 d_own) / max(d_other, d_own): +1 = far from the other labels, 0 = on the border, "
-                "negative = closer to another label. "
-                + (f"Wrong: {', '.join(wrong)}. " if wrong else "No reference file was wrong. ")
-                + "An unknown file is always assigned to some reference, however far it is: read the distance, not only the label.",
-                [r"$c_g = \frac{1}{n_g}\sum_{i \in g} t_i$   (centroid of reference label $g$, scores $t_i$ in the first $k$ PCs)",
-                 r"$d_{ig} = \| t_i - c_{g \setminus i} \|$   ($i$ is left out of its own label)",
-                 r"assigned label $= \arg\min_g d_{ig}$",
-                 r"margin $= (d_{\mathrm{other}} - d_{\mathrm{own}})\ /\ \max(d_{\mathrm{other}}, d_{\mathrm{own}})$"], fig)
     return out
 
 
@@ -694,8 +609,7 @@ def tune_figure(info):
                     for sp in a.spines.values():
                         sp.set_edgecolor("#c53030")
                         sp.set_linewidth(2.0)
-        what = ("closest" if info["goal"] == "closest" else "most separating")
-        fig.suptitle(f"{info['title']}: PC{pc + 1} is the {what} PC (distance {dz[pc]:.2f} SD)\n"
+        fig.suptitle(f"{info['title']}: PC{pc + 1} is the closest PC (distance {dz[pc]:.2f} SD)\n"
                      f"bin {best['bin']:g}, NBR \u2265 {best['ratio_min']:g}, TIC \u2265 {100 * best['frac_min']:g}%, {best['n_features']} bins",
                      fontsize=11, fontweight="bold")
         buf = io.BytesIO()

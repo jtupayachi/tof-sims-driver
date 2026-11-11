@@ -631,12 +631,10 @@ function makePca(v){
     ? '<div style="margin-top:12px;padding:8px;border:1px solid var(--line);border-radius:6px">'
       + '<div style="font-weight:600;margin-bottom:4px">Learn the settings and the PC from two labels</div>'
       + '<div class="muted" style="font-size:13px;margin-bottom:6px">Pick compound A (e.g. 6PPD) and compound B (e.g. a street sample). Only their subsamples are used. '
-      + 'Every bin / NBR / TIC combination gets its own PCA; <i>closest PC</i> finds the setting and the PC where the two centroids are nearest '
-      + '(in SDs of that PC, PCs under 3% variance ignored) and tests it against shuffled labels; <i>tell apart</i> finds the setting that separates them best. '
-      + 'The best limits go into the parameter boxes (press Run PCA to use them for all files). The PC numbers belong to this A+B PCA: read the loadings shown here. '
-      + 'The two labels are also the reference centroids of the nearest-centroid figure (leave both empty to use every label).</div>'
+      + 'Every bin / NBR / TIC combination gets its own PCA; the search finds the setting and the PC where the two centroids are nearest '
+      + '(in SDs of that PC, PCs under 3% variance ignored) and tests it against shuffled labels. '
+      + 'The best limits go into the parameter boxes (press Run PCA to use them for all files). The PC numbers belong to this A+B PCA: read the loadings shown here.</div>'
       + '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><select id="' + K + 'refa" title="compound A"></select><span class="muted">vs</span><select id="' + K + 'refb" title="compound B"></select>'
-      + '<select id="' + K + 'goal"><option value="closest">closest PC</option><option value="separate">tell apart</option></select>'
       + '<button id="' + K + 'tune" class="sm" title="grid search over bin width, NBR and TIC on the two labels">Learn settings</button></div>'
       + '<div id="' + K + 'tuneout" style="margin-top:6px;font-size:13px"></div></div>'
     : '';
@@ -821,7 +819,6 @@ function makePca(v){
       body.bin = +P('bin').value;
       body.filter_peaks = P('flt').checked;
       body.ratio_min = +P('nbr').value; body.frac_min = +P('tic').value / 100;
-      const rp = refPair(); if (rp) body.ref_labels = rp;
       if (!(body.ratio_min >= 0 && body.frac_min >= 0 && body.frac_min <= 1)){ P('msg').textContent = 'NBR must be \u2265 0 and TIC between 0 and 100 %'; return; }
     }
     else body.peaks = peaks;
@@ -1020,29 +1017,25 @@ function makePca(v){
     let res;
     try {
       const r = await fetch('/api/pca/tune', {method: 'POST', headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({samples: rows, refs: rp, goal: P('goal').value, normalize: P('norm').value, sqrt: P('sqrt').checked})});
+        body: JSON.stringify({samples: rows, refs: rp, normalize: P('norm').value, sqrt: P('sqrt').checked})});
       res = await r.json();
       if (!r.ok){ out.textContent = res.error || 'error'; return; }
     } catch (e) { out.textContent = 'error: ' + e.message; return; }
-    const closest = res.goal === 'closest', pct = x => +(100 * x).toFixed(1);
+    const pct = x => +(100 * x).toFixed(1);
     const row = (r, k) => '<tr><td>' + r.bin + '</td><td>' + (r.ratio_min || '\u2013') + '</td><td>' + (r.frac_min ? +(100 * r.frac_min).toFixed(4) + ' %' : '\u2013')
       + '</td><td>' + r.n_features + '</td>'
-      + (closest ? '<td>PC' + r.pc + ' (' + pct(r.evr) + ' %)</td><td>' + r.dz.toFixed(3) + '</td>'
-                 : '<td>' + Math.round(100 * r.acc) + ' %</td><td>' + r.sep.toFixed(2) + '</td>')
+      + '<td>PC' + r.pc + ' (' + pct(r.evr) + ' %)</td><td>' + r.dz.toFixed(3) + '</td>'
       + '<td>' + (r.filter ? '<button class="sm" data-use="' + k + '">use</button>' : '<span class="muted">no filter</span>') + '</td></tr>';
     const list = res.results.concat(res.baseline.filter(b => !res.results.some(r => r.bin === b.bin && !r.filter)));
     const B = res.best, lim = 'bin ' + B.bin + ', NBR \u2265 ' + B.ratio_min + ', TIC \u2265 ' + +(100 * B.frac_min).toFixed(4) + ' %';
-    const head = closest
-      ? '<b>PC' + B.pc + '</b> (' + pct(B.evr) + ' % of the variance) is where ' + escHtml(res.refs[0]) + ' and ' + escHtml(res.refs[1]) + ' are closest: centroid distance '
+    const head = '<b>PC' + B.pc + '</b> (' + pct(B.evr) + ' % of the variance) is where ' + escHtml(res.refs[0]) + ' and ' + escHtml(res.refs[1]) + ' are closest: centroid distance '
         + B.dz.toFixed(3) + ' SD of that PC, with ' + lim + '. Chance of a minimum this small with shuffled labels (all ' + res.n_compared + ' setting\u00d7PC choices counted): <b>p = '
         + res.p_corr.toFixed(2) + '</b>' + (res.p_corr > 0.05 ? ' \u2013 not distinguishable from chance. ' : '. ')
-        + 'A PC with the groups on top of each other is usually one that does not tell them apart (for example the spread inside one group); it does not show that the compounds are alike. Check the other PCs in the bar chart.'
-      : 'Best with a filter: ' + lim + ', ' + Math.round(100 * B.acc) + ' % right (PC1\u2013PC2).'
-        + (res.n_tied > 1 ? ' <b>' + res.n_tied + ' settings are tied</b> (same accuracy, margin within 0.02): these two labels separate easily, so the data does not pin the limits down.' : '');
+        + 'A PC with the groups on top of each other is usually one that does not tell them apart (for example the spread inside one group); it does not show that the compounds are alike. Check the other PCs in the bar chart.';
     const ld = '<div style="margin-top:4px"><b>Top loadings of PC' + B.pc + '</b> (m/z : weight): ' + res.loadings.map(l => l.mz + ' : ' + l.w.toFixed(2)).join(', ') + '</div>';
     out.innerHTML = '<div>' + res.n_files + ' files, ' + res.n_tested + ' settings tried. ' + head + '</div>' + ld
       + '<table style="margin-top:4px"><tr><th>bin</th><th>NBR\u2265</th><th>TIC\u2265</th><th>bins kept</th>'
-      + (closest ? '<th>PC</th><th>distance (SD)</th>' : '<th>right</th><th>margin</th>') + '<th></th></tr>'
+      + '<th>PC</th><th>distance (SD)</th><th></th></tr>'
       + list.map(row).join('') + '</table>'
       + '<div class="muted" style="margin-top:4px">The best settings are already in the parameter boxes above; press <i>use</i> on another row to fill those instead, then <i>Run PCA</i>.</div>'
       + '<img id="' + K + 'tuneimg" src="' + res.figure + '" title="click to open full size" style="width:100%;margin-top:6px;border:1px solid var(--line);border-radius:6px;cursor:pointer">';
@@ -1396,8 +1389,7 @@ function renderDocs(){
       + '<b>Unit.</b> d is a difference of the pre-processed values, so its unit is the unit of x: with the default settings (total-ion and square root) it is <b>&radic;(share of the total ions)</b>, a pure number without a physical unit. '
       + 'Example: d = +0.05 means the label\'s average &radic;(ion share) of that m/z is 0.05 higher than in the average file; if the average file has &radic;share = 0.10 (a share of 0.10<sup>2</sup> = 1% of its ions), the label has about (0.10 + 0.05)<sup>2</sup> = 2.25% of its ions there. With total-ion off the unit is &radic;counts, with the square root off it is the plain ion share (or counts). The axis name states the unit of your run. Compare heights within one figure, not between runs with different settings. '
       + '<b>Worked example</b>: 6PPD has t&#772; = +1.9 on PC2 and &minus;0.3 on PC1; m/z 217 has loadings +0.4 on PC2 and +0.1 on PC1; then d = 1.9&times;0.4 + (&minus;0.3)&times;0.1 + (other PCs) = 0.73 + (other PCs), so 217 is richer in 6PPD than in the average file. The figure prints the same calculation for your own strongest peak under the plots, and the formula steps are listed in its caption. '
-      + 'The numbers are also in <i>label_loadings.csv</i> of the export (total d and the part of every PC).'],
-    ['Nearest centroid', 'Only when two or more labels are references (by default every label; or the two labels picked under <i>Learn the settings</i>). The centroid (star) of a reference label is the average score of its files. Every file goes to the nearest centroid; a reference file is first taken out of its own centroid, so it cannot vote for itself. Left: scores and centroids, a dashed line to the assigned centroid (red = a reference file that was wrong; grey = an unknown file). Middle: the distance of every file to every centroid. Right: the same accuracy using 1, 1\u20132, 1\u20133\u2026 PCs. An unknown file always gets <i>some</i> label, however far it is, so read its distance: a file that is much farther than the reference files are from their own centroid is not really 6PPD or 6PPD-Q. The table is in <i>nearest_centroid.csv</i> of the export.']];
+      + 'The numbers are also in <i>label_loadings.csv</i> of the export (total d and the part of every PC).']];
   $('doc').innerHTML =
     sec('start', 'Getting started',
       '<p>The app helps you look at TOF-SIMS measurements and see how your samples differ from each other.</p>'

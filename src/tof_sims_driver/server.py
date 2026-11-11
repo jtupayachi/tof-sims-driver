@@ -36,13 +36,12 @@ APIs:
   GET  /api/peaks                    user peaks  [{id, name, lo, hi}]
   POST /api/peaks                    {name, lo, hi} -> create
   POST /api/pca                      {samples:[{sample,label}], n_components, normalize, sqrt, mode, bin|peaks,
-                                       filter_peaks, ratio_min, frac_min, ref_labels}
+                                       filter_peaks, ratio_min, frac_min}
                                      a sample may be a region of interest: "NAME@roi:x0,y0,x1,y1" (pixels, inclusive)
                                      -> scores, loadings, steps (with formulas), figures
-  POST /api/pca/tune                 {samples:[{sample,label}], refs:[labelA,labelB], normalize, sqrt, goal: closest|separate}
-                                     grid search of bin / NBR / TIC on the files of the two labels; closest = the setting and PC
-                                     where their centroids are nearest (with a shuffled-label p), separate = best leave-one-out
-                                     nearest-centroid accuracy in PC1-PC2
+  POST /api/pca/tune                 {samples:[{sample,label}], refs:[labelA,labelB], normalize, sqrt}
+                                     grid search of bin / NBR / TIC on the files of the two labels: the setting and the PC
+                                     where their centroids are nearest (with a shuffled-label p)
                                      -> {best, results, baseline, pcs, loadings, figure, p_corr}
   GET  /api/pca/steps?mode=all|mine  preprocessing / peak-selection steps with formulas (no data)
   POST /api/export                   {name, results:[<PCA result>, ...]} -> zip of CSV tables (raw counts, scores, loadings, ...) + figures
@@ -290,7 +289,7 @@ def make_handler(store, uploader=None):
             except Exception as e:
                 return self._json({"error": f"bad request: {e}"}, 400)
             try:
-                self._json(tune_filter(store, names, labels, refs, normalize, sqrt, goal=str(body.get("goal", "closest"))))
+                self._json(tune_filter(store, names, labels, refs, normalize, sqrt))
             except ValueError as e:
                 self._json({"error": str(e)}, 400)
             except Exception as e:
@@ -321,7 +320,6 @@ def make_handler(store, uploader=None):
                 frac_min = float(body.get("frac_min", FRAC_MIN))
                 n_labels = int(body.get("n_labels", N_LABELS))
                 filter_peaks = bool(body.get("filter_peaks", False))
-                ref_labels = [str(r) for r in (body.get("ref_labels") or [])] or None
                 if not (math.isfinite(ratio_min) and ratio_min >= 0 and 0 <= frac_min <= 1 and 0 <= n_labels <= 60):
                     return self._json({"error": "need ratio_min >= 0, 0 <= frac_min <= 1, 0 <= n_labels <= 60"}, 400)
             except Exception as e:
@@ -329,7 +327,7 @@ def make_handler(store, uploader=None):
             try:
                 self._json(compute_pca(store, names, labels, ncomp, normalize, sqrt, mode,
                                        bin_width, mass_max, peaks, ratio_min=ratio_min, frac_min=frac_min,
-                                       n_labels=n_labels, filter_peaks=filter_peaks, ref_labels=ref_labels))
+                                       n_labels=n_labels, filter_peaks=filter_peaks))
             except Exception as e:
                 LOG.error("500 /api/pca:\n%s", traceback.format_exc())
                 self._json({"error": f"{type(e).__name__}: {e}"}, 500)

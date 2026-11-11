@@ -63,10 +63,10 @@ def test_figures_per_label_loadings(store):
     names = list(store.vec)
     res = compute_pca(store, names, ["a"] * 4 + ["b"] * 4, 4, "tic", True, "all")
     ids = [f["id"] for f in res["figures"]]
-    assert ids == ["scree", "scores", "pcloadings", "drivers", "labelpc", "labelload", "centroid"]   # all PCs and all labels in each figure
+    assert ids == ["scree", "scores", "pcloadings", "drivers", "labelpc", "labelload"]   # all PCs and all labels in each figure
     assert all(len(f["title"]) <= 32 for f in res["figures"])
     one = compute_pca(store, names, ["a"] * 8, 4, "tic", True, "all")                # one label = every file: nothing to contrast
-    assert [f["id"] for f in one["figures"]] == ["scree", "scores", "pcloadings", "drivers"]   # and no centroid figure
+    assert [f["id"] for f in one["figures"]] == ["scree", "scores", "pcloadings", "drivers"]
     sel = compute_pca(store, names, ["a"] * 4 + ["b"] * 4, 3, "tic", True, "mine",
                       peaks=[dict(name=f"P{j}", lo=j, hi=j + 1) for j in (5, 10, 20, 30, 40)])
     assert [f["id"] for f in sel["figures"]] == ids
@@ -163,34 +163,12 @@ def test_peak_filter_is_ignored_for_selected_peaks(store):
     assert res["n_features"] == 3 and not res["filter_peaks"]
 
 
-def test_nearest_centroid_leave_one_out_and_unknowns():
-    from tof_sims_driver.pca import nearest_centroid
-    S = np.array([[0, 0], [0.2, 0], [0.1, 0.1], [5, 5], [5.2, 5], [5, 5.2], [4.9, 4.8], [0.3, 0.1], [5, 4]], float)
-    lab = ["a"] * 3 + ["b"] * 4 + ["", ""]
-    nc = nearest_centroid(S, lab, plane=2)
-    assert nc["refs"] == ["a", "b"] and nc["pred"][7] == "a" and nc["pred"][8] == "b"
-    assert nc["is_ref"] == [True] * 7 + [False] * 2 and nc["acc"][-1] == 1.0 and nc["sep"] > 0.8
-    # the file is removed from its own centroid: a lone outlier labelled "a" is not rescued by itself
-    S2 = S.copy(); S2[2] = [5, 5]
-    assert nearest_centroid(S2, lab)["acc"][-1] < 1.0
-    assert nearest_centroid(S, ["a"] * 9) is None
-    assert nearest_centroid(S, lab, refs=["a"]) is None
-
-
-def test_nearest_centroid_in_result_and_figure(store):
-    res = compute_pca(store, list(store.vec), ["a"] * 4 + ["b"] * 3 + [""], 3, "tic", True, "all", ref_labels=["a", "b"])
-    assert res["centroid"]["refs"] == ["a", "b"] and res["centroid"]["pred"][-1] in ("a", "b")
-    assert "centroid" in [f["id"] for f in res["figures"]]
-    one = compute_pca(store, list(store.vec), ["a"] * 8, 3, "tic", True, "all", figures=False)
-    assert one["centroid"] is None
-
-
-def test_tune_filter_finds_peaks_and_checks_inputs():
+def test_tune_filter_uses_a_filter_and_checks_inputs():
     from tof_sims_driver.tune import tune_filter
     st = PeakStore(n=8)
     names, labels = list(st.vec), ["a"] * 4 + ["b"] * 4
-    r = tune_filter(st, names, labels, ["a", "b"], goal="separate", bins=(1.0,), ratios=(0, 3), fracs=(0, 0.005), min_features=5)
-    assert r["best"]["filter"] and r["best"]["acc"] == 1.0 and r["n_files"] == 8 and r["baseline"][0]["filter"] is False
+    r = tune_filter(st, names, labels, ["a", "b"], bins=(1.0,), ratios=(0, 3), fracs=(0, 0.005), min_features=5, n_perm=50)
+    assert r["best"]["filter"] and r["n_files"] == 8 and r["baseline"][0]["filter"] is False
     assert all(r_["n_features"] >= 5 for r_ in r["results"])
     assert r["figure"].startswith("data:image/png;base64,")
     with pytest.raises(ValueError, match="two different"):
@@ -206,7 +184,7 @@ def test_tune_closest_pc_reports_pc_loadings_and_shuffle_p():
     r = tune_filter(st, names, labels, ["a", "b"], bins=(1.0,), ratios=(0, 3), fracs=(0, 0.005), min_features=5,
                     min_var=0.0, n_perm=100)
     b = r["best"]
-    assert r["goal"] == "closest" and 1 <= b["pc"] <= len(r["pcs"])
+    assert 1 <= b["pc"] <= len(r["pcs"])
     assert b["dz"] == pytest.approx(r["pcs"][b["pc"] - 1]["dz"])
     assert 0 < r["p_corr"] <= 1 and r["n_compared"] >= 1
     assert 0 < len(r["loadings"]) <= 12 and r["figure"].startswith("data:image/png;base64,")

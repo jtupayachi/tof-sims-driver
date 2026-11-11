@@ -11,7 +11,6 @@
     label_loadings.csv      per label group (only when files are labelled): every feature's difference from the average file and
                             the part of it carried by each PC (the per-label dot-plot figure)
     label_pc_scores.csv     per label group: mean score and share of its separation on every PC (the label x PC heat map)
-    nearest_centroid.csv    per file: reference / unknown, nearest reference centroid (leave-one-out) and the distances to them
     files.csv, settings.json
     figures/*.png           the figures
 
@@ -127,16 +126,6 @@ def tables(res):
                                for i, (n, lb) in enumerate(zip(names, labels))])
     if res.get("counts") is not None:
         out["counts_raw.csv"] = _csv([["file"] + feats] + [[n] + [int(v) for v in row] for n, row in zip(names, res["counts"])])
-    nc = res.get("centroid")
-    refs = nc.get("refs") if isinstance(nc, dict) else None
-    if (isinstance(refs, list) and refs and all(isinstance(g, str) for g in refs)
-            and all(isinstance(nc.get(k), list) and len(nc[k]) == len(names) for k in ("pred", "dist", "is_ref", "evaluated"))
-            and all(isinstance(r, list) and len(r) == len(refs) for r in nc["dist"])):
-        out["nearest_centroid.csv"] = _csv(
-            [["file", "label", "role", "assigned_label", "correct"] + [f"distance_to_{g}" for g in refs]]
-            + [[n, lb, "reference" if nc["is_ref"][i] else "unknown", nc["pred"][i],
-                (nc["pred"][i] == lb) if nc["evaluated"][i] else ""] + ["" if d is None else d for d in nc["dist"][i]]
-               for i, (n, lb) in enumerate(zip(names, labels))])
     out["scores.csv"] = _csv([["file", "label"] + pcs] + [[n, lb] + [float(v) for v in row]
                                                           for n, lb, row in zip(names, labels, res["scores"])])
     ev = [100.0 * float(v) for v in res["explained"]]
@@ -205,9 +194,6 @@ Each folder is one PCA. Every file is plain CSV (comma separated, one header row
   loadings.csv            one row per feature: its m/z window, counts added up over all files, share of all ions, how many times
                           higher it is than its strongest neighbour, whether it passes the thresholds in settings.json, and its
                           loading on every PC (the loading-spectrum and driving-peak figures).
-  nearest_centroid.csv    only when 2 or more labels are references. For each file: its role (reference / unknown), the label of the
-                          nearest reference centroid, whether that is right (reference files only, the file itself left out of its
-                          centroid) and its distance to every reference centroid in the first two PCs.
   ellipses_90.csv         for each label group and each pair of PCs: the 90% ellipse (centre, semi-axes, angle of the long axis in
                           degrees from the x axis). Only groups with a label and 3 or more files get one (the scores figure).
   label_loadings.csv      only when files have labels. For each label and feature: how much higher (+) or lower (-) the label's average

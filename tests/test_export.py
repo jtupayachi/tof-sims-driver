@@ -114,12 +114,3 @@ def test_nothing_to_export_and_duplicate_tabs(res):
         results_zip([])
     with pytest.raises(ValueError):
         results_zip([res, res])
-
-
-def test_nearest_centroid_table(res):
-    z = zipfile.ZipFile(io.BytesIO(results_zip([res])))
-    rows = read(z, "all_peak_pca/nearest_centroid.csv")
-    assert rows[0][:5] == ["file", "label", "role", "assigned_label", "correct"] and len(rows) == len(res["names"]) + 1
-    assert rows[1][2] == "reference" and rows[1][3] in ("a", "b")
-    bad = dict(res, centroid={"refs": ["a"], "pred": [], "dist": [], "is_ref": [], "evaluated": []})   # malformed: skipped, no crash
-    assert "all_peak_pca/nearest_centroid.csv" not in zipfile.ZipFile(io.BytesIO(results_zip([bad]))).namelist()

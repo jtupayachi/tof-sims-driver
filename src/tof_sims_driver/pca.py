@@ -150,61 +150,11 @@ def selection_steps(st=None):
     return out
 
 
-# --------------------------------------------------------------------------- nearest centroid
-
-def nearest_centroid(scores, labels, refs=None, plane=2):
-    """Leave-one-out nearest-centroid classification in PC space.
-
-    The centroid of a reference label is the mean score of its files. Each file is assigned to the nearest
-    centroid; a reference file is left out of its own centroid first, so it cannot vote for itself. Files whose
-    label is not a reference are 'unknown': they are only assigned, never used for a centroid.
-    `refs` = the reference labels (default: every non-empty label). Returns None unless 2+ references have files.
-    Distances are Euclidean in the first `plane` PCs (the plane that is plotted); `acc[k-1]` is the accuracy of
-    the reference files when the first k PCs are used, `sep` the mean silhouette-like margin
-    (d_other - d_own) / max(d_other, d_own) in the plane."""
-    S = np.asarray(scores, float)
-    n, K = S.shape
-    lab = [str(x or "").strip() for x in labels] + [""] * (n - len(labels))
-    refs = [g for g in dict.fromkeys(refs if refs else lab) if g and g in lab]
-    if len(refs) < 2:
-        return None
-    members = [np.flatnonzero([x == g for x in lab[:n]]) for g in refs]
-    plane = max(1, min(int(plane), K))
-
-    def dist(k):
-        D = np.full((n, len(refs)), np.inf)
-        for q, m in enumerate(members):
-            for i in range(n):
-                mm = m[m != i]
-                if len(mm):
-                    D[i, q] = np.linalg.norm(S[i, :k] - S[mm, :k].mean(0))
-        return D
-
-    is_ref = np.array([x in refs for x in lab[:n]])
-    own = np.array([refs.index(x) if x in refs else -1 for x in lab[:n]])
-    ok = is_ref & np.isfinite(dist(1)[np.arange(n), np.maximum(own, 0)])         # a lone file has no centroid of its own
-    acc = []
-    for k in range(1, K + 1):
-        D = dist(k)
-        acc.append(float(np.mean(np.argmin(D, 1)[ok] == own[ok])) if ok.any() else None)
-    D = dist(plane)
-    pred = np.argmin(D, 1)
-    marg = []
-    for i in np.flatnonzero(ok):
-        other = np.delete(D[i], own[i])
-        d_o, d_n = D[i, own[i]], float(other.min())
-        marg.append((d_n - d_o) / max(d_n, d_o, 1e-12))
-    return dict(refs=refs, plane=plane, is_ref=[bool(v) for v in is_ref], evaluated=[bool(v) for v in ok],
-                pred=[refs[j] for j in pred], dist=[[_num(v) for v in r] for r in D],
-                centroids=[S[m].mean(0).tolist() for m in members], acc=acc,
-                sep=float(np.mean(marg)) if marg else None)
-
-
 # --------------------------------------------------------------------------- PCA
 
 def compute_pca(store, names, labels, ncomp, normalize, sqrt=True, mode="all",
                 bin_width=1.0, mass_max=MASS_MAX, peaks=None, figures=True,
-                ratio_min=RATIO_MIN, frac_min=FRAC_MIN, n_labels=N_LABELS, filter_peaks=False, ref_labels=None):
+                ratio_min=RATIO_MIN, frac_min=FRAC_MIN, n_labels=N_LABELS, filter_peaks=False):
     """PCA over subsample spectra. mode='all' uses the whole binned spectrum (every m/z bin) as
     features; mode='mine' uses only the supplied peaks (list of {name, lo, hi}).
 
@@ -291,7 +241,6 @@ def compute_pca(store, names, labels, ncomp, normalize, sqrt=True, mode="all",
                  filter_peaks=filtered, p_kept=int(Xk.shape[1]),
                  center_check=center_check, K=int(ncomp), backend=backend.split(" (")[0],
                  ratio_min=ratio_min, frac_min=frac_min)
-    centroid = nearest_centroid(scores, labels, ref_labels) if scores.shape[1] >= 2 else None
     res = dict(backend=backend, names=list(names), labels=list(labels), mode=mode, bin=bin_width,
                normalize=str(normalize), sqrt=bool(sqrt),
                scores=scores.tolist(), explained=evr.tolist(),
@@ -306,7 +255,7 @@ def compute_pca(store, names, labels, ncomp, normalize, sqrt=True, mode="all",
                comps=comps.tolist(), mean_centered=True, center_check=center_check,
                ratio_min=float(ratio_min), frac_min=float(frac_min), filter_peaks=filtered,
                n_filtered=int(n_filtered), n_pass=n_pass, n_bins=int(p),
-               n_labels=int(n_labels), centroid=centroid,
+               n_labels=int(n_labels),
                steps=pca_steps(mode, stats),
                selection_steps=selection_steps(stats) if mode == "mine" else [])
     if figures:

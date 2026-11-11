@@ -80,13 +80,13 @@ written in plain language.
    The All-peak PCA has a **peak filter** (on by default): bins below the **NBR** limit (intensity ÷ strongest
    neighbouring bin, default 3) or the **TIC** limit (share of all ions of the chosen files, default 0.5 %) are removed
    before the PCA; files are still normalised by their full total. API: `filter_peaks`, `ratio_min`, `frac_min`.
-   **Nearest centroid** (last figure, `nearest_centroid.csv` in the export): leave-one-out assignment of every file to the
-   centroid of the reference labels in PC1–PC2, with the accuracy for 1, 1–2, 1–3… PCs. **Learn settings** (All-peak PCA, `POST /api/pca/tune`): pick compound A and compound B (two labels of the file list); a grid over
-   bin width, NBR and TIC is run on their files only. *Closest PC* returns the setting and the PC on which the two
-   centroids are nearest (distance in SDs of that PC, PCs under 3 % variance ignored), a shuffled-label p-value that counts every
-   setting × PC tried, the loadings of that PC and a figure (distance per PC, loading spectrum, pair plot). *Tell apart* returns the
-   setting with the best leave-one-out nearest-centroid accuracy. The best limits are put into the parameter boxes. The PC
-   numbers belong to the A+B PCA, not to the later run on all files.
+   The **peak list** shows every feature (3,601 bins at 0.25 u), not a first page.
+   **Learn settings** (All-peak PCA, `POST /api/pca/tune`): pick compound A and compound B (two labels of the file list); a
+   grid over bin width, NBR and TIC is run on their files only. It returns the setting and the PC on which the two centroids
+   are nearest (distance in SDs of that PC, PCs under 3 % variance ignored), a shuffled-label p-value that counts every
+   setting × PC tried, the loadings of that PC and a figure (distance per PC, loading spectrum, pair plot). The best limits
+   are put into the parameter boxes; press *Run PCA* to use them for all files. The PC numbers belong to the A+B PCA, not to
+   the later run on all files.
    **Sessions:** *Save session* (top of the tab) downloads one JSON file with the files and labels, settings,
    ticks, biplot axes, peak-list filters and the results of both tabs, figures included. *Load session…* shows it all
    again without recomputing. Files are validated before anything is shown (damaged, edited or foreign files are
@@ -121,25 +121,37 @@ for a read-only server; the size limit is `--max-upload-gb` (default 8).
 
 ## Screenshots
 
-Captured at 100% browser zoom (1600×1000) against `6PPD` / `6PPD-Q` negative-polarity samples.
+Captured at 100% browser zoom (1600×1000) against negative-polarity samples: the `6PPD`, `6PPD-Q`, `Si_control`,
+`cyclohexylmethylamine` and `phenylurea` standards and the uploaded `spectra-sample1/2/5/6-500x500` files.
 
-**Spectra & 2D** — raw-count spectrum with expert peaks, total-ion image, and a per-peak selection image.
+**Spectra & 2D** — raw-count spectrum, total-ion image, and a per-range selection image.
 
 ![Spectra & 2D tab](docs/screenshots/01_spectra_2d.png)
 
-**Peak → 2D image** — click `2D` on any peak to map its m/z window.
+**Zoom → 2D image** — zoom the spectrum (here m/z 212.5–215.5 of `6PPD-Q_neg3`) and the *Selection* image maps that m/z window.
 
 ![Peak selection](docs/screenshots/02_peak_selection.png)
 
-**ROI spectrum** — drag a box on the *Total* image to get the spectrum of just that region (down to one pixel).
+**ROI spectrum** — drag a box on the *Total* image to get the spectrum of just that region (down to one pixel); *+ ROI to PCA* uses it as a sample.
 
 ![ROI spectrum](docs/screenshots/03_roi_spectrum.png)
 
-**PCA tab** — interactive biplot (files with a 90% ellipse per label) and explorable peak list.
+**All-peak PCA** — subsample picker, interactive biplot (files with a 90% ellipse per label) and the parameters, including
+the bin width and the NBR / TIC peak filter.
 
 ![PCA tab](docs/screenshots/04_pca.png)
 
-**Scores figure** — scores of every PC pair with a 90% confidence ellipse per label group.
+**Learn settings** — pick compound A and B; the best bin / NBR / TIC and the closest PC (with its loadings and the figure)
+are shown and put into the parameter boxes.
+
+![Learn settings](docs/screenshots/08_learn_settings.png)
+
+**Peak list** — every feature of the run (here 731 bins after the filter), sortable and filterable, with the loading of every PC; tick
+the m/z for the Selected-peak PCA.
+
+![Peak list](docs/screenshots/09_peak_list.png)
+
+**Scores figure** — scores of every PC pair with a 90% confidence ellipse per label group (first rows of the figure).
 
 ![PCA scores](docs/screenshots/05_pca_scores.png)
 
@@ -168,8 +180,8 @@ Captured at 100% browser zoom (1600×1000) against `6PPD` / `6PPD-Q` negative-po
 | `POST /api/peaks` | Create a user peak `{name, lo, hi}`. |
 | `DELETE /api/peaks?id=N` | Remove a user peak. |
 | `POST /api/export` | `{name, results:[<PCA result>, ...]}` → zip of the CSV tables and figures. |
-| `POST /api/pca` | `{samples:[{sample,label}], n_components, normalize, sqrt, mode: all\|mine, bin \| peaks, filter_peaks, ratio_min, frac_min, ref_labels}` → scores, loadings, steps, figures, `centroid`. `filter_peaks` (All-peak only) drops bins below `ratio_min` (NBR) or `frac_min` (TIC share). A `sample` may be a region of interest, `NAME@roi:x0,y0,x1,y1` (pixels, inclusive). |
-| `POST /api/pca/tune` | `{samples, refs:[A,B], normalize, sqrt, goal: closest\|separate}` → best bin / NBR / TIC, the closest (or most separating) PC, its loadings, a shuffled-label `p_corr`, a figure. |
+| `POST /api/pca` | `{samples:[{sample,label}], n_components, normalize, sqrt, mode: all\|mine, bin \| peaks, filter_peaks, ratio_min, frac_min}` → scores, loadings, steps, figures. `filter_peaks` (All-peak only) drops bins below `ratio_min` (NBR) or `frac_min` (TIC share). A `sample` may be a region of interest, `NAME@roi:x0,y0,x1,y1` (pixels, inclusive). |
+| `POST /api/pca/tune` | `{samples, refs:[A,B], normalize, sqrt}` → best bin / NBR / TIC, the PC where A and B are closest, its loadings, a shuffled-label `p_corr`, a figure. |
 | `GET /api/pca/steps?mode=all\|mine` | Preprocessing (and peak-selection) steps with formulas. |
 
 ## Choosing ions for 6PPD and 6PPD-Q (negative polarity)
@@ -291,7 +303,6 @@ bins around 298 separate the 6PPD-Q standard film from the other standards, but 
 - A PC with the two groups on top of each other (smallest centroid distance) is usually one that does not tell them apart,
   not proof that they are alike. Judge by the distance with the shuffled-label `p_corr`, not by picking PC pairs by eye (10 PCs
   give 45 pairs, and some pair always looks close).
-- An unknown file is always assigned to some reference by the nearest-centroid rule; read its distance, not only its label.
 
 ## Data flow
 
@@ -338,7 +349,7 @@ make probe PROBE_BASE="my sample"   # different base name
 | File / dir | Purpose |
 |---|---|
 | `pyproject.toml` | Python package metadata (`tof-sims-driver`, import name `tof_sims_driver`). |
-| `src/tof_sims_driver/` | **The library.** `data_load` (READ step), `data_probe`, `store` (ion events → spectra / images / peaks), `pca` (preprocessing, PCA, steps & formulas), `uploads` (browser uploads), `figures` (matplotlib PCA figures), `server` (interactive browser), `static/app.html` (single-page app). |
+| `src/tof_sims_driver/` | **The library.** `data_load` (READ step), `data_probe`, `store` (ion events → spectra / images / peaks), `pca` (preprocessing, peak filter, PCA, steps & formulas), `tune` (bin / NBR / TIC and closest-PC search), `export` (CSV tables + zip), `uploads` (browser uploads), `figures` (matplotlib PCA figures), `server` (interactive browser), `static/app.html` (single-page app). |
 | `tests/` | pytest suite (`make test`). |
 | `data_load.py` | Shim → `tof_sims_driver.data_load` (**READ step**: parses IONTOF files and writes `raw_*` outputs). |
 | `data_probe.py` | Shim → `tof_sims_driver.data_probe` (dumps the internal block tree of an IONTOF file). |
