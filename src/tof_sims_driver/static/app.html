@@ -1,0 +1,1519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TOF-SIMS browser</title>
+<script src="/plotly.js"></script>
+<style>
+  :root{--ink:#1c2330;--mut:#6b7585;--line:#dde1e8;--bg:#f4f6f9;--card:#fff;--acc:#2b6cb0;--acc2:#1e4e8c;--ok:#2f855a;--bad:#c53030}
+  *{box-sizing:border-box}
+  body{margin:0;font:15px/1.45 system-ui,-apple-system,"Segoe UI",Arial,sans-serif;color:var(--ink);background:var(--bg)}
+  h2{margin:0 0 6px;font-size:20px} h3{margin:0 0 8px;font-size:15px}
+  select,input,button{font:inherit;padding:4px 8px;border:1px solid #b9c0cc;border-radius:5px;background:#fff;color:var(--ink)}
+  button{cursor:pointer} button:hover:not(:disabled){border-color:var(--acc);color:var(--acc)}
+  button:disabled{opacity:.45;cursor:default}
+  button.pri{background:var(--acc);border-color:var(--acc);color:#fff} button.pri:hover:not(:disabled){background:var(--acc2);color:#fff}
+  button.sm{padding:2px 8px;font-size:13px}
+  button.danger:hover:not(:disabled){border-color:var(--bad);color:var(--bad)}
+  label.inl{display:inline-flex;gap:5px;align-items:center;white-space:nowrap}
+  a{color:var(--acc)}
+  .muted{color:var(--mut)}
+  .topbar{display:flex;align-items:flex-end;gap:14px;padding:8px 14px 0;background:#1f2a3c;position:sticky;top:0;z-index:50}
+  .brand{color:#fff;font-weight:700;font-size:17px;letter-spacing:.3px;padding:0 6px 8px 0}
+  .tabs{display:flex;gap:2px;flex:1}
+  .tabs button{padding:8px 18px;border:0;border-radius:7px 7px 0 0;background:transparent;color:#b8c2d4;font-size:15px}
+  .tabs button:hover{color:#fff;background:rgba(255,255,255,.08)}
+  .tabs button.on{background:var(--bg);color:var(--ink);font-weight:600}
+  .seg{display:inline-flex}
+  .seg button{border-radius:0;padding:3px 12px;border-color:#b9c0cc}
+  .seg button:first-child{border-radius:5px 0 0 5px} .seg button:last-child{border-radius:0 5px 5px 0}
+  .seg button+button{margin-left:-1px}
+  .seg button.on{background:var(--acc);border-color:var(--acc);color:#fff}
+  .pane{display:none} .pane.on{display:block}
+  .toolbar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;padding:8px 14px;background:#fff;border-bottom:1px solid var(--line);
+           position:sticky;top:41px;z-index:40}
+  main{display:flex;gap:14px;align-items:flex-start;padding:14px}
+  #spec{flex:1 1 640px;min-width:420px;height:min(760px,calc(100vh - 160px));min-height:520px;background:#fff;border:1px solid var(--line);border-radius:8px}
+  aside{flex:0 0 460px;display:flex;flex-direction:column;gap:14px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:12px}
+  .imgs{display:flex;gap:14px;flex-wrap:wrap}
+  .imgwrap{text-align:center}
+  .imgwrap canvas{image-rendering:pixelated;border:1px solid #999;background:#000;cursor:crosshair}
+  .cap{font-size:12.5px;color:#4a5568;max-width:215px;margin-top:2px;word-break:break-word}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  td,th{padding:3px 6px;border-bottom:1px solid #eef0f4;text-align:left}
+  th{font-weight:600;color:#4a5568}
+  .peaklist{max-height:180px;overflow:auto}
+  details>summary{cursor:pointer;font-weight:600;font-size:14.5px}
+  .roi{color:var(--bad);font-weight:bold}
+  .chip{display:inline-block;padding:0 7px;border-radius:9px;font-size:12px;color:#fff;background:#8a94a6}
+  .chip.ok{background:var(--ok)} .chip.bad{background:var(--bad)} .chip.run{background:#b7791f} .chip.ref{background:var(--acc)} .chip.usr{background:#6b46c1}
+  /* statistical methods */
+  .wrap{padding:14px;max-width:1700px;margin:auto}
+  .sessbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;background:#fff;border:1px solid var(--line);border-radius:8px;padding:8px 12px;margin-bottom:12px}
+  .subtabs{display:flex;gap:6px;margin-bottom:12px}
+  .subtabs button{padding:6px 16px;border-radius:16px;background:#fff}
+  .subtabs button.on{background:var(--acc);border-color:var(--acc);color:#fff;font-weight:600}
+  .params{display:grid;grid-template-columns:auto 1fr;gap:7px 10px;align-items:center}
+  .figrow{margin:0 0 22px}
+  .figrow h3{margin:0 0 6px}
+  .figrow figure{margin:0;padding:0;min-width:0}
+  .figrow img{width:100%;height:auto;border:1px solid var(--line);border-radius:6px;cursor:zoom-in;background:#fff}
+  .ptwrap{max-height:430px;overflow:auto;border:1px solid #eef0f4;border-radius:6px}
+  .ptable{font-size:13px;white-space:nowrap}
+  .ptable th{position:sticky;top:0;background:#f3f5f9;z-index:1}
+  .ptable th.srt{cursor:pointer;user-select:none}
+  .ptable td.num{text-align:right;font-variant-numeric:tabular-nums}
+  .okb{display:inline-block;padding:0 4px;border-radius:6px;background:var(--ok);color:#fff;font-size:11px}
+  /* data tab */
+  .cols2{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:14px}
+  @media(max-width:1100px){.cols2{grid-template-columns:1fr}}
+  .tscroll{max-height:560px;overflow:auto;border:1px solid #eef0f4;border-radius:6px}
+  .tscroll th{position:sticky;top:0;background:#f3f5f9}
+  .drop{border:2px dashed #aeb7c6;border-radius:8px;padding:16px;text-align:center;background:#fafbfd;color:var(--mut)}
+  .drop.over{border-color:var(--acc);background:#eef4fc;color:var(--acc)}
+  .bar{height:6px;background:#e5e9f0;border-radius:3px;overflow:hidden;min-width:90px}
+  .bar>i{display:block;height:100%;background:var(--acc);width:0}
+  /* docs */
+  .docs{display:flex;gap:24px;align-items:flex-start}
+  .docnav{flex:0 0 200px;position:sticky;top:60px;display:flex;flex-direction:column;gap:2px}
+  .docnav a{padding:5px 10px;border-radius:6px;text-decoration:none;color:var(--ink);font-size:14px}
+  .docnav a:hover{background:#e6ebf3}
+  .doc{flex:1;max-width:980px;background:#fff;border:1px solid var(--line);border-radius:8px;padding:6px 26px 26px}
+  .doc section{padding-top:14px;scroll-margin-top:60px}
+  .doc h2{border-bottom:1px solid var(--line);padding-bottom:4px;margin-top:10px}
+  .doc p,.doc li{line-height:1.6} .doc code{background:#eef1f6;padding:0 4px;border-radius:3px;font-size:13.5px}
+  .doc table td:first-child{white-space:nowrap;font-weight:600}
+  .doc ol,.doc ul{padding-left:22px}
+  .fdoc{border:1px solid var(--line);border-radius:6px;padding:8px 12px;margin:0 0 10px;background:#fbfcfe}
+  .fdoc img{max-width:100%;height:auto;margin-top:4px}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <span class="brand">TOF-SIMS</span>
+  <div class="tabs">
+    <button id="tabbtn_spectra" class="on" data-pane="spectra">Spectra &amp; 2D</button>
+    <button id="tabbtn_stats" data-pane="stats">PCA</button>
+    <button id="tabbtn_data" data-pane="data">Data</button>
+    <button id="tabbtn_docs" data-pane="docs">Docs</button>
+  </div>
+</div>
+
+<section id="pane_spectra" class="pane on">
+<div class="toolbar">
+  <span class="seg"><button id="pol_pos">Positive</button><button id="pol_neg">Negative</button><button id="pol_other" style="display:none">Other</button></span>
+  <label>Subsample <select id="sample" style="max-width:340px"></select></label>
+  <label>bin <select id="bin"><option value="0.01">0.01</option>
+     <option value="0.02" selected>0.02</option><option value="0.05">0.05</option>
+     <option value="0.1">0.10</option><option value="2">2.0</option></select> u</label>
+  <label id="spec_src_wrap" style="display:none" title="a sample with an .itax (or .ita) also has SurfaceLab's own stored spectrum">source
+    <select id="spec_src"><option value="events">ion events (.itm)</option><option value="stored">stored spectrum (.itax)</option></select></label>
+  <label class="inl"><input type="checkbox" id="show_user" checked> my peaks</label>
+  <span id="status" class="muted"></span>
+</div>
+<main>
+  <div id="spec"></div>
+  <aside>
+    <div class="card">
+      <h3>2D images <span class="muted" id="roi_state"></span></h3>
+      <div style="margin-bottom:8px;display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+        <select id="scale" title="intensity scale"><option>linear</option><option>sqrt</option><option>log</option></select>
+        <button id="clear_roi" class="sm" disabled>clear ROI</button>
+        <button id="roi_add" class="sm" title="use the selected region as a sample of its own (a replicate of this sample) in PCA">+ ROI to PCA</button>
+        <button id="reset_2d" class="sm">reset 2D</button>
+      </div>
+      <div class="imgs">
+        <div class="imgwrap"><div><b>Total</b></div>
+          <canvas id="cv_total" width="128" height="128" style="width:210px" title="drag a box to select a region (ROI, down to 1 pixel)"></canvas>
+          <div class="cap" id="cap_total"></div></div>
+        <div class="imgwrap"><div><b>Selection</b>
+            <button id="dl_sel" class="sm" title="download a high-resolution PNG of this image">⬇ PNG</button></div>
+          <canvas id="cv_sel" width="128" height="128" style="width:210px"></canvas>
+          <div class="cap" id="cap_sel"></div></div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>My peaks</h3>
+      <details style="margin-bottom:8px"><summary>Add a peak</summary>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:8px">
+          <input id="pk_name" placeholder="name (optional)" style="width:120px">
+          <input id="pk_lo" type="number" step="0.001" placeholder="lo m/z" style="width:80px">
+          <input id="pk_hi" type="number" step="0.001" placeholder="hi m/z" style="width:80px">
+          <button id="pk_fill" class="sm" title="use the visible m/z range">from zoom</button>
+          <button id="pk_add" class="sm pri">add</button>
+        </div>
+        <div id="pk_msg" class="muted" style="margin-top:4px"></div>
+      </details>
+      <div class="peaklist"><table id="pk_table"><tbody></tbody></table></div>
+    </div>
+  </aside>
+</main>
+</section>
+
+<section id="pane_stats" class="pane">
+  <div class="wrap">
+    <div class="sessbar">
+      <b>Session</b>
+      <input id="sess_name" placeholder="name (optional)" style="width:170px">
+      <button id="sess_save" class="sm" title="download everything in this tab: files, labels, settings, selections and all results">&#11015; Save session</button>
+      <button id="sess_load" class="sm" title="load a saved session and show its results again">&#11014; Load session&hellip;</button>
+      <button id="sess_zip" class="sm" title="download the raw counts, scores, loadings and ellipses as CSV tables, plus the figures, in one zip">&#11015; Export data (zip)</button>
+      <input id="sess_file" type="file" accept=".json,application/json" style="display:none">
+      <span id="sess_msg" class="muted"></span>
+    </div>
+    <div id="pca_subtabs" class="subtabs"></div>
+    <div id="pca_panels"></div>
+  </div>
+</section>
+
+<section id="pane_data" class="pane">
+  <div class="wrap" style="max-width:1100px">
+    <div class="card">
+      <h3>Samples <span id="smp_n" class="muted"></span></h3>
+      <div id="up_on">
+        <div id="drop" class="drop">Drop <b>.itm</b> (ion events: PCA, 2D images) and <b>.itax</b> (stored spectrum) files here, or <a href="#" id="pick">browse</a>.
+          <div style="font-size:12.5px;margin-top:4px">An .itm and an .itax with the <b>same file name</b> are joined into one sample, in either order.</div>
+          <input id="file" type="file" multiple accept=".itm,.ita,.itax,.itmx" style="display:none"></div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:10px">
+          <label>group label <input id="up_label" placeholder="e.g. my 6PPD" style="width:130px"></label>
+          <label>polarity <select id="up_pol"><option value="auto">auto (from name)</option><option value="pos">positive</option>
+            <option value="neg">negative</option><option value="other">other</option></select></label>
+        </div>
+        <table id="up_jobs" style="margin-top:10px"></table>
+      </div>
+      <div id="up_off" class="muted" style="display:none">Adding samples is turned off on this server.</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:14px 0 8px">
+        <input id="smp_q" placeholder="filter samples" style="width:220px">
+        <button id="usr_del" class="sm danger" disabled>delete selected</button>
+      </div>
+      <div class="tscroll" style="max-height:640px"><table id="smp_table"></table></div>
+    </div>
+  </div>
+</section>
+
+<section id="pane_docs" class="pane">
+  <div class="wrap"><div class="docs">
+    <nav class="docnav" id="docnav"></nav>
+    <div class="doc" id="doc"></div>
+  </div></div>
+</section>
+
+<script>
+const $ = id => document.getElementById(id);
+const API = p => fetch(p).then(r => r.json());
+// one in-flight request per key; starting a new one aborts the previous (no pile-ups / stuck UI)
+const CTRL = {};
+function sig(key){ if (CTRL[key]) CTRL[key].abort(); const c = new AbortController(); CTRL[key] = c; return c.signal; }
+function abortAll(){ Object.values(CTRL).forEach(c => { try { c.abort(); } catch(e){} }); }
+const isAbort = e => e && e.name === 'AbortError';
+async function apiKey(p, key){ const r = await fetch(p, {signal: sig(key)}); return r.json(); }
+const MASSMAX = 900;
+let POL = (new URLSearchParams(location.search).get('pol') || 'pos').startsWith('neg') ? 'neg' : 'pos';
+let SAMPLES = [], PARTIAL = [], SAMPLE = null, SPEC = null, ROI = null;
+let USER = [];
+const isMine = k => String(k).startsWith('user:');
+// A region of interest (ROI) used as a sample of its own in the PCA tab has the key "SAMPLE@roi:x0,y0,x1,y1".
+const ROI_TAG = '@roi:';
+const roiSplit = k => { k = String(k); const i = k.indexOf(ROI_TAG);
+  return i < 0 ? [k, null] : [k.slice(0, i), k.slice(i + ROI_TAG.length).split(',').map(Number)]; };
+let ROIS = (() => { try {
+  const a = JSON.parse(localStorage.getItem('tof_rois') || '[]');
+  return Array.isArray(a) ? a.filter(k => typeof k === 'string' && (roiSplit(k)[1] || []).length === 4 && roiSplit(k)[1].every(Number.isInteger)) : [];
+} catch (e){ return []; } })();
+const saveRois = () => { try { localStorage.setItem('tof_rois', JSON.stringify(ROIS)); } catch (e){} };
+const disp = k => { const [b, r] = roiSplit(k), base = isMine(b) ? b.slice(5) + ' (upload)' : b;    // sample key -> name shown
+  return r ? base + ' [ROI x' + r[0] + '-' + r[2] + ' y' + r[1] + '-' + r[3] + ']' : base; };
+function allSamples(){                                 // the samples plus the regions the user added (only of samples that exist)
+  const base = new Map(SAMPLES.map(s => [s.sample, s]));
+  return SAMPLES.concat(ROIS.filter(k => base.has(roiSplit(k)[0])).map(k => {
+    const s = base.get(roiSplit(k)[0]); return {sample: k, polarity: s.polarity, label: s.label || '', roi: true}; }));
+}
+const sub = s => (s || '').replace(/_(\d+)/g, '$1');   // C_4H_3 -> C4H3 (compact label)
+// ---- sample groups: the "folder" a sample belongs to, derived from its name ("6PPD_pos3" -> "6PPD")
+const GROUP_MODES = {first: 'before the first _ or -', pol: 'before pos / neg', last: 'before the last _ or -', none: 'no grouping'};
+let GROUP_BY = 'pol';
+function groupOf(k, mode){
+  const n = String(k).replace(/^user:/, '').replace(/@roi:.*$/, '').replace(/\.(itmx?|zip)$/i, '');   // a region belongs to the group of its sample
+  mode = mode || GROUP_BY;
+  if (mode === 'none') return 'all samples';
+  if (mode === 'pol'){ const m = n.match(/^(.+?)[_\-\s](?:pos|neg)/i); if (m) return m[1].trim(); mode = 'first'; }   // no pos/neg in the name: first separator
+  const m = mode === 'last' ? n.match(/^(.*)[_-]/) : n.match(/^([^_-]+)[_-]/);
+  return (m && m[1].trim()) || n;
+}
+const natCmp = (a, b) => String(a).localeCompare(String(b), undefined, {numeric: true, sensitivity: 'base'});
+
+// ---- spectrum helpers -----------------------------------------------------
+function xAt(i){ return SPEC.x0 + i * SPEC.dx; }
+function idxAt(mz){ return Math.round((mz - SPEC.x0) / SPEC.dx); }
+function peakHeight(lo, hi){
+  if (!SPEC) return 0;
+  let i0 = Math.max(0, idxAt(lo)), i1 = Math.min(SPEC.y.length - 1, idxAt(hi)), m = 0;
+  for (let i = i0; i <= i1; i++) if (SPEC.y[i] > m) m = SPEC.y[i];
+  return m;
+}
+function ymaxIn(lo, hi){
+  let i0 = Math.max(0, idxAt(lo)), i1 = Math.min(SPEC.y.length - 1, idxAt(hi)), m = 0;
+  for (let i = i0; i <= i1; i++) if (SPEC.y[i] > m) m = SPEC.y[i];
+  return m || 1;
+}
+
+// ---- Plotly spectrum ------------------------------------------------------
+let relTimer = null, lastX = [0, MASSMAX];
+
+function markerTrace(list, color, name){
+  const xs = [], ys = [], tx = [];
+  list.forEach(p => { const c = p.cmass != null ? p.cmass : (p.lo + p.hi) / 2;
+    xs.push(c); ys.push(peakHeight(p.lo, p.hi)); tx.push(sub(p.name) || c.toFixed(2)); });
+  return {x: xs, y: ys, text: tx, mode: 'markers+text', name, textposition: 'top center',
+          textfont: {size: 12, color}, cliponaxis: false,
+          marker: {symbol: 'triangle-down', size: 9, color},
+          hovertemplate: '<b>%{text}</b><br>m/z %{x:.3f}<br>%{y:,}<extra>' + name + '</extra>'};
+}
+
+function renderSpectrum(keepX){
+  if (!SPEC) return;
+  const traces = [{type: 'scattergl', x0: SPEC.x0, dx: SPEC.dx, y: SPEC.y, mode: 'lines',
+                   line: {color: '#111', width: 1}, name: SAMPLE,
+                   hovertemplate: 'm/z %{x:.3f}<br>%{y:,} counts<extra></extra>'}];
+  const shapes = [];
+  function addPeaks(list, color){
+    list.forEach(p => shapes.push({type: 'rect', xref: 'x', yref: 'paper', y0: 0, y1: 1,
+      x0: p.lo, x1: p.hi, fillcolor: color, opacity: 0.15, line: {width: 0}, layer: 'below'}));
+  }
+  if ($('show_user').checked){ addPeaks(USER, '#c53030'); traces.push(markerTrace(USER, '#c53030', 'my peaks')); }
+
+  const x = keepX ? lastX : [SPEC.roi ? SPEC.x0 : 0, MASSMAX];
+  const layout = {
+    font: {size: 15}, margin: {t: 40, r: 12, b: 64, l: 80}, hovermode: 'x', dragmode: 'zoom', showlegend: false,
+    title: {text: disp(SAMPLE) + (SPEC.roi ? '  —  ROI (' + SPEC.events.toLocaleString() + ' ions)'
+                                     : SPEC.source === 'stored' ? '  —  stored spectrum (.itax)'
+                                     : '  —  whole spectrum (' + SPEC.events.toLocaleString() + ' ions)'),
+            x: 0.01, font: {size: 18}},
+    xaxis: {title: 'm/z (u)', range: x.slice(), rangeslider: {visible: true, thickness: 0.07, range: [0, MASSMAX]},
+            showspikes: true, spikemode: 'across', spikethickness: 1, spikedash: 'dot', spikecolor: '#999'},
+    yaxis: {title: 'Counts (raw)', rangemode: 'tozero', range: [0, ymaxIn(x[0], x[1]) * 1.25]},
+    shapes
+  };
+  Plotly.react('spec', traces, layout, {scrollZoom: true, displaylogo: false, responsive: true});
+  wireSpec();
+}
+
+let wired = false;
+function wireSpec(){
+  if (wired) return; wired = true;
+  const gd = $('spec');
+  gd.on('plotly_relayout', ev => {
+    let r = null;
+    if (ev['xaxis.range']) r = ev['xaxis.range'];
+    else if (ev['xaxis.range[0]'] !== undefined) r = [ev['xaxis.range[0]'], ev['xaxis.range[1]']];
+    if (!r) return;
+    lastX = [Math.min(r[0], r[1]), Math.max(r[0], r[1])];
+    const touchesY = Object.keys(ev).some(k => /^yaxis\.(range|autorange)/.test(k));
+    if (!touchesY) Plotly.relayout(gd, {'yaxis.range': [0, ymaxIn(lastX[0], lastX[1]) * 1.25]});
+    clearTimeout(relTimer);
+    relTimer = setTimeout(() => updateSelection(lastX[0], lastX[1]), 220);
+  });
+  gd.on('plotly_click', ev => {
+    if (!ev.points || !ev.points.length) return;
+    const p = ev.points[0];
+    const all = USER;
+    let best = null, bd = 1e9;
+    all.forEach(q => { const d = Math.abs((q.cmass != null ? q.cmass : (q.lo + q.hi) / 2) - p.x);
+      if (d < bd){ bd = d; best = q; } });
+    if (best && bd < 1) updateSelection(best.lo, best.hi, sub(best.name) || best.cmass.toFixed(3));
+    else updateSelection(p.x - SPEC.dx, p.x + SPEC.dx);
+  });
+}
+
+// ---- 2D images ------------------------------------------------------------
+const LUT = []; for (let i = 0; i < 256; i++){ const x = i / 255, c = v => Math.round(255 * Math.min(1, Math.max(0, v)));
+  LUT.push([c(2 * x), c(2 * x - 0.5), c(2 * x - 1)]); }     // afmhot
+let TOTAL = null;    // {arr, w, h}
+let selMeta = null;  // last Selection image {lo, hi, label} for the download button
+
+async function fetchImage(params, key){
+  const r = await fetch('/api/image?' + params, key ? {signal: sig(key)} : undefined);
+  const w = +r.headers.get('X-W'), h = +r.headers.get('X-H');
+  const buf = await r.arrayBuffer();
+  return {arr: new Uint32Array(buf), w, h};
+}
+function drawImage(cv, img, scale){
+  cv.width = img.w; cv.height = img.h;
+  let vmax = 0; for (let i = 0; i < img.arr.length; i++) if (img.arr[i] > vmax) vmax = img.arr[i];
+  const ctx = cv.getContext('2d'), id = ctx.createImageData(img.w, img.h), lv = Math.log1p(vmax);
+  for (let i = 0; i < img.arr.length; i++){
+    const v = img.arr[i];
+    let t = vmax > 0 ? (scale === 'sqrt' ? Math.sqrt(v / vmax) : scale === 'log' ? Math.log1p(v) / lv : v / vmax) : 0;
+    const c = LUT[Math.max(0, Math.min(255, Math.round(t * 255)))];
+    id.data[4 * i] = c[0]; id.data[4 * i + 1] = c[1]; id.data[4 * i + 2] = c[2]; id.data[4 * i + 3] = 255;
+  }
+  ctx.putImageData(id, 0, 0);
+  cv._img = img;
+  return vmax;
+}
+function fmt(v){ return v >= 1e5 ? v.toExponential(2) : Math.round(v).toLocaleString(); }
+function stats(arr){ let mx = 0, tc = 0; for (let i = 0; i < arr.length; i++){ tc += arr[i]; if (arr[i] > mx) mx = arr[i]; } return [mx, tc]; }
+
+async function loadTotal(){
+  try { TOTAL = await fetchImage('sample=' + encodeURIComponent(SAMPLE) + '&all=1', 'total'); }
+  catch (e) { if (isAbort(e)) return; $('cap_total').textContent = 'image error'; return; }
+  drawImage($('cv_total'), TOTAL, $('scale').value);
+  const [mx, tc] = stats(TOTAL.arr);
+  $('cap_total').textContent = TOTAL.w + 'x' + TOTAL.h + ' px | MC ' + fmt(mx) + ' | TC ' + fmt(tc);
+  drawRoiRect();
+}
+let selToken = 0;
+async function updateSelection(lo, hi, label){
+  if (!SAMPLE || lo >= hi) return;
+  const tok = ++selToken;
+  let img;
+  try { img = await fetchImage('sample=' + encodeURIComponent(SAMPLE) + '&lo=' + lo + '&hi=' + hi, 'sel'); }
+  catch (e) { if (isAbort(e)) return; $('cap_sel').textContent = 'image error'; return; }
+  if (tok !== selToken) return;
+  selMeta = {lo, hi, label: label || ''};
+  drawImage($('cv_sel'), img, $('scale').value);
+  const [mx, tc] = stats(img.arr);
+  $('cap_sel').textContent = (label ? label + ' | ' : '') + 'm/z ' + lo.toFixed(2) + '–' + hi.toFixed(2)
+    + ' | MC ' + fmt(mx) + ' | TC ' + fmt(tc);
+}
+function downloadSelection(){
+  const cv = $('cv_sel');
+  if (!cv._img) return;
+  const scale = 8;                                   // 128 px -> 1024 px, crisp (no smoothing)
+  const big = document.createElement('canvas');
+  big.width = cv._img.w * scale; big.height = cv._img.h * scale;
+  const ctx = big.getContext('2d'); ctx.imageSmoothingEnabled = false;
+  ctx.drawImage(cv, 0, 0, big.width, big.height);
+  const tag = selMeta ? 'mz' + selMeta.lo.toFixed(2) + '-' + selMeta.hi.toFixed(2) : 'sel';
+  big.toBlob(b => { const a = document.createElement('a'); a.href = URL.createObjectURL(b);
+    a.download = ((SAMPLE || 'sample') + '_' + tag + '.png').replace(/[^\w.-]+/g, '_');
+    a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000); }, 'image/png');
+}
+
+// ---- ROI drawing on the Total image --------------------------------------
+let dragging = null;
+function cvPixel(cv, e){
+  const r = cv.getBoundingClientRect();
+  return [Math.max(0, Math.min(cv.width - 1, Math.floor((e.clientX - r.left) / r.width * cv.width))),
+          Math.max(0, Math.min(cv.height - 1, Math.floor((e.clientY - r.top) / r.height * cv.height)))];
+}
+function drawRoiRect(){
+  if (!TOTAL) return;
+  const cv = $('cv_total');
+  drawImage(cv, TOTAL, $('scale').value);
+  if (!ROI) return;
+  const ctx = cv.getContext('2d');
+  ctx.strokeStyle = '#39ff14'; ctx.lineWidth = Math.max(1, cv.width / 128);
+  ctx.strokeRect(ROI[0], ROI[1], ROI[2] - ROI[0] + 1, ROI[3] - ROI[1] + 1);
+}
+function initRoi(){
+  const cv = $('cv_total');
+  cv.onmousedown = e => { dragging = cvPixel(cv, e); };
+  cv.onmousemove = e => {
+    if (!TOTAL) return;
+    const [x, y] = cvPixel(cv, e);
+    cv.title = 'x ' + x + ', y ' + y + ': ' + (TOTAL.arr[y * cv.width + x] || 0);
+    if (dragging){ ROI = [Math.min(dragging[0], x), Math.min(dragging[1], y),
+                          Math.max(dragging[0], x), Math.max(dragging[1], y)]; drawRoiRect(); }
+  };
+  cv.onmouseup = e => {
+    if (!dragging) return;
+    const [x, y] = cvPixel(cv, e);
+    ROI = [Math.min(dragging[0], x), Math.min(dragging[1], y),
+           Math.max(dragging[0], x), Math.max(dragging[1], y)];
+    dragging = null; drawRoiRect(); applyRoi();
+  };
+}
+async function applyRoi(){
+  $('clear_roi').disabled = false;
+  $('spec_src').value = 'events';                  // a region exists only in the ion events
+  const [x0, y0, x1, y1] = ROI;
+  $('roi_state').textContent = 'ROI x' + x0 + '–' + x1 + ', y' + y0 + '–' + y1;
+  $('status').innerHTML = '<span class="roi">loading ROI spectrum…</span>';
+  let spec;
+  try {
+    spec = await apiKey('/api/spectrum?sample=' + encodeURIComponent(SAMPLE)
+      + '&bin=' + $('bin').value + '&x0=' + x0 + '&y0=' + y0 + '&x1=' + x1 + '&y1=' + y1, 'spec');
+  } catch (e) {
+    if (isAbort(e)) return;
+    $('status').innerHTML = '<span class="roi">ROI failed: ' + e.message + ' (try reset 2D)</span>';
+    return;
+  }
+  SPEC = spec; recomputeMarkers(); renderSpectrum(true);
+  $('status').innerHTML = '<span class="roi">ROI: ' + SPEC.events.toLocaleString() + ' ions</span>';
+}
+function clearRoi(){
+  abortAll();
+  ROI = null; $('clear_roi').disabled = true; $('roi_state').textContent = ''; drawRoiRect();
+  loadSpectrum(false);
+}
+// reset the 2D panel (and any ROI) to a clean state: whole spectrum, total image, full-range selection
+async function reset2D(){
+  abortAll();
+  ROI = null; $('clear_roi').disabled = true; $('roi_state').textContent = '';
+  lastX = [0, MASSMAX];
+  await loadSpectrum(false);
+  await loadTotal();
+  await updateSelection(0, MASSMAX, 'full');
+}
+
+// ---- peaks ----------------------------------------------------------------
+function recomputeMarkers(){
+  USER.forEach(p => p.h = peakHeight(p.lo, p.hi));
+}
+function renderPeakTable(){
+  const tb = $('pk_table').querySelector('tbody');
+  const rows = [];
+  rows.push('<tr><th>name</th><th>m/z</th><th>window</th><th></th></tr>');
+  USER.forEach(p => rows.push('<tr><td>' + (p.name || '—')
+    + '</td><td>' + ((p.lo + p.hi) / 2).toFixed(3) + '</td><td>' + p.lo.toFixed(2) + '–' + p.hi.toFixed(2)
+    + '</td><td><button class="sm" data-v="' + p.lo + ',' + p.hi + ',' + (p.name || '')
+    + '">2D</button> <button class="sm" data-del="' + p.id + '">✕</button></td></tr>'));
+  tb.innerHTML = rows.join('');
+  tb.querySelectorAll('button[data-v]').forEach(b => b.onclick = () => {
+    const [lo, hi, lab] = b.dataset.v.split(','); updateSelection(+lo, +hi, lab); });
+  tb.querySelectorAll('button[data-del]').forEach(b => b.onclick = async () => {
+    await fetch('/api/peaks?id=' + b.dataset.del, {method: 'DELETE'}); await loadUserPeaks(); });
+}
+async function loadUserPeaks(){
+  USER = await API('/api/peaks');
+  recomputeMarkers(); renderPeakTable(); renderSpectrum(true);
+}
+async function addPeak(){
+  const lo = parseFloat($('pk_lo').value), hi = parseFloat($('pk_hi').value);
+  if (!(lo < hi)){ $('pk_msg').textContent = 'need lo < hi'; return; }
+  const r = await fetch('/api/peaks', {method: 'POST', headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({name: $('pk_name').value, lo, hi})});
+  const j = await r.json();
+  $('pk_msg').textContent = r.ok ? 'added ' + (j.name || '') : (j.error || 'error');
+  if (r.ok){ $('pk_name').value = $('pk_lo').value = $('pk_hi').value = ''; await loadUserPeaks(); }
+}
+
+// ---- loaders --------------------------------------------------------------
+async function loadSpectrum(keepX){
+  $('status').textContent = 'loading spectrum…';
+  const stored = $('spec_src').value === 'stored' && !ROI;
+  try { SPEC = await apiKey('/api/spectrum?sample=' + encodeURIComponent(SAMPLE) + '&bin=' + $('bin').value + (stored ? '&source=stored' : ''), 'spec'); }
+  catch (e) { if (isAbort(e)) return; $('status').textContent = 'spectrum error: ' + e.message; return; }
+  recomputeMarkers(); renderSpectrum(keepX);
+  $('status').textContent = SPEC.events.toLocaleString() + (stored ? ' counts (stored .itax spectrum)' : ' ions');
+}
+function syncSpecSource(){                       // the source choice only exists for samples that have an .itax / .ita
+  const s = SAMPLES.find(x => x.sample === SAMPLE);
+  $('spec_src_wrap').style.display = s && s.stored ? '' : 'none';
+  if (!s || !s.stored) $('spec_src').value = 'events';
+}
+async function loadSample(name){
+  SAMPLE = name; ROI = null; $('clear_roi').disabled = true; $('roi_state').textContent = '';
+  syncSpecSource();
+  lastX = [0, MASSMAX];
+  await loadUserPeaks();                       // sets USER and renders table
+  await loadSpectrum(false);
+  await loadTotal();
+  updateSelection(0, MASSMAX);
+}
+function fillSamples(){
+  const mine = SAMPLES;
+  if (!mine.some(s => s.polarity === POL)){                      // jump to a polarity that has samples
+    const p = ['pos', 'neg', 'other'].find(q => mine.some(s => s.polarity === q)); if (p) POL = p;
+  }
+  $('pol_other').style.display = mine.some(s => s.polarity === 'other') ? '' : 'none';
+  const sel = $('sample'); sel.innerHTML = '';
+  const list = mine.filter(s => s.polarity === POL).sort((a, b) => natCmp(a.sample, b.sample));
+  const opt = s => { const o = document.createElement('option'); o.value = s.sample;
+    o.textContent = disp(s.sample) + '  (' + s.events.toLocaleString() + ' ions)'; return o; };
+  const grouped = new Map();
+  list.forEach(s => { const g = groupOf(s.sample); if (!grouped.has(g)) grouped.set(g, []); grouped.get(g).push(s); });
+  grouped.forEach((ss, g) => {
+    if (grouped.size === 1) return ss.forEach(s => sel.appendChild(opt(s)));
+    const og = document.createElement('optgroup'); og.label = g + ' (' + ss.length + ')';
+    ss.forEach(s => og.appendChild(opt(s))); sel.appendChild(og);
+  });
+  ['pos', 'neg', 'other'].forEach(p => $('pol_' + p).classList.toggle('on', POL === p));
+  if (list.length) loadSample(list[0].sample);
+  else {
+    SAMPLE = null; Plotly.purge('spec');
+    $('spec').innerHTML = '<p class="muted" style="padding:20px">No samples found. Add .itm files in the <b>Data</b> tab.</p>';
+  }
+}
+// ---- wire up --------------------------------------------------------------
+$('pol_pos').onclick = () => { POL = 'pos'; fillSamples(); };
+$('pol_neg').onclick = () => { POL = 'neg'; fillSamples(); };
+$('pol_other').onclick = () => { POL = 'other'; fillSamples(); };
+$('sample').onchange = e => loadSample(e.target.value);
+$('show_user').onchange = () => renderSpectrum(true);
+$('bin').onchange = () => ROI ? applyRoi() : loadSpectrum(true);
+$('spec_src').onchange = () => { if (ROI) clearRoi(); else loadSpectrum(false); };
+$('scale').onchange = () => { drawRoiRect(); if ($('cv_sel')._img) drawImage($('cv_sel'), $('cv_sel')._img, $('scale').value); };
+$('clear_roi').onclick = clearRoi;
+$('roi_add').onclick = () => {
+  if (!SAMPLE || !ROI){ $('status').innerHTML = '<span class="roi">drag a box on the Total image first</span>'; return; }
+  const key = SAMPLE + ROI_TAG + ROI.join(',');
+  if (!ROIS.includes(key)){ ROIS.push(key); saveRois(); }
+  PCA_INST.forEach(i => i.renderRows());
+  $('status').innerHTML = '<span class="roi">ROI added to the PCA tab, in the group "' + escHtml(groupOf(SAMPLE)) + '"</span>';
+};
+$('reset_2d').onclick = reset2D;
+$('pk_add').onclick = addPeak;
+$('pk_fill').onclick = () => { $('pk_lo').value = lastX[0].toFixed(3); $('pk_hi').value = lastX[1].toFixed(3); };
+
+// ---- PCA tab ----------------------------------------
+// Two PCA runs (sub-tabs); every explanation is in the Docs tab.
+const PCA_VARIANTS = [
+  {key: 'p1', mode: 'all', tab: 'All-peak PCA'},
+  {key: 'p2', mode: 'mine', tab: 'Selected-peak PCA'}];
+
+function toCsv(rows){ return rows.map(r => r.map(v => {
+  const s = (v == null ? '' : String(v));
+  return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; }).join(',')).join('\n'); }
+
+const fmzjs = x => Number.isInteger(+x) ? String(+x) : (+x).toFixed(2);   // integers without decimals
+const escHtml = s => String(s).replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
+
+// subsamples + peaks picked in the All-peak PCA; Selected-peak PCA runs on this selection
+let PCA_SELECTION = {samples: [], peaks: [], labels: {}};
+let PCA_REFRESH = null;                                 // set by Selected-peak PCA to redraw its summary
+
+const GROUP_PAL = ['#2b6cb0', '#c53030', '#2f855a', '#b7791f', '#6b46c1', '#319795', '#d53f8c', '#718096'];
+function groupColors(labels){                           // label -> colour, ordered by first appearance
+  const seen = [], m = {};
+  labels.forEach(l => { const g = (l || '').trim() || '(unlabeled)'; if (!(g in m)){ m[g] = GROUP_PAL[seen.length % GROUP_PAL.length]; seen.push(g); } });
+  return {map: m, groups: seen};
+}
+function openInTab(dataUri){                            // data: URIs cannot be navigated to; go through a blob URL
+  const w = window.open('', '_blank');
+  fetch(dataUri).then(r => r.blob()).then(b => { const u = URL.createObjectURL(b); if (w) w.location = u; else window.open(u); });
+}
+
+function makePca(v){
+  const K = v.key + '_', P = id => $(K + id);
+  let rows = [], RES = null, MAG = [], MAXW = 1;
+  let ixX = 0, ixY = 1, incFiles = new Set(), incPeaks = new Set();
+  const PT = {q: '', pass: false, ticked: false, key: 'mag', dir: -1};    // peak-list filter / sort state
+  const RATIO_MIN = 3, FRAC_MIN = 0.005;                 // defaults of the peak filter: 3x its strongest neighbour, 0.5% of all ions
+  const okRatio = i => RES.peak_ratio[i] == null || RES.peak_ratio[i] >= (RES.ratio_min ?? RATIO_MIN);   // limits of the run that made RES
+  const okFrac = i => RES.peak_frac[i] >= (RES.frac_min ?? FRAC_MIN);
+  const peakLabel = i => RES.peak_names[i] || ('m/z ' + fmzjs(RES.peak_mz[i]));
+  const show = i => sub(peakLabel(i));                    // C_3H_7+ -> C3H7+
+  const explore = v.mode === 'all';                      // only the All-peak PCA has the biplot and the peak list
+
+  const selectionBlock = v.mode === 'mine'
+    ? '<h3>Selection <span class="muted" style="font-weight:400">from All-peak PCA</span></h3>'
+      + '<div id="' + K + 'pk_list" style="max-height:220px;overflow:auto;padding:6px;border:1px solid var(--line);'
+      + 'border-radius:6px;min-height:30px;font-size:13px;margin-bottom:12px"></div>'
+    : '';
+  const subsBlock = v.mode === 'all'
+    ? '<h3>Subsamples</h3>'
+      + '<div style="margin-bottom:6px;display:flex;gap:6px;flex-wrap:wrap;align-items:center">'
+      + '<input id="' + K + 'gq" placeholder="search group / sample" style="width:150px">'
+      + '<select id="' + K + 'gpol" title="show only one polarity"><option value="">pos + neg</option><option value="pos">positive</option>'
+      + '<option value="neg">negative</option><option value="other">other</option></select>'
+      + '<select id="' + K + 'gby" title="how a sample name is split into a group">'
+      + Object.entries(GROUP_MODES).map(([k, t]) => '<option value="' + k + '"' + (k === GROUP_BY ? ' selected' : '') + '>group: ' + t + '</option>').join('') + '</select></div>'
+      + '<div id="' + K + 'gtree" style="max-height:260px;overflow:auto;border:1px solid var(--line);border-radius:6px;padding:4px 6px;margin-bottom:6px;font-size:13px"></div>'
+      + '<div style="margin-bottom:8px;display:flex;gap:6px;flex-wrap:wrap">'
+      + '<button id="' + K + 'addtick" class="sm" title="add the ticked samples; their label is their group">+ add ticked</button>'
+      + '<button id="' + K + 'addshown" class="sm" title="add every sample listed above (respects the search and polarity)">+ add all shown</button>'
+      + '<button id="' + K + 'clear" class="sm">clear</button></div>'
+      + '<div style="max-height:300px;overflow:auto;margin-bottom:12px"><table id="' + K + 'rows"><tbody></tbody></table></div>'
+    : '';
+  const binRow = v.mode === 'all'
+    ? '<label>bin (u)</label><select id="' + K + 'bin"><option value="0.25">0.25</option><option value="0.5" selected>0.5</option>'
+      + '<option value="1">1.0</option><option value="2">2.0</option></select>'
+      + '<label title="remove the bins that are not real peaks before the PCA: NBR = intensity / strongest neighbouring bin, TIC = share of all ions">peak filter</label>'
+      + '<span style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><input id="' + K + 'flt" type="checkbox" checked>'
+      + '<span class="muted">NBR \u2265</span><input id="' + K + 'nbr" type="number" min="0" step="0.5" value="3" style="width:60px">'
+      + '<span class="muted">TIC \u2265</span><input id="' + K + 'tic" type="number" min="0" max="100" step="0.01" value="0.5" style="width:66px"><span class="muted">%</span></span>'
+    : '';
+  const tuneHtml = v.mode === 'all'
+    ? '<div style="margin-top:12px;padding:8px;border:1px solid var(--line);border-radius:6px">'
+      + '<div style="font-weight:600;margin-bottom:4px">Learn the settings and the PC from two labels</div>'
+      + '<div class="muted" style="font-size:13px;margin-bottom:6px">Pick compound A (e.g. 6PPD) and compound B (e.g. a street sample). Only their subsamples are used. '
+      + 'Every bin / NBR / TIC combination gets its own PCA; <i>closest PC</i> finds the setting and the PC where the two centroids are nearest '
+      + '(in SDs of that PC, PCs under 3% variance ignored) and tests it against shuffled labels; <i>tell apart</i> finds the setting that separates them best. '
+      + 'The best limits go into the parameter boxes (press Run PCA to use them for all files). The PC numbers belong to this A+B PCA: read the loadings shown here. '
+      + 'The two labels are also the reference centroids of the nearest-centroid figure (leave both empty to use every label).</div>'
+      + '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><select id="' + K + 'refa" title="compound A"></select><span class="muted">vs</span><select id="' + K + 'refb" title="compound B"></select>'
+      + '<select id="' + K + 'goal"><option value="closest">closest PC</option><option value="separate">tell apart</option></select>'
+      + '<button id="' + K + 'tune" class="sm" title="grid search over bin width, NBR and TIC on the two labels">Learn settings</button></div>'
+      + '<div id="' + K + 'tuneout" style="margin-top:6px;font-size:13px"></div></div>'
+    : '';
+  const interactiveHtml =
+    '<div class="card" style="margin-bottom:14px"><h3>Interactive biplot</h3>'
+    + '<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:6px">'
+    + '<label>X <select id="' + K + 'ixx"></select></label>'
+    + '<label>Y <select id="' + K + 'ixy"></select></label>'
+    + '<span id="' + K + 'ixhint" class="muted" style="font-size:13px"></span></div>'
+    + '<div class="muted" style="font-size:13px;margin-bottom:2px">Files (untick to leave one out)</div>'
+    + '<div id="' + K + 'ixfilebox" style="max-height:130px;overflow:auto;border:1px solid #eee;'
+    + 'border-radius:5px;padding:4px 6px;margin-bottom:8px;font-size:13px"></div>'
+    + '<div id="' + K + 'ix" style="height:520px"></div></div>';
+  const peakListHtml =
+    '<div class="card" style="margin-bottom:14px"><h3>Peak list</h3>'
+    + '<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:6px">'
+    + '<input id="' + K + 'ptq" placeholder="search name or m/z" style="width:180px">'
+    + '<label class="inl"><input type="checkbox" id="' + K + 'ptpass"> passing</label>'
+    + '<label class="inl"><input type="checkbox" id="' + K + 'ptticked"> ticked</label>'
+    + '<button id="' + K + 'ptall" class="sm">tick shown</button><button id="' + K + 'ptnone" class="sm">untick shown</button>'
+    + '<button id="' + K + 'ptcsv" class="sm">\u2b07 CSV</button>'
+    + '<span id="' + K + 'ptinfo" class="muted" style="font-size:13px"></span></div>'
+    + '<div id="' + K + 'pt" class="ptwrap"><span class="muted" style="padding:8px;display:block">run the PCA to list its features</span></div></div>';
+
+  $('pca_panels').insertAdjacentHTML('beforeend',
+    '<div id="' + K + 'panel" class="pcapanel" style="display:none">'
+    + '<div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start">'
+    + '<div style="flex:0 0 400px;position:sticky;top:56px;max-height:calc(100vh - 70px);overflow:auto">'
+    + '<div class="card">'
+    + subsBlock + selectionBlock
+    + '<h3>Parameters</h3>'
+    + '<div class="params">'
+    + '<label>components</label><input id="' + K + 'nc" type="number" min="2" max="20" value="10" '
+    + 'title="computes up to this many PCs (auto-capped at subsamples \u2212 1)" style="width:70px">'
+    + binRow
+    + '<label>normalize</label><select id="' + K + 'norm"><option value="tic">total-ion</option><option value="none">none</option></select>'
+    + '<label>sqrt transform</label><input id="' + K + 'sqrt" type="checkbox" checked style="justify-self:start">'
+    + '<label title="how many of the largest-loading peaks get a text label per PC in the figures (loading spectra, driving peaks); labels that would overlap are left out; 0 = none. Does not change the PCA.">peak labels / PC</label>'
+    + '<input id="' + K + 'nl" type="number" min="0" max="60" step="1" value="12" style="width:70px"></div>'
+    + tuneHtml
+    + '<div style="margin-top:12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap"><button id="' + K + 'run" class="pri">Run PCA</button>'
+    + '<a href="#" id="' + K + 'doc" class="muted" style="font-size:13px">steps &amp; formulas \u2192 Docs</a></div>'
+    + '<div id="' + K + 'msg" class="muted" style="margin-top:6px;font-size:13px"></div></div></div>'
+    + '<div style="flex:1 1 640px;min-width:480px">'
+    + (explore ? interactiveHtml + peakListHtml : '')
+    + '<div id="' + K + 'figs"></div></div></div></div>');
+
+  // ---- picking samples by group ("folder"): the group comes from the sample name, see groupOf()
+  let gmode = GROUP_BY, gq = '', gpol = '', TREE = [];
+  const TICK = new Set(), OPEN = new Set();
+  const polOf = k => (allSamples().find(s => s.sample === k) || {}).polarity;
+  function shownSamples(){
+    return allSamples().filter(s => (!gpol || s.polarity === gpol)
+      && (!gq || (groupOf(s.sample, gmode) + ' ' + disp(s.sample) + ' ' + (s.label || '')).toLowerCase().includes(gq)));
+  }
+  function groupList(list){
+    const m = new Map();
+    list.slice().sort((a, b) => natCmp(a.sample, b.sample)).forEach(s => {
+      const g = groupOf(s.sample, gmode); if (!m.has(g)) m.set(g, []); m.get(g).push(s); });
+    return [...m].sort((a, b) => natCmp(a[0], b[0]));
+  }
+  function addSamples(list){                             // label = group (+ polarity when pos and neg end up in the same run)
+    const have = new Set(rows.map(r => r.sample)), fresh = list.filter(s => !have.has(s.sample));
+    const mixed = new Set([...fresh.map(s => s.polarity), ...rows.map(r => polOf(r.sample))].filter(Boolean)).size > 1;
+    fresh.forEach(s => rows.push({sample: s.sample, label: s.label || (gmode === 'none' ? '' : groupOf(s.sample, gmode) + (mixed ? ' ' + s.polarity : ''))}));
+    renderRows();
+    return fresh.length;
+  }
+  function renderTree(){
+    const box = P('gtree');
+    if (!box) return;                                    // no subsamples picker in Selected-peak PCA
+    const inRows = new Set(rows.map(r => r.sample));
+    TREE = groupList(shownSamples());
+    if (!TREE.length){ box.innerHTML = '<span class="muted">no samples match</span>'; return; }
+    box.innerHTML = TREE.map(([g, ss], gi) => {
+      const nt = ss.filter(s => TICK.has(s.sample)).length, nin = ss.filter(s => inRows.has(s.sample)).length;
+      const chips = ['pos', 'neg', 'other'].map(p => { const c = ss.filter(s => s.polarity === p).length;
+        return c ? '<span class="chip' + (p === 'pos' ? ' ok' : p === 'neg' ? ' bad' : '') + '">' + p + ' ' + c + '</span>' : ''; }).join(' ');
+      return '<details data-gi="' + gi + '"' + (gq || OPEN.has(g) ? ' open' : '') + '><summary style="font-weight:400">'
+        + '<input type="checkbox" class="gck" data-gi="' + gi + '"' + (nt === ss.length ? ' checked' : '') + '> <b>' + escHtml(g) + '</b> '
+        + '<span class="muted">' + ss.length + (nin ? ' \u00b7 ' + nin + ' added' : '') + '</span> ' + chips
+        + ' <button class="sm gadd" data-gi="' + gi + '" title="add this group to the PCA">+ add</button></summary>'
+        + ss.map((s, si) => '<div style="padding-left:24px"><label class="inl"><input type="checkbox" class="sck" data-gi="' + gi + '" data-si="' + si + '"'
+          + (TICK.has(s.sample) ? ' checked' : '') + '> ' + escHtml(disp(s.sample)) + '</label>'
+          + (s.roi ? ' <span class="chip usr" title="a region of interest of this sample, used as a sample of its own">ROI</span>' : '')
+          + (inRows.has(s.sample) ? ' <span class="chip ok">added</span>' : '')
+          + (s.roi ? ' <button class="sm rdel" data-gi="' + gi + '" data-si="' + si + '" title="remove this region from the list">\u2715</button>' : '') + '</div>').join('')
+        + '</details>';
+    }).join('');
+    box.querySelectorAll('details').forEach(d => d.ontoggle = () => {
+      const g = TREE[+d.dataset.gi][0]; if (d.open) OPEN.add(g); else OPEN.delete(g); });
+    box.querySelectorAll('.gck').forEach(c => {
+      const ss = TREE[+c.dataset.gi][1], nt = ss.filter(s => TICK.has(s.sample)).length;
+      c.indeterminate = nt > 0 && nt < ss.length;
+      c.onchange = () => { ss.forEach(s => c.checked ? TICK.add(s.sample) : TICK.delete(s.sample)); renderTree(); };
+    });
+    box.querySelectorAll('.sck').forEach(c => c.onchange = () => {
+      const s = TREE[+c.dataset.gi][1][+c.dataset.si]; c.checked ? TICK.add(s.sample) : TICK.delete(s.sample); renderTree(); });
+    box.querySelectorAll('.gadd').forEach(b => b.onclick = () => { addSamples(TREE[+b.dataset.gi][1]); });
+    box.querySelectorAll('.rdel').forEach(b => b.onclick = () => {
+      const s = TREE[+b.dataset.gi][1][+b.dataset.si];
+      ROIS = ROIS.filter(k => k !== s.sample); saveRois(); TICK.delete(s.sample); PCA_INST.forEach(i => i.renderRows()); });
+  }
+  const refPair = () => {
+    const a = P('refa') && P('refa').value, b = P('refb') && P('refb').value;
+    return a && b && a !== b ? [a, b] : null;
+  };
+  function refreshRefs(){                                // the two reference selects list the labels of the file list
+    if (!P('refa')) return;
+    const labs = [...new Set(rows.map(r => (r.label || '').trim()).filter(Boolean))].sort(natCmp);
+    const keep = [P('refa').value, P('refb').value];
+    [['refa', 0], ['refb', 1]].forEach(([id, k]) => {
+      P(id).innerHTML = '<option value="">(reference ' + (k + 1) + ')</option>' + labs.map(l => '<option value="' + escHtml(l) + '">' + escHtml(l) + '</option>').join('');
+      P(id).value = labs.includes(keep[k]) ? keep[k] : '';
+    });
+  }
+  function renderRows(){
+    renderTree();
+    const tb = P('rows') && P('rows').querySelector('tbody');
+    if (!tb) return;                                     // no subsamples table in Selected-peak PCA
+    if (!rows.length){ tb.innerHTML = '<tr><td class="muted">no subsamples yet</td></tr>'; refreshRefs(); return; }
+    const lab = i => (rows[i].label || '').trim();
+    const order = rows.map((_, i) => i).sort((a, b) => (!lab(a) - !lab(b)) || natCmp(lab(a), lab(b)) || a - b);
+    const baseKnown = new Set(SAMPLES.map(s => s.sample)), GL = [];
+    const known = { has: k => baseKnown.has(roiSplit(k)[0]) };            // a region is known when its sample is
+    let html = '', prev = null;
+    order.forEach(i => {
+      if (prev === null || lab(i) !== prev){
+        prev = lab(i); GL.push(prev);
+        const n = order.filter(j => lab(j) === prev).length;
+        html += '<tr><td colspan="2" style="background:#f3f5f9"><b>' + (prev ? escHtml(prev) : '(no label)') + '</b> <span class="muted">' + n
+          + '</span></td><td style="background:#f3f5f9"><button class="sm" data-delg="' + (GL.length - 1) + '" title="remove this whole group">\u2715</button></td></tr>';
+      }
+      const r = rows[i];
+      html += '<tr><td style="padding-left:14px">' + escHtml(disp(r.sample))
+        + (roiSplit(r.sample)[1] ? ' <span class="chip usr" title="a region of interest of this sample">ROI</span>' : '')
+        + (known.has(r.sample) ? '' : ' <span class="muted">(not on this server)</span>') + '</td>'
+        + '<td><input data-i="' + i + '" class="l" value="' + escHtml(r.label || '') + '" placeholder="group" style="width:100px"></td>'
+        + '<td><button class="sm" data-del="' + i + '">\u2715</button></td></tr>';
+    });
+    tb.innerHTML = '<tr><th>subsample</th><th>label (group)</th><th></th></tr>' + html;
+    refreshRefs();
+    tb.querySelectorAll('.l').forEach(s => s.oninput = e => rows[+e.target.dataset.i].label = e.target.value);
+    tb.querySelectorAll('button[data-del]').forEach(b => b.onclick = () => { rows.splice(+b.dataset.del, 1); renderRows(); });
+    tb.querySelectorAll('button[data-delg]').forEach(b => b.onclick = () => {
+      const g = GL[+b.dataset.delg]; rows = rows.filter(r => (r.label || '').trim() !== g); renderRows(); });
+  }
+
+  function renderMine(){                                 // Selected-peak PCA: show the current All-peak selection
+    if (v.mode !== 'mine') return;
+    const box = P('pk_list'), sel = PCA_SELECTION;
+    if (!sel.samples.length && !sel.peaks.length){
+      box.innerHTML = '<span class="muted">nothing selected yet \u2014 run All-peak PCA and tick files/peaks there</span>';
+      return;
+    }
+    box.innerHTML = '<div style="margin-bottom:4px"><b>Subsamples (' + sel.samples.length + ')</b>: '
+      + (sel.samples.map(s => escHtml(disp(s)) + (sel.labels[s] ? ' [' + escHtml(sel.labels[s]) + ']' : '')).join(', ') || '\u2014') + '</div>'
+      + '<div style="display:flex;gap:5px;flex-wrap:wrap"><b style="width:100%">Peaks (' + sel.peaks.length + ')</b>'
+      + sel.peaks.map(p => '<span style="border:1px solid #b7791f;border-radius:12px;'
+        + 'padding:2px 9px;font-size:13px;color:#b7791f">' + escHtml(sub(p.name || ('m/z ' + fmzjs((p.lo + p.hi) / 2))))
+        + ' <span style="opacity:.7;font-size:12px">' + p.lo.toFixed(2) + '\u2013' + p.hi.toFixed(2) + '</span></span>').join('')
+      + '</div>';
+  }
+
+  async function run(){
+    let samples, peaks;
+    if (v.mode === 'mine'){
+      peaks = PCA_SELECTION.peaks;
+      const sel = PCA_SELECTION.samples;
+      if (sel.length < 2){ P('msg').textContent = 'select >= 2 subsamples in All-peak PCA'; return; }
+      if (!peaks.length){ P('msg').textContent = 'select peaks in All-peak PCA first'; return; }
+      samples = sel.map(s => ({sample: s, label: PCA_SELECTION.labels[s] || ''}));
+    } else {
+      if (rows.length < 2){ P('msg').textContent = 'add at least 2 subsamples'; return; }
+      samples = rows;
+    }
+    P('msg').textContent = 'running\u2026';
+    const body = {samples, n_components: +P('nc').value, normalize: P('norm').value,
+      sqrt: P('sqrt').checked, mode: v.mode, ratio_min: RATIO_MIN, frac_min: FRAC_MIN,
+      n_labels: +P('nl').value};
+    if (v.mode === 'all'){
+      body.bin = +P('bin').value;
+      body.filter_peaks = P('flt').checked;
+      body.ratio_min = +P('nbr').value; body.frac_min = +P('tic').value / 100;
+      const rp = refPair(); if (rp) body.ref_labels = rp;
+      if (!(body.ratio_min >= 0 && body.frac_min >= 0 && body.frac_min <= 1)){ P('msg').textContent = 'NBR must be \u2265 0 and TIC between 0 and 100 %'; return; }
+    }
+    else body.peaks = peaks;
+    let res;
+    try {
+      const r = await fetch('/api/pca', {method: 'POST', headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(body)});
+      res = await r.json();
+      if (!r.ok){ P('msg').textContent = res.error || 'error'; return; }
+    } catch (e) { P('msg').textContent = 'error: ' + e.message; return; }
+    P('msg').textContent = res.backend.split(' (')[0] + ' \u00b7 ' + res.n_features + (v.mode === 'mine' ? ' peaks' : ' bins')
+      + ' \u00b7 mean-centred (max |column mean| ' + (+res.center_check).toExponential(0) + ')';
+    RES = res; PCA_LAST[v.key] = res; docsBuilt = false;
+    MAG = res.peak_mz.map((_, i) => { let m = 0;
+      for (let c = 0; c < res.n_components; c++) m = Math.max(m, Math.abs(res.comps[c][i])); return m; });
+    MAXW = Math.max(1e-12, ...MAG);
+    render();
+    if (explore){ buildIxControls(); drawIx(); renderTable(); }
+  }
+  const setPeak = (i, on) => { on ? incPeaks.add(i) : incPeaks.delete(i); };
+  function buildIxControls(){
+    const nc = RES.n_components;
+    const opt = sel => Array.from({length: nc}, (_, i) => '<option value="' + i + '"' + (i === sel ? ' selected' : '')
+      + '>PC' + (i + 1) + ' (' + (100 * RES.explained[i]).toFixed(1) + '%)</option>').join('');
+    ixX = 0; ixY = Math.min(1, nc - 1);
+    P('ixx').innerHTML = opt(ixX); P('ixy').innerHTML = opt(ixY);
+    incFiles = new Set(RES.names.map((_, i) => i));
+    P('ixfilebox').innerHTML = RES.names.map((n, i) => '<label class="inl" style="margin:0 10px 2px 0">'
+      + '<input type="checkbox" data-f="' + i + '" checked> ' + escHtml(disp(n)) + '</label>').join('');
+    P('ixfilebox').querySelectorAll('input[data-f]').forEach(c => c.onchange = () => {
+      const i = +c.dataset.f; c.checked ? incFiles.add(i) : incFiles.delete(i); drawIx(); });
+    const nf = RES.peak_names.length;                           // the 40 most influential m/z start ticked in the peak list
+    incPeaks = new Set(Array.from({length: nf}, (_, i) => i).sort((a, b) => MAG[b] - MAG[a]).slice(0, Math.min(nf, 40)));
+  }
+  // 90% confidence ellipse of a group of points: covariance ellipse scaled by sqrt(chi2_{2,0.90}) = sqrt(-2 ln 0.10)
+  function ellipse90(pts){
+    const n = pts.length; if (n < 3) return null;
+    const mx = pts.reduce((a, p) => a + p[0], 0) / n, my = pts.reduce((a, p) => a + p[1], 0) / n;
+    let a = 0, b = 0, c = 0;
+    pts.forEach(p => { const dx = p[0] - mx, dy = p[1] - my; a += dx * dx; b += dx * dy; c += dy * dy; });
+    a /= n - 1; b /= n - 1; c /= n - 1;
+    const half = (a + c) / 2, d = Math.sqrt(Math.max(0, half * half - (a * c - b * b)));
+    const l1 = half + d, l2 = half - d;
+    if (!(l1 > 0) || l2 <= 1e-12 * l1) return null;             // all on a line: no ellipse
+    const th = 0.5 * Math.atan2(2 * b, a - c), k = Math.sqrt(-2 * Math.log(0.10));
+    const xs = [], ys = [];
+    for (let i = 0; i <= 120; i++){
+      const t = 2 * Math.PI * i / 120, u = k * Math.sqrt(l1) * Math.cos(t), w = k * Math.sqrt(l2) * Math.sin(t);
+      xs.push(mx + u * Math.cos(th) - w * Math.sin(th)); ys.push(my + u * Math.sin(th) + w * Math.cos(th));
+    }
+    return {x: xs, y: ys};
+  }
+  function drawIx(){
+    const res = RES; if (!res || !window.Plotly) return;
+    ixX = +P('ixx').value; ixY = +P('ixy').value;
+    const fi = [...incFiles];
+    const keys = res.names.map((_, i) => ((res.labels && res.labels[i]) || '').trim() || '(unlabeled)');
+    const gc = groupColors(res.labels || []);            // colour = the label you gave each file
+    const multi = gc.groups.length > 1;
+    const nLab = keys.filter(k => k !== '(unlabeled)').length;
+    P('ixhint').textContent = nLab === 0
+      ? 'No labels yet: type a label (group) for each file on the left and press Run PCA to get a 90% ellipse per group.'
+      : 'Shaded ellipse = 90% ellipse of each label group (needs 3+ files; with 6 or fewer, all of a group\'s files are always inside)' + (nLab < keys.length ? '; files without a label get none.' : '.');
+    const traces = [];
+    gc.groups.forEach(g => {
+      const idx = fi.filter(i => keys[i] === g);
+      if (!idx.length) return;
+      const el = g === '(unlabeled)' ? null : ellipse90(idx.map(i => [res.scores[i][ixX], res.scores[i][ixY]]));   // a group exists only if you labelled it
+      if (el){
+        traces.push({x: el.x, y: el.y, mode: 'lines', type: 'scatter',
+          line: {color: gc.map[g], width: 1.8}, hoverinfo: 'skip', showlegend: false});
+      }
+      traces.push({x: idx.map(i => res.scores[i][ixX]), y: idx.map(i => res.scores[i][ixY]),
+        text: idx.map(i => disp(res.names[i])), mode: 'markers', type: 'scatter', name: g, showlegend: multi,
+        marker: {size: 11, color: gc.map[g], line: {width: 1, color: '#fff'}},
+        hovertemplate: '%{text}<br>(%{x:.3g}, %{y:.3g})<extra>' + g + '</extra>'});
+      if (g !== '(unlabeled)'){                          // the group name once, at the centre of its files (the file name stays in the hover)
+        const mean = f => idx.reduce((a, i) => a + res.scores[i][f], 0) / idx.length;
+        traces.push({x: [mean(ixX)], y: [mean(ixY)], text: [g], mode: 'text', type: 'scatter', textposition: 'top center',
+          textfont: {size: 12, color: gc.map[g]}, hoverinfo: 'skip', showlegend: false});
+      }
+    });
+    Plotly.react(P('ix'), traces, {margin: {t: 10, r: 10, b: 46, l: 60}, hovermode: 'closest', showlegend: multi,
+      legend: {title: {text: 'label'}},
+      xaxis: {title: 'PC' + (ixX + 1) + ' Scores (' + (100 * res.explained[ixX]).toFixed(1) + ' %)', zeroline: true, zerolinecolor: '#111', zerolinewidth: 1.5, mirror: true, showline: true, linecolor: '#111'},
+      yaxis: {title: 'PC' + (ixY + 1) + ' Scores (' + (100 * res.explained[ixY]).toFixed(1) + ' %)', zeroline: true, zerolinecolor: '#111', zerolinewidth: 1.5, mirror: true, showline: true, linecolor: '#111'}},
+      {displaylogo: false, responsive: true, scrollZoom: true});
+    updateSelection();                                   // feed the Selected-peak PCA tab
+  }
+  function tableRows(){                                  // indices after the peak-list filter, sorted
+    const res = RES, q = PT.q.trim().toLowerCase();
+    const idx = res.peak_mz.map((_, i) => i).filter(i =>
+      (!q || peakLabel(i).toLowerCase().includes(q) || show(i).toLowerCase().includes(q)
+        || fmzjs(res.peak_mz[i]).startsWith(q))
+      && (!PT.pass || (okRatio(i) && okFrac(i))) && (!PT.ticked || incPeaks.has(i)));
+    const val = (i, k) => k === 'mz' ? res.peak_mz[i]
+      : k === 'counts' ? res.peak_counts[i] : k === 'frac' ? res.peak_frac[i]
+      : k === 'ratio' ? (res.peak_ratio[i] == null ? Infinity : res.peak_ratio[i])
+      : k === 'mag' ? MAG[i] : k === 'on' ? (incPeaks.has(i) ? 1 : 0) : res.comps[+k.slice(2)][i];
+    return idx.sort((a, b) => { const x = val(a, PT.key), y = val(b, PT.key); return (x < y ? -1 : x > y ? 1 : 0) * PT.dir; });
+  }
+  function renderTable(){
+    const res = RES; if (!res) return;
+    const nf = res.peak_mz.length, nc = res.n_components;
+    const idx = tableRows(), shown = idx;                  // every feature, not a first page
+    const cols = [['on', '\u2713'], ['mz', 'm/z'], ['win', 'window'], ['counts', 'counts'],
+      ['frac', '% ions'], ['ratio', '\u00d7 nbr'], ['mag', 'max |p|']]
+      .concat(Array.from({length: nc}, (_, c) => ['pc' + c, 'PC' + (c + 1)]));
+    const head = '<tr>' + cols.map(([k, t]) => '<th' + (k !== 'win' ? ' class="srt" data-k="' + k + '"' : '') + '>' + t
+      + (PT.key === k ? (PT.dir > 0 ? ' \u25b2' : ' \u25bc') : '') + '</th>').join('') + '</tr>';
+    const cell = w => '<td class="num" style="background:' + (w >= 0 ? 'rgba(47,133,90,' : 'rgba(197,48,48,')
+      + (0.06 + 0.55 * Math.min(1, Math.abs(w) / MAXW)).toFixed(2) + ')">' + w.toFixed(3) + '</td>';
+    const body = shown.map(i => '<tr>'
+      + '<td><input type="checkbox" data-t="' + i + '"' + (incPeaks.has(i) ? ' checked' : '') + '></td>'
+      + '<td class="num">' + fmzjs(res.peak_mz[i]) + '</td>'
+      + '<td class="num">' + res.peak_lo[i].toFixed(2) + '\u2013' + res.peak_hi[i].toFixed(2) + '</td>'
+      + '<td class="num">' + Math.round(res.peak_counts[i]).toLocaleString() + '</td>'
+      + '<td class="num">' + (100 * res.peak_frac[i]).toFixed(3) + '</td>'
+      + '<td class="num">' + (res.peak_ratio[i] == null ? '\u221e' : res.peak_ratio[i].toFixed(1))
+      + (okRatio(i) && okFrac(i) ? ' <span class="okb">pass</span>' : '') + '</td>'
+      + '<td class="num">' + MAG[i].toFixed(3) + '</td>'
+      + Array.from({length: nc}, (_, c) => cell(res.comps[c][i])).join('') + '</tr>').join('');
+    tableInfo(idx.length);
+    P('pt').innerHTML = '<table class="ptable"><thead>' + head + '</thead><tbody>' + body + '</tbody></table>';
+    P('pt').querySelectorAll('th.srt').forEach(th => th.onclick = () => {
+      const k = th.dataset.k;
+      if (PT.key === k) PT.dir = -PT.dir; else { PT.key = k; PT.dir = k === 'mz' ? 1 : -1; }
+      renderTable(); });
+    P('pt').querySelectorAll('input[data-t]').forEach(c => c.onchange = () => {
+      setPeak(+c.dataset.t, c.checked); updateSelection();
+      if (PT.ticked) renderTable(); else tableInfo(tableRows().length); });          // rebuilding thousands of rows for one tick is not needed
+  }
+  function tableInfo(n){
+    P('ptinfo').textContent = n + ' of ' + RES.peak_mz.length + ' features \u2022 ' + incPeaks.size + ' ticked';
+  }
+  function tableCsv(){
+    const res = RES; if (!res) return;
+    const nc = res.n_components;
+    const rowsOut = [['ticked', 'mz', 'lo', 'hi', 'counts', 'frac_total_ions', 'neighbour_ratio', 'pass',
+      'max_abs_loading'].concat(Array.from({length: nc}, (_, c) => 'PC' + (c + 1) + '_loading'))];
+    tableRows().forEach(i => rowsOut.push([incPeaks.has(i) ? 1 : 0, res.peak_mz[i], res.peak_lo[i],
+      res.peak_hi[i], res.peak_counts[i], res.peak_frac[i], res.peak_ratio[i] == null ? 'inf' : res.peak_ratio[i],
+      okRatio(i) && okFrac(i) ? 1 : 0, MAG[i]].concat(Array.from({length: nc}, (_, c) => res.comps[c][i]))));
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([toCsv(rowsOut)], {type: 'text/csv'}));
+    a.download = v.key === 'p1' ? 'all_peak_pca_peaks.csv' : 'selected_peak_pca_peaks.csv';
+    a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  }
+  function updateSelection(){
+    const res = RES; if (!res) return;
+    PCA_SELECTION = {
+      samples: [...incFiles].map(i => res.names[i]),
+      peaks: [...incPeaks].sort((a, b) => res.peak_mz[a] - res.peak_mz[b]).map(i => ({name: res.peak_names[i] || '',
+        lo: +res.peak_lo[i].toFixed(4), hi: +res.peak_hi[i].toFixed(4)})),
+      labels: Object.fromEntries([...incFiles].map(i => [res.names[i], (res.labels && res.labels[i]) || '']))};
+    if (PCA_REFRESH) PCA_REFRESH();
+  }
+  function render(){
+    const res = RES; if (!res) return;
+    const box = P('figs'); box.innerHTML = '';
+    (res.figures || []).forEach((f, i) => {
+      const row = document.createElement('div');
+      row.className = 'figrow';
+      const h = document.createElement('h3');
+      h.textContent = 'Figure ' + (i + 1) + ' \u00b7 ' + f.title;
+      const fig = document.createElement('figure');
+      const img = document.createElement('img');
+      img.src = f.png; img.alt = f.title; img.title = 'click to open full size';
+      img.onclick = () => openInTab(f.png);
+      fig.append(img);
+      row.append(h, fig); box.append(row);
+    });
+  }
+
+  if (v.mode === 'all'){
+    P('gq').oninput = e => { gq = e.target.value.trim().toLowerCase(); renderTree(); };
+    P('gpol').onchange = e => { gpol = e.target.value; renderTree(); };
+    P('gby').onchange = e => { gmode = e.target.value; renderTree(); };
+    P('addtick').onclick = () => { addSamples(allSamples().filter(s => TICK.has(s.sample))); TICK.clear(); renderTree(); };
+    P('addshown').onclick = () => addSamples(shownSamples());
+    P('clear').onclick = () => { rows = []; renderRows(); };
+  }
+  if (v.mode === 'mine'){
+    PCA_REFRESH = renderMine;                            // refresh summary when All-peak selection changes
+    renderMine();
+  }
+  P('run').onclick = run;
+  function useSettings(r){                               // put the learned limits into the parameter boxes
+    P('bin').value = String(r.bin); P('flt').checked = true;
+    P('nbr').value = r.ratio_min; P('tic').value = +(100 * r.frac_min).toFixed(4);
+  }
+  async function tune(){
+    const out = P('tuneout'), rp = refPair();
+    if (!rp){ out.textContent = 'pick two different labels (compound A and compound B)'; return; }
+    out.textContent = 'learning\u2026 (about 10 s)';
+    let res;
+    try {
+      const r = await fetch('/api/pca/tune', {method: 'POST', headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({samples: rows, refs: rp, goal: P('goal').value, normalize: P('norm').value, sqrt: P('sqrt').checked})});
+      res = await r.json();
+      if (!r.ok){ out.textContent = res.error || 'error'; return; }
+    } catch (e) { out.textContent = 'error: ' + e.message; return; }
+    const closest = res.goal === 'closest', pct = x => +(100 * x).toFixed(1);
+    const row = (r, k) => '<tr><td>' + r.bin + '</td><td>' + (r.ratio_min || '\u2013') + '</td><td>' + (r.frac_min ? +(100 * r.frac_min).toFixed(4) + ' %' : '\u2013')
+      + '</td><td>' + r.n_features + '</td>'
+      + (closest ? '<td>PC' + r.pc + ' (' + pct(r.evr) + ' %)</td><td>' + r.dz.toFixed(3) + '</td>'
+                 : '<td>' + Math.round(100 * r.acc) + ' %</td><td>' + r.sep.toFixed(2) + '</td>')
+      + '<td>' + (r.filter ? '<button class="sm" data-use="' + k + '">use</button>' : '<span class="muted">no filter</span>') + '</td></tr>';
+    const list = res.results.concat(res.baseline.filter(b => !res.results.some(r => r.bin === b.bin && !r.filter)));
+    const B = res.best, lim = 'bin ' + B.bin + ', NBR \u2265 ' + B.ratio_min + ', TIC \u2265 ' + +(100 * B.frac_min).toFixed(4) + ' %';
+    const head = closest
+      ? '<b>PC' + B.pc + '</b> (' + pct(B.evr) + ' % of the variance) is where ' + escHtml(res.refs[0]) + ' and ' + escHtml(res.refs[1]) + ' are closest: centroid distance '
+        + B.dz.toFixed(3) + ' SD of that PC, with ' + lim + '. Chance of a minimum this small with shuffled labels (all ' + res.n_compared + ' setting\u00d7PC choices counted): <b>p = '
+        + res.p_corr.toFixed(2) + '</b>' + (res.p_corr > 0.05 ? ' \u2013 not distinguishable from chance. ' : '. ')
+        + 'A PC with the groups on top of each other is usually one that does not tell them apart (for example the spread inside one group); it does not show that the compounds are alike. Check the other PCs in the bar chart.'
+      : 'Best with a filter: ' + lim + ', ' + Math.round(100 * B.acc) + ' % right (PC1\u2013PC2).'
+        + (res.n_tied > 1 ? ' <b>' + res.n_tied + ' settings are tied</b> (same accuracy, margin within 0.02): these two labels separate easily, so the data does not pin the limits down.' : '');
+    const ld = '<div style="margin-top:4px"><b>Top loadings of PC' + B.pc + '</b> (m/z : weight): ' + res.loadings.map(l => l.mz + ' : ' + l.w.toFixed(2)).join(', ') + '</div>';
+    out.innerHTML = '<div>' + res.n_files + ' files, ' + res.n_tested + ' settings tried. ' + head + '</div>' + ld
+      + '<table style="margin-top:4px"><tr><th>bin</th><th>NBR\u2265</th><th>TIC\u2265</th><th>bins kept</th>'
+      + (closest ? '<th>PC</th><th>distance (SD)</th>' : '<th>right</th><th>margin</th>') + '<th></th></tr>'
+      + list.map(row).join('') + '</table>'
+      + '<div class="muted" style="margin-top:4px">The best settings are already in the parameter boxes above; press <i>use</i> on another row to fill those instead, then <i>Run PCA</i>.</div>'
+      + '<img id="' + K + 'tuneimg" src="' + res.figure + '" title="click to open full size" style="width:100%;margin-top:6px;border:1px solid var(--line);border-radius:6px;cursor:pointer">';
+    useSettings(res.best);
+    P('tuneimg').onclick = () => openInTab(res.figure);
+    out.querySelectorAll('button[data-use]').forEach(b => b.onclick = () => useSettings(list[+b.dataset.use]));
+  }
+  if (v.mode === 'all'){
+    P('tune').onclick = tune;
+  }
+  P('doc').onclick = e => { e.preventDefault(); document.getElementById('tabbtn_docs').click(); location.hash = '#doc_pca'; };
+  if (explore){
+    P('ixx').onchange = P('ixy').onchange = drawIx;
+    P('ptq').oninput = e => { PT.q = e.target.value; renderTable(); };
+    P('ptpass').onchange = e => { PT.pass = e.target.checked; renderTable(); };
+    P('ptticked').onchange = e => { PT.ticked = e.target.checked; renderTable(); };
+    P('ptall').onclick = () => { if (!RES) return; tableRows().forEach(i => setPeak(i, true)); updateSelection(); renderTable(); };
+    P('ptnone').onclick = () => { if (!RES) return; tableRows().forEach(i => setPeak(i, false)); updateSelection(); renderTable(); };
+    P('ptcsv').onclick = tableCsv;
+  }
+  // ---- session: everything this panel needs to show its results again
+  function getState(){
+    const params = {nc: P('nc').value, norm: P('norm').value, sqrt: P('sqrt').checked, nl: P('nl').value};
+    if (v.mode === 'all'){ params.bin = P('bin').value; params.flt = P('flt').checked; params.nbr = P('nbr').value; params.tic = P('tic').value; }
+    const st = {rows: v.mode === 'all' ? rows.map(r => ({sample: r.sample, label: r.label || ''})) : [], params,
+      msg: P('msg').textContent.replace(/( \u00b7 loaded from a session)+$/, ''), res: null};
+    if (RES){
+      st.res = Object.assign({}, RES, {figures: (RES.figures || []).map(f => ({id: f.id, title: f.title, caption: f.caption, png: f.png}))});
+      if (explore){ st.incFiles = [...incFiles]; st.incPeaks = [...incPeaks]; st.ix = {x: ixX, y: ixY}; st.pt = Object.assign({}, PT); }
+    }
+    return st;
+  }
+  function setState(st){                                 // `st` has been checked by checkState()
+    if (v.mode === 'all'){ rows = st.rows.map(r => ({sample: r.sample, label: r.label})); renderRows(); }
+    const pr = st.params || {};
+    const put = (id, val) => { if (val !== undefined && val !== null && P(id)) P(id).value = val; };
+    put('nc', pr.nc); put('norm', pr.norm); put('nl', pr.nl);
+    if (v.mode === 'all'){
+      put('bin', pr.bin); put('nbr', pr.nbr); put('tic', pr.tic);
+      if (pr.flt !== undefined) P('flt').checked = !!pr.flt;
+    }
+    if (pr.sqrt !== undefined) P('sqrt').checked = !!pr.sqrt;
+    P('msg').textContent = st.res ? (st.msg || '').replace(/( \u00b7 loaded from a session)+$/, '') + ' \u00b7 loaded from a session' : '';
+    if (!st.res){ RES = null; P('figs').innerHTML = ''; return; }
+    RES = st.res; PCA_LAST[v.key] = RES; docsBuilt = false;
+    MAG = RES.peak_mz.map((_, i) => { let m = 0;
+      for (let c = 0; c < RES.n_components; c++) m = Math.max(m, Math.abs(RES.comps[c][i])); return m; });
+    MAXW = Math.max(1e-12, ...MAG);
+    render();
+    if (explore){
+      buildIxControls();
+      incFiles = new Set(st.incFiles); incPeaks = new Set(st.incPeaks);
+      P('ixfilebox').querySelectorAll('input[data-f]').forEach(c => { c.checked = incFiles.has(+c.dataset.f); });
+      P('ixx').value = st.ix.x; P('ixy').value = st.ix.y;
+      Object.assign(PT, st.pt);
+      P('ptq').value = PT.q; P('ptpass').checked = PT.pass; P('ptticked').checked = PT.ticked;
+      drawIx(); renderTable();
+    }
+  }
+  return {renderRows, renderMine, getState, setState};
+}
+
+const PCA_INST = PCA_VARIANTS.map(v => {
+  $('pca_subtabs').insertAdjacentHTML('beforeend', '<button data-sub="' + v.key + '">' + v.tab + '</button>');
+  return makePca(v);
+});
+function showPcaSub(key){
+  document.querySelectorAll('#pca_subtabs button').forEach(b => b.classList.toggle('on', b.dataset.sub === key));
+  document.querySelectorAll('.pcapanel').forEach(p => p.style.display = p.id === key + '_panel' ? '' : 'none');
+  if (PCA_REFRESH) PCA_REFRESH();                        // refresh Selected-peak PCA selection summary
+  if (window.Plotly){ const d = $(key + '_ix'); if (d && d.data) Plotly.Plots.resize(d); }
+}
+document.querySelectorAll('#pca_subtabs button').forEach(b => b.onclick = () => showPcaSub(b.dataset.sub));
+showPcaSub(PCA_VARIANTS[0].key);
+
+// ---- Sessions: save everything in the PCA tab to a file, load it later ----------------------------
+// A session holds, for both PCA tabs: the files and labels, the settings, what you ticked, the biplot axes and all
+// results (numbers and figures). It holds no raw data, so loading never recomputes anything. The file is checked
+// carefully before anything is shown, because it could come from anywhere.
+const SESSION_FORMAT = 'tof-sims-session', SESSION_VERSION = 1;
+let APP_VERSION = '';
+const isNum = x => typeof x === 'number' && isFinite(x);
+const isStr = x => typeof x === 'string';
+const numArr = (a, n) => Array.isArray(a) && (n == null || a.length === n) && a.every(isNum);
+const isIdx = (x, n) => Number.isInteger(x) && x >= 0 && x < n;
+const PNG_RE = /^data:image\/png;base64,[A-Za-z0-9+\/]+=*$/;
+
+function checkRes(r, mode){
+  if (!r || typeof r !== 'object') return 'the results are missing';
+  if (r.mode !== mode) return 'the results belong to the other PCA tab';
+  if (!Array.isArray(r.names) || !r.names.length || !r.names.every(isStr)) return 'the file names are missing';
+  const n = r.names.length, K = r.n_components, p = Array.isArray(r.peak_mz) ? r.peak_mz.length : -1;
+  if (!Number.isInteger(K) || K < 1 || K > 50 || p < 1) return 'the sizes are wrong';
+  if (!Array.isArray(r.labels) || r.labels.length !== n || !r.labels.every(isStr)) return 'the labels do not match the files';
+  if (!Array.isArray(r.scores) || r.scores.length !== n || !r.scores.every(row => numArr(row, K))) return 'the scores do not match';
+  if (!numArr(r.explained, K)) return 'the explained variance does not match';
+  if (!Array.isArray(r.comps) || r.comps.length !== K || !r.comps.every(row => numArr(row, p))) return 'the loadings do not match';
+  for (const k of ['peak_mz', 'peak_lo', 'peak_hi', 'peak_counts', 'peak_frac']) if (!numArr(r[k], p)) return k + ' does not match';
+  if (!Array.isArray(r.peak_ratio) || r.peak_ratio.length !== p || !r.peak_ratio.every(x => x === null || isNum(x))) return 'peak_ratio does not match';
+  if (!Array.isArray(r.peak_names) || r.peak_names.length !== p || !r.peak_names.every(isStr)) return 'the peak names do not match';
+  if (!isStr(r.backend) || !isNum(r.n_features) || !isNum(r.bin)) return 'the run details are missing';
+  if (r.counts !== undefined && (!Array.isArray(r.counts) || r.counts.length !== n || !r.counts.every(row => numArr(row, p)))) return 'the raw counts do not match';
+  if (!Array.isArray(r.figures) || !r.figures.every(f => f && isStr(f.title) && isStr(f.caption) && isStr(f.png) && PNG_RE.test(f.png)))
+    return 'a figure is not a valid image';
+  return null;
+}
+function checkState(st, mode){
+  if (!st || typeof st !== 'object') return 'it is empty';
+  if (!Array.isArray(st.rows) || !st.rows.every(r => r && isStr(r.sample) && isStr(r.label))) return 'the file list is invalid';
+  if (!st.params || typeof st.params !== 'object') return 'the settings are missing';
+  const pr = st.params;
+  for (const k of ['nc', 'nl', 'bin', 'nbr', 'tic']) if (pr[k] !== undefined && !isNum(+pr[k])) return 'the setting "' + k + '" is invalid';
+  if (pr.norm !== undefined && !['tic', 'none'].includes(pr.norm)) return 'the normalize setting is invalid';
+  if (st.res === null || st.res === undefined){ st.res = null; return null; }
+  const e = checkRes(st.res, mode); if (e) return e;
+  if (mode === 'all'){
+    const n = st.res.names.length, p = st.res.peak_mz.length, K = st.res.n_components;
+    if (!Array.isArray(st.incFiles) || !st.incFiles.every(i => isIdx(i, n))) return 'the ticked files are invalid';
+    if (!Array.isArray(st.incPeaks) || !st.incPeaks.every(i => isIdx(i, p))) return 'the ticked peaks are invalid';
+    if (!st.ix || !isIdx(st.ix.x, K) || !isIdx(st.ix.y, K)) return 'the biplot axes are invalid';
+    const pt = st.pt, keys = ['on', 'mz', 'counts', 'frac', 'ratio', 'mag'];
+    if (!pt || !isStr(pt.q) || typeof pt.pass !== 'boolean' || typeof pt.ticked !== 'boolean' || ![1, -1].includes(pt.dir)
+        || !(keys.includes(pt.key) || (/^pc\d+$/.test(pt.key) && +pt.key.slice(2) < K))) return 'the peak-list view is invalid';
+  }
+  return null;
+}
+function checkSession(o){
+  if (!o || typeof o !== 'object' || o.format !== SESSION_FORMAT) return 'this is not a TOF-SIMS session file';
+  if (!Number.isInteger(o.version) || o.version > SESSION_VERSION) return 'it was saved by a newer version of the app (format ' + o.version + ')';
+  if (!o.panels || typeof o.panels !== 'object') return 'it has no analysis in it';
+  let any = false;
+  for (const [key, mode] of [['p1', 'all'], ['p2', 'mine']]){
+    if (o.panels[key] === undefined) continue;
+    const e = checkState(o.panels[key], mode); if (e) return (key === 'p1' ? 'All-peak PCA: ' : 'Selected-peak PCA: ') + e;
+    any = true;
+  }
+  if (!any) return 'it has no analysis in it';
+  if (o.selection !== undefined){
+    const s = o.selection;
+    if (!s || !Array.isArray(s.samples) || !s.samples.every(isStr) || !Array.isArray(s.peaks)
+        || !s.peaks.every(q => q && isStr(q.name) && isNum(q.lo) && isNum(q.hi)) || !s.labels || typeof s.labels !== 'object') return 'the selection is invalid';
+  }
+  return null;
+}
+
+const sessMsg = (t, bad) => { $('sess_msg').textContent = t; $('sess_msg').style.color = bad ? 'var(--bad)' : ''; };
+function exportSession(){
+  const panels = {}, pcs = PCA_INST.map(i => i.getState());
+  PCA_VARIANTS.forEach((v, k) => { panels[v.key] = pcs[k]; });
+  if (!pcs.some(s => s.res || s.rows.length)){ sessMsg('nothing to save yet: run a PCA first', true); return; }
+  const name = sessName();
+  const obj = {format: SESSION_FORMAT, version: SESSION_VERSION, app_version: APP_VERSION, created: new Date().toISOString(), name,
+    panels, selection: PCA_SELECTION};
+  const blob = new Blob([JSON.stringify(obj)], {type: 'application/json'});
+  sessMsg('saved ' + downloadBlob(blob, 'tofsims-session', name, 'json') + ' (' + (blob.size / 1e6).toFixed(1) + ' MB)');
+}
+const sessName = () => $('sess_name').value.trim().slice(0, 80);
+function downloadBlob(blob, prefix, name, ext){          // returns the file name used
+  const d = new Date(), z = n => String(n).padStart(2, '0');
+  const stamp = d.getFullYear() + z(d.getMonth() + 1) + z(d.getDate()) + '-' + z(d.getHours()) + z(d.getMinutes());
+  const slug = name.replace(/[^\w.-]+/g, '_').replace(/^_+|_+$/g, '');
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = prefix + '-' + (slug ? slug + '-' : '') + stamp + '.' + ext;
+  a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+  return a.download;
+}
+async function exportData(){                             // tidy CSV tables + figures, built by the server
+  const results = PCA_INST.map(i => i.getState().res).filter(Boolean);
+  if (!results.length){ sessMsg('nothing to export yet: run a PCA first', true); return; }
+  sessMsg('preparing the zip\u2026');
+  let r;
+  try {
+    r = await fetch('/api/export', {method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({name: sessName(), results})});
+  } catch (e) { sessMsg('could not reach the server: ' + e.message, true); return; }
+  if (!r.ok){ let m = 'export failed'; try { m = (await r.json()).error; } catch (e) {} sessMsg(m, true); return; }
+  const blob = await r.blob();
+  sessMsg('saved ' + downloadBlob(blob, 'tofsims-data', sessName(), 'zip') + ' (' + (blob.size / 1e6).toFixed(1) + ' MB)');
+}
+async function importSession(file){
+  if (!file) return;
+  if (file.size > 400e6){ sessMsg('that file is too large to be a session', true); return; }
+  let o;
+  try { o = JSON.parse(await file.text()); } catch (e) { sessMsg('could not read the file: it is not valid JSON', true); return; }
+  const err = checkSession(o);
+  if (err){ sessMsg('cannot load this file: ' + err, true); return; }
+  if (PCA_LAST.p1 || PCA_LAST.p2 || PCA_INST.some(i => i.getState().rows.length)){
+    if (!confirm('Replace the analysis currently in this tab with the one in "' + file.name + '"?')) return;
+  }
+  PCA_SELECTION = {samples: [], peaks: [], labels: {}};
+  delete PCA_LAST.p1; delete PCA_LAST.p2;
+  PCA_VARIANTS.forEach((v, k) => { if (o.panels[v.key]) PCA_INST[k].setState(o.panels[v.key]); });
+  if (o.selection){                                      // the live selection is re-derived from the All-peak tab; use the saved one if there is none
+    if (!o.panels.p1 || !o.panels.p1.res)
+      PCA_SELECTION = {samples: o.selection.samples.slice(), peaks: o.selection.peaks.map(q => ({name: q.name, lo: q.lo, hi: q.hi})),
+        labels: Object.fromEntries(Object.entries(o.selection.labels).filter(([, v]) => isStr(v)))};
+  }
+  PCA_INST.forEach(i => i.renderMine());
+  const p = o.panels.p1 && (o.panels.p1.res || o.panels.p1.rows.length) ? 'p1' : 'p2';
+  showPcaSub(p);
+  const have = { has: k => SAMPLES.some(s => s.sample === roiSplit(k)[0]) }, used = new Set();
+  Object.values(o.panels).forEach(st => { (st.rows || []).forEach(r => used.add(r.sample)); if (st.res) st.res.names.forEach(n => used.add(n)); });
+  const missing = [...used].filter(n => !have.has(n));
+  if (o.name) $('sess_name').value = o.name;
+  sessMsg('loaded ' + (o.name ? '"' + o.name + '" ' : '') + 'from ' + (o.created ? o.created.slice(0, 10) : 'a session file')
+    + (missing.length ? '. ' + missing.length + ' of its files are not on this server (' + missing.slice(0, 3).map(disp).join(', ')
+      + (missing.length > 3 ? ', \u2026' : '') + '): the results are shown, but running the PCA again needs them' : ''), missing.length > 0);
+}
+$('sess_save').onclick = exportSession;
+$('sess_zip').onclick = exportData;
+$('sess_load').onclick = () => $('sess_file').click();
+$('sess_file').onchange = e => { importSession(e.target.files[0]); e.target.value = ''; };
+
+
+// ---- Data tab: all samples, uploads, delete ----------------------
+const mb = b => b >= 1e9 ? (b / 1e9).toFixed(2) + ' GB' : (b / 1e6).toFixed(1) + ' MB';
+const polChip = p => '<span class="chip' + (p === 'pos' ? ' ok' : p === 'neg' ? ' bad' : '') + '">' + p + '</span>';
+async function deleteSamples(keys){
+  if (!keys.length) return;
+  if (!confirm('Delete ' + (keys.length === 1 ? disp(keys[0]) : keys.length + ' samples') + ' and the original file(s)? This cannot be undone.')) return;
+  for (const k of keys){
+    const r = await fetch('/api/upload?sample=' + encodeURIComponent(k), {method: 'DELETE'});
+    if (!r.ok){ alert((await r.json()).error || 'delete failed'); break; }
+    UP.sel.delete(k);
+  }
+  await loadSamples();
+}
+function renderData(){
+  const every = SAMPLES.concat(PARTIAL);
+  const mine = every.filter(s => isMine(s.sample));
+  const q = $('smp_q').value.trim().toLowerCase();
+  const shown = every.filter(s => !q || disp(s.sample).toLowerCase().includes(q) || (s.label || '').toLowerCase().includes(q))
+    .sort((a, b) => a.sample.localeCompare(b.sample));
+  UP.sel = new Set([...UP.sel].filter(k => mine.some(s => s.sample === k)));
+  $('smp_n').textContent = shown.length + (shown.length === every.length ? '' : ' of ' + every.length) + ' samples';
+  const fileChips = s => (s.files || []).map(e => '<span class="chip' + (e === 'itm' ? ' ref' : e === 'itax' || e === 'ita' ? ' usr' : '') + '">' + e + '</span>').join(' ')
+    + (s.partial ? ' <span class="chip run" title="this .itax has no ion events; upload the .itm with the same file name to use the sample in PCA and 2D">needs .itm</span>' : '');
+  $('smp_table').innerHTML = '<thead><tr><th><input type="checkbox" id="smp_all" title="select all of mine"></th><th>sample</th><th>pol</th>'
+    + '<th>label</th><th>files</th><th>ions</th><th>size</th><th></th></tr></thead><tbody>' + (shown.length ? shown.map(s => {
+      const m = isMine(s.sample);
+      return '<tr><td>' + (m ? '<input type="checkbox" data-sel="' + escHtml(s.sample) + '"' + (UP.sel.has(s.sample) ? ' checked' : '') + '>' : '')
+        + '</td><td>' + escHtml(disp(s.sample)) + '</td><td>' + polChip(s.polarity) + '</td><td>' + escHtml(s.label || '') + '</td>'
+        + '<td>' + fileChips(s) + '</td>'
+        + '<td>' + (s.partial ? '\u2014' : s.events.toLocaleString()) + '</td><td>' + mb(s.bytes) + '</td>'
+        + '<td>' + (m ? '<button class="sm danger" data-del="' + escHtml(s.sample) + '">delete</button>' : '') + '</td></tr>';
+    }).join('') : '<tr><td colspan="8" class="muted">no samples</td></tr>') + '</tbody>';
+  const upd = () => { $('usr_del').disabled = !UP.sel.size; $('usr_del').textContent = 'delete selected' + (UP.sel.size ? ' (' + UP.sel.size + ')' : ''); };
+  $('smp_table').querySelectorAll('button[data-del]').forEach(b => b.onclick = () => deleteSamples([b.dataset.del]));
+  $('smp_table').querySelectorAll('input[data-sel]').forEach(c => c.onchange = () => {
+    c.checked ? UP.sel.add(c.dataset.sel) : UP.sel.delete(c.dataset.sel); upd(); });
+  const all = $('smp_all');
+  if (!mine.length) all.style.visibility = 'hidden';
+  all.onchange = () => { mine.forEach(s => all.checked ? UP.sel.add(s.sample) : UP.sel.delete(s.sample)); renderData(); };
+  $('usr_del').onclick = () => deleteSamples([...UP.sel]);
+  upd();
+}
+async function loadSamples(){
+  const all = await API('/api/samples');
+  SAMPLES = all.filter(s => !s.partial);              // usable samples (have ion events)
+  PARTIAL = all.filter(s => s.partial);               // uploaded .itax still waiting for their .itm
+  renderData(); fillSamples();
+  PCA_INST.forEach(i => i.renderRows());
+}
+
+const UP = {jobs: [], local: {}, timer: null, sel: new Set()};
+function statusChip(j){
+  const m = {uploading: ['run', 'uploading'], queued: ['run', 'queued'], processing: ['run', 'converting…'], done: ['ok', 'ready'],
+             error: ['bad', 'failed']}[j.status] || ['', j.status];
+  return '<span class="chip ' + m[0] + '" title="' + escHtml(j.message || '') + '">' + m[1] + '</span>';
+}
+function renderJobs(){
+  const rows = UP.jobs.slice(-8).reverse();
+  $('up_jobs').innerHTML = rows.map(j => {
+    const loc = UP.local[j.id] || {};
+    const pct = j.status === 'uploading' && loc.pct != null ? loc.pct : 100;
+    return '<tr><td style="max-width:200px;overflow:hidden;text-overflow:ellipsis" title="' + escHtml(j.filename) + '">'
+      + escHtml(j.filename) + '</td><td>' + mb(j.size) + '</td><td><div class="bar"><i style="width:' + pct + '%"></i></div></td><td>'
+      + statusChip(j) + (j.status === 'error' ? '<div class="muted" style="font-size:12px;max-width:260px">' + escHtml(j.message) + '</div>' : '')
+      + '</td></tr>';
+  }).join('');
+}
+async function pollJobs(){
+  clearTimeout(UP.timer);
+  let jobs = [];
+  try { jobs = await API('/api/upload/status'); } catch (e) {}
+  const was = UP.jobs.some(j => ['queued', 'processing'].includes(j.status));
+  UP.jobs = jobs.concat(UP.jobs.filter(j => j.pending));   // keep rows of files still being sent
+  renderJobs();
+  const busy = jobs.some(j => ['uploading', 'queued', 'processing'].includes(j.status));
+  if (was && !busy) await loadSamples();                    // a conversion finished
+  if (busy) UP.timer = setTimeout(pollJobs, 2000);
+}
+function sendFile(file){
+  return new Promise(resolve => {
+    const tmp = {id: 'p' + Math.random(), filename: file.name, size: file.size, status: 'uploading', message: '', pending: true};
+    UP.jobs.push(tmp); UP.local[tmp.id] = {pct: 0}; renderJobs();
+    const x = new XMLHttpRequest();
+    x.open('POST', '/api/upload?filename=' + encodeURIComponent(file.name) + '&label=' + encodeURIComponent($('up_label').value)
+      + '&polarity=' + $('up_pol').value);
+    x.upload.onprogress = e => { if (e.lengthComputable){ UP.local[tmp.id].pct = Math.round(100 * e.loaded / e.total); renderJobs(); } };
+    x.onload = () => {
+      UP.jobs = UP.jobs.filter(j => j !== tmp);
+      if (x.status !== 202){
+        let msg = 'upload failed'; try { msg = JSON.parse(x.responseText).error; } catch (e) {}
+        UP.jobs.push({id: tmp.id, filename: file.name, size: file.size, status: 'error', message: msg});
+      }
+      resolve();
+    };
+    x.onerror = () => { UP.jobs = UP.jobs.filter(j => j !== tmp);
+      UP.jobs.push({id: tmp.id, filename: file.name, size: file.size, status: 'error', message: 'connection lost'}); resolve(); };
+    x.send(file);
+  });
+}
+async function uploadFiles(files){
+  for (const f of files){ await sendFile(f); await pollJobs(); }
+}
+
+// ---- Docs tab: plain-language help ---------------------------------------------
+const PCA_LAST = {};                                    // last PCA result per panel, for the "your last run" lines
+const DOC_SECTIONS = [
+  ['start', 'Getting started'], ['spectra', 'Spectra & 2D'], ['binning', 'What binning does'], ['pca', 'How the PCA works'],
+  ['params', 'PCA settings'], ['select', 'Choosing peaks'], ['figs', 'The figures'], ['list', 'The peak list'], ['sessions', 'Saving your work'], ['data', 'Your own samples']];
+let docsBuilt = false;
+function renderDocs(){
+  $('docnav').innerHTML = DOC_SECTIONS.map(([id, t]) => '<a href="#doc_' + id + '">' + t + '</a>').join('');
+  const last = k => {
+    const r = PCA_LAST[k]; if (!r) return '';
+    const ev = r.explained.slice(0, 2).map(e => (100 * e).toFixed(0) + '%').join(' and ');
+    return '<p class="muted">Your last run: ' + r.names.length + ' files, ' + r.n_features + (r.mode === 'mine' ? ' peaks' : ' buckets')
+      + ', ' + r.n_components + ' PCs (the first two explain ' + ev + ' of the differences).</p>';
+  };
+  const sec = (id, t, body) => '<section id="doc_' + id + '"><h2>' + t + '</h2>' + body + '</section>';
+  const figs = [
+    ['Scree plot', 'Left: how much of the differences between your samples each PC captures; a few high dots followed by low ones means a few PCs tell most of the story. Right (only when your files have labels): for each label, how its separation from the other samples is shared between the PCs.'],
+    ['Scores by PC pair', 'One panel for every pair of PCs, all labels together. Each dot is one file; files with similar spectra sit close together. Colours (and shapes) are the labels you gave, and every panel names each label group. '
+      + 'Around each label group is an outlined <b>90% ellipse</b>, drawn from that group\'s own spread. If two ellipses do not overlap, those groups are clearly different on that pair of PCs. '
+      + 'The groups are exactly the labels you typed, so files with no label get no ellipse. An ellipse needs at least 3 files. <b>With 6 or fewer files in a group, every one of them is always inside its ellipse</b>, so there the ellipse shows where the group sits and whether groups overlap; it cannot point out an odd one out. '
+      + 'Look for the pair of PCs where the groups are best separated.'],
+    ['Scores and loadings per PC', 'One row for every PC. Left: the score of every file on that PC as a dot plot (files in label order, shaded bands mark the labels); above the zero line is the positive side of the PC, below it the negative side. Right: the loadings of that PC as a stick spectrum, one stick per m/z; sticks up are higher in files on the positive side, sticks down on the negative side. The labels named in the top-left corner sit on the positive side, those in the bottom-left corner on the negative side. The tallest sticks are labelled with their m/z.'],
+    ['Driving peaks', 'The rule: for every PC, take the three m/z with the largest absolute loading (not a percentage; a loading is a weight, and its square is the fraction of that PC carried by the m/z), and pool them. The figure then draws the loading of each of these m/z on every PC, one coloured dot per m/z; dashed lines and grey bands separate the PCs. Dots far from zero mark the m/z that drive that PC, and the sign tells you the direction.'],
+    ['Label by PC heat map', 'Only when your files have labels. One row per label, one column per PC; the number is the label\'s average score on that PC (in standard deviations), i.e. where the label sits along the PC. Red = positive side, blue = negative side. A strong colour means that PC separates the label from the others: the label is rich in the m/z with positive loadings on that PC and poor in those with negative loadings (for a blue cell, the reverse).'],
+    ['Top loadings per label', 'Only when your files have labels. One panel per label; for every m/z separately, how different the label\'s average spectrum is from the average of all files. '
+      + '<b>The complete calculation</b> (c = counts of file i in m/z bucket j):<ol>'
+      + '<li><b>Share of the ions</b> (if <i>normalize</i> is total-ion): x(i, j) = c(i, j) / (all counts of file i). This removes the effect of files having different total signal.</li>'
+      + '<li><b>Square root</b> (if <i>sqrt transform</i> is on): x(i, j) = &radic;x(i, j). This stops the biggest peaks from dominating.</li>'
+      + '<li><b>Mean-centre</b>: z(i, j) = x(i, j) &minus; the average of x(&middot;, j) over all files. Now every m/z is measured relative to the average file.</li>'
+      + '<li><b>PCA</b> of z: every PC k has a loading p(k, j) for each m/z j (a weight, the whole PC has length 1) and gives every file a score t(i, k) = sum over j of z(i, j) &times; p(k, j).</li>'
+      + '<li><b>Mean score of the label</b> g (n<sub>g</sub> files): t&#772;(g, k) = (sum of t(i, k) over the files i of g) / n<sub>g</sub>. This is the number in the heat map, before dividing by the standard deviation.</li>'
+      + '<li><b>The difference</b>: <b>d(g, j) = sum over all PCs k of [ t&#772;(g, k) &times; p(k, j) ]</b>. It is what the PCA says the label\'s average is above (+) or below (&minus;) the average file for that m/z. With all PCs kept this equals exactly <i>(average of x(i, j) over the files of g) &minus; (average of x(i, j) over all files)</i>; with fewer PCs it is the PCA\'s approximation of it.</li>'
+      + '<li><b>The plot</b>: the m/z with the largest |d| are drawn; height (and the number above the dot) = |d|; triangle up/down = sign of d; colour = the PC k with the largest |t&#772;(g, k) &times; p(k, j)|.</li></ol>'
+      + '<b>Unit.</b> d is a difference of the pre-processed values, so its unit is the unit of x: with the default settings (total-ion and square root) it is <b>&radic;(share of the total ions)</b>, a pure number without a physical unit. '
+      + 'Example: d = +0.05 means the label\'s average &radic;(ion share) of that m/z is 0.05 higher than in the average file; if the average file has &radic;share = 0.10 (a share of 0.10<sup>2</sup> = 1% of its ions), the label has about (0.10 + 0.05)<sup>2</sup> = 2.25% of its ions there. With total-ion off the unit is &radic;counts, with the square root off it is the plain ion share (or counts). The axis name states the unit of your run. Compare heights within one figure, not between runs with different settings. '
+      + '<b>Worked example</b>: 6PPD has t&#772; = +1.9 on PC2 and &minus;0.3 on PC1; m/z 217 has loadings +0.4 on PC2 and +0.1 on PC1; then d = 1.9&times;0.4 + (&minus;0.3)&times;0.1 + (other PCs) = 0.73 + (other PCs), so 217 is richer in 6PPD than in the average file. The figure prints the same calculation for your own strongest peak under the plots, and the formula steps are listed in its caption. '
+      + 'The numbers are also in <i>label_loadings.csv</i> of the export (total d and the part of every PC).'],
+    ['Nearest centroid', 'Only when two or more labels are references (by default every label; or the two labels picked under <i>Learn the settings</i>). The centroid (star) of a reference label is the average score of its files. Every file goes to the nearest centroid; a reference file is first taken out of its own centroid, so it cannot vote for itself. Left: scores and centroids, a dashed line to the assigned centroid (red = a reference file that was wrong; grey = an unknown file). Middle: the distance of every file to every centroid. Right: the same accuracy using 1, 1\u20132, 1\u20133\u2026 PCs. An unknown file always gets <i>some</i> label, however far it is, so read its distance: a file that is much farther than the reference files are from their own centroid is not really 6PPD or 6PPD-Q. The table is in <i>nearest_centroid.csv</i> of the export.']];
+  $('doc').innerHTML =
+    sec('start', 'Getting started',
+      '<p>The app helps you look at TOF-SIMS measurements and see how your samples differ from each other.</p>'
+      + '<ul><li><b>Spectra &amp; 2D</b>: look at one sample at a time.</li>'
+      + '<li><b>PCA</b>: compare many samples at once with PCA. You can save the analysis and open it again later.</li>'
+      + '<li><b>Data</b>: see all samples, add your own, delete your own.</li></ul>'
+      + '<p>A typical session: open the <i>PCA</i> tab, open a group (folder) in the list and press <i>+ add</i> (or tick replicates and press <i>+ add ticked</i>); the label is filled in with the group name, edit it if you like. Press <i>Run PCA</i>, '
+      + 'look at the figures, tick the m/z you care about in the peak list, then switch to <i>Selected-peak PCA</i> and run it again on just those.</p>')
+    + sec('spectra', 'Spectra &amp; 2D',
+      '<ul><li>Choose the polarity and the sample at the top. Zoom by dragging on the chart or with the slider underneath.</li>'
+      + '<li>The <b>bin</b> box only changes how finely the chart is drawn; it does not change the PCA.</li>'
+      + '<li>The <b>Selection</b> image shows where on the surface the ions in the visible m/z range came from.</li>'
+      + '<li>Drag a box on the <b>Total</b> image to see the spectrum of just that spot (down to a single pixel). <i>clear ROI</i> goes back to the whole sample. '
+      + 'Press <i>+ ROI to PCA</i> to use that region as a sample of its own, like a replicate: it appears in the <i>PCA</i> tab inside the group of its sample, named e.g. <i>6PPD_pos3 [ROI x10-40 y12-50]</i> with a <i>ROI</i> tag, and you can add it to a PCA like any other sample. The &#10005; next to it removes it from the list.</li>'
+      + '<li><b>My peaks</b> are m/z ranges you name yourself. They appear on the spectrum.</li></ul>')
+    + sec('binning', 'What binning does',
+      '<p>A measurement is a long list of detected ions. Each ion has a flight time (heavier ions arrive later) and a spot on the surface. '
+      + 'Binning turns that list into a spectrum by sorting the ions into m/z <b>buckets</b> and counting how many landed in each one.</p>'
+      + '<ol><li><b>Count by flight time.</b> The ions are counted slot by slot along the flight time. Nothing is smoothed or averaged.</li>'
+      + '<li><b>Turn flight time into m/z.</b> Each slot is converted to an m/z using the mass scale stored in the file. The scale is used as it comes; it is not re-adjusted here.</li>'
+      + '<li><b>Drop each slot into its bucket.</b> With 1-unit buckets, everything from m/z 0 to 1 goes in the first bucket, 1 to 2 in the second, and so on up to m/z 900. '
+      + 'The counts are <b>added up</b>, so a bucket\'s number is simply how many ions it caught.</li>'
+      + '<li><b>Region of interest.</b> If you drew a box on the image, only ions from inside that box are counted.</li></ol>'
+      + '<p><b>Which bucket size matters?</b> The <i>bin</i> box on the Spectra &amp; 2D tab only affects the picture. '
+      + 'In the <i>All-peak PCA</i> the <i>bin (u)</i> setting decides what is compared: every bucket becomes one column of the table. Small buckets keep more detail but give more columns and take longer; '
+      + 'big buckets merge close-by peaks together. The <i>Selected-peak PCA</i> uses no buckets: it just counts the ions inside the m/z ranges you ticked.</p>')
+    + sec('pca', 'How the PCA works',
+      '<p>PCA looks for the main ways your samples differ. Think of a table with one row per file and one column per bucket. These steps are applied in order:</p>'
+      + '<ol><li><b>Bin</b> every file into buckets (see above).</li>'
+      + '<li><b>Make files comparable.</b> Each file\'s counts are divided by its own total, so a file that was measured longer does not look bigger (<i>normalize: total-ion</i>).</li>'
+      + '<li><b>Square root.</b> This stops a few huge peaks from drowning out everything else (<i>sqrt transform</i>).</li>'
+      + '<li><b>Remove empty columns.</b> Buckets that are identical in every file tell us nothing and are dropped.</li>'
+      + '<li><b>Subtract the average.</b> For each bucket we subtract its average over all files, so we look at <i>differences between files</i>, not overall size. '
+      + 'Buckets are not stretched to the same size, so strong peaks keep more weight than weak ones.</li>'
+      + '<li><b>Find the PCs.</b> PC1 is the direction along which the files differ the most; PC2 is the next biggest difference that is not already in PC1, and so on. '
+      + 'Every file gets a <b>score</b> on each PC (where it sits), and every m/z gets a <b>loading</b> (how much it pulls on that PC).</li></ol>'
+      + '<p>The groups you see in the plots are the <b>labels you typed</b>; nothing is grouped automatically. Each label group gets a 90% ellipse (see <i>The figures</i>).</p>'
+      + last('p1') + last('p2'))
+    + sec('params', 'PCA settings',
+      '<table><tr><td>components</td><td>How many PCs to compute. It cannot be more than the number of files minus one.</td></tr>'
+      + '<tr><td>bin (u)</td><td>Bucket size of the All-peak PCA (see <i>What binning does</i>).</td></tr>'
+      + '<tr><td>normalize</td><td><i>total-ion</i> divides each file by its own total; <i>none</i> uses the raw counts.</td></tr>'
+      + '<tr><td>sqrt transform</td><td>Takes the square root of the values so huge peaks do not dominate.</td></tr>'
+      + '<tr><td>pass</td><td>A peak gets the <i>pass</i> mark in the peak list if it is at least 3 times higher than its strongest neighbour (so it stands out from its surroundings) and holds at least 0.5% of all ions (so it is not just noise). These limits are fixed.</td></tr>'
+      + '<tr><td>peak labels / PC</td><td>How many of the most important m/z get a text label per PC in the figures. Labels that would overlap are skipped; 0 means no labels. It changes only the figures, never the result.</td></tr></table>')
+    + sec('select', 'Choosing peaks',
+      '<p>Only the <i>All-peak PCA</i> has the <b>interactive biplot</b> and the <b>peak list</b>. The <i>Selected-peak PCA</i> has neither, because its peaks and files were already chosen before it runs. '
+      + 'To use it:</p>'
+      + '<ol><li>Type a <b>label (group)</b> for each file (files with the same label form one group), then run the All-peak PCA.</li>'
+      + '<li>In the <b>interactive biplot</b> every dot is a file, with a shaded 90% ellipse around each label group. Pick which PCs go on the axes, and untick files in the list above the plot to leave them out.</li>'
+      + '<li>In the <b>peak list</b>, the 40 m/z with the biggest influence are ticked for you. Tick or untick the m/z you want. The <i>passing</i> filter shows only peaks that stand out; <i>ticked</i> shows only your choice.</li>'
+      + '<li>Open <i>Selected-peak PCA</i> and press <i>Run PCA</i>. It uses the files and m/z you left ticked, counts the ions inside each m/z range, and then follows the same steps as above.</li></ol>')
+    + sec('figs', 'The figures',
+      figs.map(([t, d]) => '<div style="margin:0 0 10px"><b>' + t + '.</b> ' + d + '</div>').join('') + '<p class="muted">Click a figure to open it full size. Figures are numbered in the order they appear after you run the PCA.</p>')
+    + sec('list', 'The peak list',
+      '<table><tr><td>&#10003;</td><td>Tick the m/z to use in the Selected-peak PCA.</td></tr>'
+      + '<tr><td>m/z, window</td><td>The middle and the range of the bucket.</td></tr>'
+      + '<tr><td>counts</td><td>How many ions were counted there, added up over the chosen files.</td></tr>'
+      + '<tr><td>% ions</td><td>The share of all detected ions that fall in this range.</td></tr>'
+      + '<tr><td>&times; nbr</td><td>How many times higher it is than its strongest neighbour. <i>pass</i> means it meets both limits (by default 3 times its neighbour, 0.5% of all ions).</td></tr>'
+      + '<tr><td>peak filter (NBR, TIC)</td><td>All-peak PCA only. When ticked, bins below the <i>NBR</i> limit (times their strongest neighbouring bin) or the <i>TIC</i> limit (percent of all ions of the chosen files) are removed before the PCA. Every file is still divided by its own total over all bins. Use the same limits for every file of one run; they are computed on the pooled files, not per file. With wide bins (1\u20132 u) almost no bin is 3 times its neighbour, so use 0.5 u or lower the limit.</td></tr>'
+      + '<tr><td>max |p|</td><td>How strongly this m/z influences the PCs overall (its biggest loading). Higher means more important.</td></tr>'
+      + '<tr><td>PC1&hellip;</td><td>How much it pulls on each PC. Green is positive, red is negative; darker means stronger.</td></tr></table>')
+    + sec('sessions', 'Saving your work',
+      '<p>A <b>session</b> is a file that holds your analysis, so you can close the browser and carry on later, or send the file to someone else. '
+      + 'The buttons are at the top of the <i>PCA</i> tab.</p>'
+      + '<ul><li><b>Save session</b> downloads one file with everything in the tab: the files and the labels you gave them, the settings, '
+      + 'which files and m/z you ticked, the biplot axes, the peak-list search and filters, and the <b>results of both PCA tabs</b>, numbers and figures. '
+      + 'The name box is optional and becomes part of the file name. It does not contain the raw measurements.</li>'
+      + '<li><b>Load session&hellip;</b> opens such a file and shows everything again exactly as you left it, with nothing recalculated. '
+      + 'It asks before replacing the analysis that is open now.</li>'
+      + '<li>The files can be a few megabytes, because the figures are inside (more PCs means more). The session also holds the numbers behind every figure, including the raw ion counts.</li>'
+      + '<li>If a session uses samples that are not on this server (for example an upload you deleted, or a different computer), the results are still shown, '
+      + 'and those rows are marked <i>(not on this server)</i>. You only need the samples if you want to press <i>Run PCA</i> again.</li>'
+      + '<li>The app checks a file before showing it and refuses one that is damaged, edited, or not a session, and tells you why. Your current analysis is left untouched.</li></ul>'
+      + '<p><b>Export data (zip)</b> is for working with the numbers somewhere else (Excel, R, Python) or for a report. It downloads one zip with a folder for each PCA you have run. Every table is a plain CSV:</p>'
+      + '<ul><li><b>counts_raw.csv</b>: the raw ion counts the PCA starts from. One row per file, one column per m/z bucket, before anything is normalised.</li>'
+      + '<li><b>scores.csv</b>: where each file sits on every PC.</li>'
+      + '<li><b>loadings.csv</b>: one row per m/z bucket with its range, counts, share of all ions, how it compares with its neighbours, whether it passes the limits, and how strongly it pulls on every PC.</li>'
+      + '<li><b>explained_variance.csv</b>: how much of the differences each PC captures.</li>'
+      + '<li><b>ellipses_90.csv</b>: the 90% ellipse of every label group for every pair of PCs (centre, size and tilt), so you can redraw the scores figure.</li>'
+      + '<li><b>files.csv</b>, <b>settings.json</b> and a <b>figures</b> folder with the pictures.</li></ul>'
+      + '<p>Together these are everything behind the figures. A short README inside the zip explains each file and how to redo the PCA from the raw counts.</p>')
+    + sec('data', 'Your own samples',
+      '<ul><li>The <b>Data</b> tab lists all samples. Drop your <b>.itm</b> and <b>.itax</b> files on the box; they then appear in every list, marked <i>(upload)</i>.</li>'
+      + '<li>An <b>.itm</b> and an <b>.itax</b> with the <b>same file name</b> are joined into one sample, whichever you upload first. The <b>.itm</b> holds every detected ion, which the 2D images, the ROI spectra and the <b>PCA</b> need. The <b>.itax</b> holds the spectrum as SurfaceLab stored it: in the <i>Spectra &amp; 2D</i> tab a <i>source</i> menu then lets you switch between the spectrum rebuilt from the ions and the stored one. The <i>files</i> column of the Data tab shows what each sample has.</li>'
+      + '<li>An <b>.itax</b> on its own is kept and marked <i>needs .itm</i>; it cannot be used in the PCA or for images until the matching <b>.itm</b> arrives.</li>'
+      + '<li>Give them a <b>group label</b> if they belong together; it is filled in for you in the PCA. The polarity is read from the file name (<i>pos</i> or <i>neg</i>) unless you set it.</li>'
+      + '<li>Large files take a few minutes to convert. You can keep working meanwhile; the status shows next to each file.</li>'
+      + '<li>You can delete your own samples (tick one or several in the list); this removes all of their files. The samples that came with the app cannot be deleted here.</li></ul>');
+  docsBuilt = true;
+}
+
+// ---- tabs -----------------------------------------------------------------
+document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => {
+  document.querySelectorAll('.tabs button').forEach(x => x.classList.toggle('on', x === b));
+  document.querySelectorAll('.pane').forEach(p => p.classList.toggle('on', p.id === 'pane_' + b.dataset.pane));
+  if (window.Plotly && b.dataset.pane === 'spectra') Plotly.Plots.resize('spec');
+  if (b.dataset.pane === 'docs' && !docsBuilt) renderDocs();
+  if (b.dataset.pane === 'data') renderData();
+  if (b.dataset.pane === 'stats') { const k = (document.querySelector('#pca_subtabs button.on') || {dataset: {}}).dataset.sub; if (k) showPcaSub(k); }
+});
+
+$('dl_sel').onclick = downloadSelection;
+
+initRoi();
+// Data tab wiring
+$('smp_q').oninput = renderData;
+$('pick').onclick = e => { e.preventDefault(); $('file').click(); };
+$('file').onchange = e => { uploadFiles([...e.target.files]); e.target.value = ''; };
+['dragenter', 'dragover'].forEach(t => $('drop').addEventListener(t, e => { e.preventDefault(); $('drop').classList.add('over'); }));
+['dragleave', 'drop'].forEach(t => $('drop').addEventListener(t, e => { e.preventDefault(); $('drop').classList.remove('over'); }));
+$('drop').addEventListener('drop', e => uploadFiles([...e.dataTransfer.files]));
+API('/api/config').then(c => { APP_VERSION = c.version || ''; $('up_on').style.display = c.uploads ? '' : 'none'; $('up_off').style.display = c.uploads ? 'none' : ''; });
+pollJobs();
+loadSamples();
+</script>
+</body>
+</html>

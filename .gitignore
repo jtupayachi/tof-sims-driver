@@ -11,3 +11,9 @@ processed/
 .venv/
 __pycache__/
 *.pyc
+
+# Packaging
+build/
+dist/
+*.egg-info/
+.pytest_cache/

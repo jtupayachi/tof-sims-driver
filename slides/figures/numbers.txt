@@ -1,0 +1,11 @@
+subsamples: 24 (6PPD=4, 6PPD-Q=5, Si_control=5, cyclohexylmethylamine=5, phenylurea=5), positive polarity
+all-peak: 901 features kept of n = 24 subsamples &times; p = 901 bins of w = 1.0 u up to m/z 900
+all-peak EV% = 37.2, 21.9, 17.5, 12.1, 8.1
+passing the quality filter (ratio >= 3, share >= 0.5%): 1 of 901 bins at 1 u
+selected-peak: 40 peaks (top 40 by max |loading|)
+selected-peak EV% = 29.5, 26.6, 17.7, 13.0, 11.4
+ion share carried by the selected bins: 17.6%
+selected m/z: 0, 18, 20, 22, 24, 30, 30, 36, 38, 40, 44, 46, 48, 56, 58, 58, 62, 64, 72, 74, 76, 82, 94, 94, 98, 128, 148, 164, 186, 188, 212, 216, 218, 220, 220, 242, 298, 300, 300, 438
+replicate variance spread (99th/1st percentile, decades): TIC only 5.1, TIC + sqrt 2.8
+6PPD_pos3: top-5 bins hold 5% of the ions (after TIC) but 2% of the summed root intensity
+ions per subsample: min 18,809,229, max 86,438,315 (ratio 4.6x) -> why TIC normalisation

@@ -6,6 +6,8 @@ PYSPM ?= $(ROOT)/pySPM
 # Change here base on space and input output files!
 DATA ?= /mnt/ceph_drive/Proj. Tire Additives
 OUT  ?= /mnt/ceph_drive/processed
+# Replicates uploaded through the browser are stored here, apart from the reference data in $(OUT).
+UPLOADS ?= $(OUT)_uploads
 
 VENV := $(ROOT)/.venv
 PY   := $(VENV)/bin/python
@@ -28,7 +30,7 @@ export PATH := $(JAVA_HOME)/bin:$(PATH)
 # Targets
 # ------------------------------------------------------------
 
-.PHONY: all venv java data proc probe inspect clean clean-calc plots serve gpu
+.PHONY: all venv java data proc probe inspect clean clean-calc plots serve gpu test dist
 
 all: data plots proc # Piepieline without serve!
 
@@ -52,7 +54,7 @@ java:
 $(VENV)/.ok: java
 	python3 -m venv "$(VENV)"
 	"$(PY)" -m pip install -U pip
-	"$(PY)" -m pip install -e "$(PYSPM)" pandas pyarrow scipy scikit-learn parquet-tools pyspark requests pyopenms matchms
+	"$(PY)" -m pip install -e "$(PYSPM)" -e "$(ROOT)[dev]" parquet-tools pyspark requests pyopenms matchms
 	touch $@
 
 venv: $(VENV)/.ok
@@ -110,7 +112,8 @@ clean-calc:
 clean:
 	rm -rf "$(OUT)"
 
-# Launch the interactive browser (3 tabs: Spectra & 2D, Statistical methods, ML/DL).
+# Launch the interactive browser (tabs: Spectra & 2D, Statistical methods, Data, Docs). Uploaded replicates go to
+# $(UPLOADS), separate from the reference data in $(OUT); add --no-upload to the command below for a read-only server.
 # Binds all interfaces by default so others on the LAN can reach it, e.g.
 #   http://<this-machine-ip>:8765/     (find the IP with:  hostname -I)
 # Restrict to this machine only with  HOST=127.0.0.1 ; change the port with PORT=9000.
@@ -121,4 +124,16 @@ serve plots: venv
 	@# [s] keeps pkill from matching this recipe's own shell command line.
 	-@pkill -f "[s]ims_server.py .*--port $(PORT)" && echo "Stopped previous server on port $(PORT)" && sleep 1
 	@echo "Serving on http://$(HOST):$(PORT)/  (reachable at http://`hostname -I | awk '{print $$1}'`:$(PORT)/ )"
-	"$(PY)" sims_server.py "$(OUT)" --host $(HOST) --port $(PORT)
+	@echo "Logs: $(ROOT)/sims_server.log"
+	"$(PY)" sims_server.py "$(OUT)" --host $(HOST) --port $(PORT) --uploads "$(UPLOADS)" --log "$(ROOT)/sims_server.log"
+
+# ------------------------------------------------------------
+# Library: tests and distribution (wheel + sdist in dist/)
+# ------------------------------------------------------------
+
+test: venv
+	"$(PY)" -m pytest -q
+
+dist: venv
+	rm -rf "$(ROOT)/dist"
+	"$(PY)" -m build "$(ROOT)"

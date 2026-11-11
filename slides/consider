@@ -1,0 +1,35 @@
+
+PCA:
+To evaluate the intrinsic similarities and dis-
+criminations among samples, spectral principal component analysis
+(PCA) was conducted using Matlab (version R2013a). SIMS data were
+treated by the following steps: normalization to the total ion intensity of
+selected peaks, square root transformation, and mean-centering, prior
+to spectral PCA (Sui et al., 2017) after removing known interference
+peaks in the rst round of analysis followed with selected peak spectral
+PCA. In the second round of spectral PCA, peaks were chosen based on
+the following criteria: (a) the loading of a peak was signi cantly higher
+than its neighboring peaks, (b) the intensity of the peak in the SIMS
+mass spectrum was 3 times higher than the its neighboring peaks, (c)
+the peak intensity was more than 0.5% of the total ion intensities, and
+(d) product peaks identi ed in previous papers were included in this
+study (Ding et al., 2016; Sui et al., 2017).
+
+
+90%
+ PCA scores plot with 95% confidence ellipse of the first two principal components (PC) obtained by the analysis of proteins significantly different in abundance (p < 0.05) between PSC patients (blue triangles) and PBC patients (red circles). For each protein, the contribution in the calculation of the variability of the first two principal components is expressed as a percentage.
+
+
+ PCA ToF SIMS:
+
+ In order to extract more data information, PCA technique is
+employed in this study. PCA provides an outline information of
+the contamination from the surrounding surface. The factor
+loadings presented in the image scores from the PC differs across
+a similar analysis area. Theoretically, the factor loading of PC1
+has the strongest influence over the entire mass range due to a
+phenomenon known as topographical effects [6] which
+potentially affects all or most of the mass peak intensities
+uniformly. As all mass fragments are affected under this influence,
+PC1 accounts for the majority of mass variance.
+The loading of PC1 for both positive and negativ

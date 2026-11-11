@@ -1,0 +1,53 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tof-sims-driver"
+version = "0.1.0"
+description = "Read IONTOF TOF-SIMS files, browse spectra / 2D images interactively, and run peak-based PCA."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+authors = [{ name = "Jose Tupayachi" }]
+keywords = ["TOF-SIMS", "SIMS", "mass spectrometry", "IONTOF", "PCA", "chemometrics"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Operating System :: OS Independent",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Chemistry",
+]
+dependencies = [
+    "numpy>=1.22",
+    "pandas>=1.5",
+    "pyarrow>=10",
+    "scipy>=1.9",
+    "scikit-learn>=1.1",
+    "matplotlib>=3.7",
+    "pySPM>=0.6",
+    "plotly>=5",                 # the browser UI serves Plotly from here, so it works offline
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7", "build", "twine>=5"]
+
+[project.urls]
+Homepage = "https://github.com/jtupayachi/tof-sims-driver"
+Issues = "https://github.com/jtupayachi/tof-sims-driver/issues"
+
+[project.scripts]
+tofsims-serve = "tof_sims_driver.server:main"
+tofsims-load = "tof_sims_driver.data_load:cli"
+tofsims-probe = "tof_sims_driver.data_probe:cli"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+tof_sims_driver = ["static/*.html"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

@@ -1,0 +1,1758 @@
+2026-10-14 16:05:26,092 INFO serving /mnt/ceph_drive/processed on http://0.0.0.0:8765/  (log: /home/cloud/tof_sims_driver/sims_server.log)
+2026-10-14 16:06:39,739 INFO 10.159.207.243 - "GET / HTTP/1.1" 200 -
+2026-10-14 16:06:39,814 INFO 10.159.207.243 - "GET /plotly.js HTTP/1.1" 200 -
+2026-10-14 16:06:40,609 INFO 10.159.207.243 - "GET /api/samples HTTP/1.1" 200 -
+2026-10-14 16:06:40,708 INFO 10.159.207.243 - "GET /favicon.ico HTTP/1.1" 404 -
+2026-10-14 16:06:40,978 INFO 10.159.207.243 - "GET /api/truepeaks?sample=6PPD_pos3 HTTP/1.1" 200 -
+2026-10-14 16:06:40,997 INFO 10.159.207.243 - "GET /api/peaks HTTP/1.1" 200 -
+2026-10-14 16:06:41,856 INFO 10.159.207.243 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02 HTTP/1.1" 200 -
+2026-10-14 16:06:43,485 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&all=1 HTTP/1.1" 200 -
+2026-10-14 16:06:44,582 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=0&hi=900 HTTP/1.1" 200 -
+2026-10-14 16:06:54,775 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=41.811379627261665&hi=42.19607562381485 HTTP/1.1" 200 -
+2026-10-14 16:06:55,782 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=16.882242043955838&hi=17.12375877503403 HTTP/1.1" 200 -
+2026-10-14 16:06:56,832 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=12.903276587645525&hi=13.11387341903041 HTTP/1.1" 200 -
+2026-10-14 16:06:58,205 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=78.70845864630901&hi=79.24132583062786 HTTP/1.1" 200 -
+2026-10-14 16:06:58,812 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=88.73162849460867&hi=89.31163324487869 HTTP/1.1" 200 -
+2026-10-14 16:07:00,761 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=218.0247713829045&hi=218.24218940244359 HTTP/1.1" 200 -
+2026-10-14 16:07:07,297 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=0&hi=347.75888717156107 HTTP/1.1" 200 -
+2026-10-14 16:07:08,427 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=129.53615426328628&hi=260.147297358633 HTTP/1.1" 200 -
+2026-10-14 16:07:09,535 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=176.7741874693313&hi=239.75823174405804 HTTP/1.1" 200 -
+2026-10-14 16:07:11,191 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=200.624405162234&hi=232.16510121325638 HTTP/1.1" 200 -
+2026-10-14 16:07:14,038 INFO 10.159.207.243 - "GET /api/spectrum?sample=6PPD_pos3&bin=1 HTTP/1.1" 200 -
+2026-10-14 16:07:16,624 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=176.24941787030963&hi=250.41340251018352 HTTP/1.1" 200 -
+2026-10-14 16:07:18,433 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=-552.143363816653&hi=795.7236742055584 HTTP/1.1" 200 -
+2026-10-14 16:07:18,439 ERROR 500 GET /api/image?sample=6PPD_pos3&lo=-552.143363816653&hi=795.7236742055584:
+Traceback (most recent call last):
+  File "/home/cloud/tof_sims_driver/sims_server.py", line 723, in do_GET
+    return self._send(200, img.astype("<u4").tobytes(), "application/octet-stream",
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/cloud/tof_sims_driver/sims_server.py", line 660, in _send
+    self.wfile.write(body)
+  File "/usr/lib/python3.12/socketserver.py", line 840, in write
+    self._sock.sendall(b)
+BrokenPipeError: [Errno 32] Broken pipe
+
+2026-10-14 16:07:18,439 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=-552.143363816653&hi=795.7236742055584 HTTP/1.1" 500 -
+2026-10-14 16:07:18,440 ERROR connection error:
+Traceback (most recent call last):
+  File "/home/cloud/tof_sims_driver/sims_server.py", line 723, in do_GET
+    return self._send(200, img.astype("<u4").tobytes(), "application/octet-stream",
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/cloud/tof_sims_driver/sims_server.py", line 660, in _send
+    self.wfile.write(body)
+  File "/usr/lib/python3.12/socketserver.py", line 840, in write
+    self._sock.sendall(b)
+BrokenPipeError: [Errno 32] Broken pipe
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/cloud/tof_sims_driver/sims_server.py", line 644, in handle_one_request
+    super().handle_one_request()
+  File "/usr/lib/python3.12/http/server.py", line 424, in handle_one_request
+    method()
+  File "/home/cloud/tof_sims_driver/sims_server.py", line 731, in do_GET
+    self._json({"error": f"{type(e).__name__}: {e}"}, 500)
+  File "/home/cloud/tof_sims_driver/sims_server.py", line 663, in _json
+    self._send(code, json.dumps(obj), "application/json")
+  File "/home/cloud/tof_sims_driver/sims_server.py", line 659, in _send
+    self.end_headers()
+  File "/usr/lib/python3.12/http/server.py", line 538, in end_headers
+    self.flush_headers()
+  File "/usr/lib/python3.12/http/server.py", line 542, in flush_headers
+    self.wfile.write(b"".join(self._headers_buffer))
+  File "/usr/lib/python3.12/socketserver.py", line 840, in write
+    self._sock.sendall(b)
+BrokenPipeError: [Errno 32] Broken pipe
+
+2026-10-14 16:07:18,577 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=-1744.743159139973&hi=1688.5618993530175 HTTP/1.1" 200 -
+2026-10-14 16:07:19,896 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=-791.7414391671792&hi=947.6292434401037 HTTP/1.1" 200 -
+2026-10-14 16:07:19,907 ERROR 500 GET /api/image?sample=6PPD_pos3&lo=-791.7414391671792&hi=947.6292434401037:
+Traceback (most recent call last):
+  File "/home/cloud/tof_sims_driver/sims_server.py", line 723, in do_GET
+    return self._send(200, img.astype("<u4").tobytes(), "application/octet-stream",
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/cloud/tof_sims_driver/sims_server.py", line 660, in _send
+    self.wfile.write(body)
+  File "/usr/lib/python3.12/socketserver.py", line 840, in write
+    self._sock.sendall(b)
+BrokenPipeError: [Errno 32] Broken pipe
+
+2026-10-14 16:07:19,908 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=-791.7414391671792&hi=947.6292434401037 HTTP/1.1" 500 -
+2026-10-14 16:07:19,909 ERROR connection error:
+Traceback (most recent call last):
+  File "/home/cloud/tof_sims_driver/sims_server.py", line 723, in do_GET
+    return self._send(200, img.astype("<u4").tobytes(), "application/octet-stream",
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/cloud/tof_sims_driver/sims_server.py", line 660, in _send
+    self.wfile.write(body)
+  File "/usr/lib/python3.12/socketserver.py", line 840, in write
+    self._sock.sendall(b)
+BrokenPipeError: [Errno 32] Broken pipe
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/cloud/tof_sims_driver/sims_server.py", line 644, in handle_one_request
+    super().handle_one_request()
+  File "/usr/lib/python3.12/http/server.py", line 424, in handle_one_request
+    method()
+  File "/home/cloud/tof_sims_driver/sims_server.py", line 731, in do_GET
+    self._json({"error": f"{type(e).__name__}: {e}"}, 500)
+  File "/home/cloud/tof_sims_driver/sims_server.py", line 663, in _json
+    self._send(code, json.dumps(obj), "application/json")
+  File "/home/cloud/tof_sims_driver/sims_server.py", line 659, in _send
+    self.end_headers()
+  File "/usr/lib/python3.12/http/server.py", line 538, in end_headers
+    self.flush_headers()
+  File "/usr/lib/python3.12/http/server.py", line 542, in flush_headers
+    self.wfile.write(b"".join(self._headers_buffer))
+  File "/usr/lib/python3.12/socketserver.py", line 840, in write
+    self._sock.sendall(b)
+BrokenPipeError: [Errno 32] Broken pipe
+
+2026-10-14 16:07:19,962 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=-180.4433495404025&hi=472.36177265884567 HTTP/1.1" 200 -
+2026-10-14 16:07:22,108 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=-0.5&hi=1.5 HTTP/1.1" 200 -
+2026-10-14 16:07:23,164 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=-0.5&hi=1.5 HTTP/1.1" 200 -
+2026-10-14 16:07:25,225 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=-97.70380183042413&hi=264.1638890190632 HTTP/1.1" 200 -
+2026-10-14 16:07:26,811 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=0.5&hi=2.5 HTTP/1.1" 200 -
+2026-10-14 16:07:28,704 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=-7.000880927535876&hi=25.176979449093682 HTTP/1.1" 200 -
+2026-10-14 16:07:29,343 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=-0.5&hi=1.5 HTTP/1.1" 200 -
+2026-10-14 16:07:30,546 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=-0.5&hi=1.5 HTTP/1.1" 200 -
+2026-10-14 16:07:31,602 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=-0.14910939413491509&hi=3.242412137621777 HTTP/1.1" 200 -
+2026-10-14 16:07:32,330 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=-0.5&hi=1.5 HTTP/1.1" 200 -
+2026-10-14 16:07:38,801 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=-1.7486055518078207&hi=4.65127067185111 HTTP/1.1" 200 -
+2026-10-14 16:07:44,020 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=-11.934076222542576&hi=7.77893035256158 HTTP/1.1" 200 -
+2026-10-14 16:07:44,413 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=-21.593956081812568&hi=10.7451964911657 HTTP/1.1" 200 -
+2026-10-14 16:07:44,799 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=-40.82148718861482&hi=16.649408063355487 HTTP/1.1" 200 -
+2026-10-14 16:07:45,540 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=-40.82148718861482&hi=16.649408063355487 HTTP/1.1" 200 -
+2026-10-14 16:07:48,379 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=-40.82148718861481&hi=494.2343466481609 HTTP/1.1" 200 -
+2026-10-14 16:07:48,385 ERROR 500 GET /api/image?sample=6PPD_pos3&lo=-40.82148718861481&hi=494.2343466481609:
+Traceback (most recent call last):
+  File "/home/cloud/tof_sims_driver/sims_server.py", line 723, in do_GET
+    return self._send(200, img.astype("<u4").tobytes(), "application/octet-stream",
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/cloud/tof_sims_driver/sims_server.py", line 660, in _send
+    self.wfile.write(body)
+  File "/usr/lib/python3.12/socketserver.py", line 840, in write
+    self._sock.sendall(b)
+BrokenPipeError: [Errno 32] Broken pipe
+
+2026-10-14 16:07:48,385 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=-40.82148718861481&hi=494.2343466481609 HTTP/1.1" 500 -
+2026-10-14 16:07:48,386 ERROR connection error:
+Traceback (most recent call last):
+  File "/home/cloud/tof_sims_driver/sims_server.py", line 723, in do_GET
+    return self._send(200, img.astype("<u4").tobytes(), "application/octet-stream",
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/cloud/tof_sims_driver/sims_server.py", line 660, in _send
+    self.wfile.write(body)
+  File "/usr/lib/python3.12/socketserver.py", line 840, in write
+    self._sock.sendall(b)
+BrokenPipeError: [Errno 32] Broken pipe
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/cloud/tof_sims_driver/sims_server.py", line 644, in handle_one_request
+    super().handle_one_request()
+  File "/usr/lib/python3.12/http/server.py", line 424, in handle_one_request
+    method()
+  File "/home/cloud/tof_sims_driver/sims_server.py", line 731, in do_GET
+    self._json({"error": f"{type(e).__name__}: {e}"}, 500)
+  File "/home/cloud/tof_sims_driver/sims_server.py", line 663, in _json
+    self._send(code, json.dumps(obj), "application/json")
+  File "/home/cloud/tof_sims_driver/sims_server.py", line 659, in _send
+    self.end_headers()
+  File "/usr/lib/python3.12/http/server.py", line 538, in end_headers
+    self.flush_headers()
+  File "/usr/lib/python3.12/http/server.py", line 542, in flush_headers
+    self.wfile.write(b"".join(self._headers_buffer))
+  File "/usr/lib/python3.12/socketserver.py", line 840, in write
+    self._sock.sendall(b)
+BrokenPipeError: [Errno 32] Broken pipe
+
+2026-10-14 16:07:48,550 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=-40.82148718861481&hi=451.78235210728894 HTTP/1.1" 200 -
+2026-10-14 16:07:58,055 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=75.99803472064826&hi=343.6547589115128 HTTP/1.1" 200 -
+2026-10-14 16:07:58,454 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=177.8652879260126&hi=249.3658477659294 HTTP/1.1" 200 -
+2026-10-14 16:08:02,760 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=196.6904618316075&hi=230.1288731811496 HTTP/1.1" 200 -
+2026-10-14 16:08:04,408 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=136.85190360251863&hi=291.27639987149996 HTTP/1.1" 200 -
+2026-10-14 16:08:05,820 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=28.16880110915062&hi=402.3369452319105 HTTP/1.1" 200 -
+2026-10-14 16:09:26,652 INFO 10.159.207.243 - "POST /api/pca HTTP/1.1" 200 -
+2026-10-14 16:10:03,001 INFO 10.159.207.243 - "POST /api/pca HTTP/1.1" 200 -
+2026-10-14 16:20:35,669 INFO 10.159.207.243 - "GET / HTTP/1.1" 200 -
+2026-10-14 16:20:35,823 INFO 10.159.207.243 - "GET /plotly.js HTTP/1.1" 200 -
+2026-10-14 16:20:36,570 INFO 10.159.207.243 - "GET /api/samples HTTP/1.1" 200 -
+2026-10-14 16:20:36,593 INFO 10.159.207.243 - "GET /api/truepeaks?sample=6PPD_pos3 HTTP/1.1" 200 -
+2026-10-14 16:20:36,608 INFO 10.159.207.243 - "GET /api/peaks HTTP/1.1" 200 -
+2026-10-14 16:20:37,196 INFO 10.159.207.243 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02 HTTP/1.1" 200 -
+2026-10-14 16:20:38,450 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&all=1 HTTP/1.1" 200 -
+2026-10-14 16:20:39,583 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=0&hi=900 HTTP/1.1" 200 -
+2026-10-14 16:20:46,549 INFO 10.159.207.243 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.01 HTTP/1.1" 200 -
+2026-10-14 16:20:49,969 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=129.3663060278207&hi=289.3353941267388 HTTP/1.1" 200 -
+2026-10-14 16:20:53,242 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=213.66500000000002&hi=213.685 HTTP/1.1" 200 -
+2026-10-14 16:20:55,499 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=219.60500000000002&hi=219.625 HTTP/1.1" 200 -
+2026-10-14 16:20:56,325 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=230.97500000000002&hi=230.995 HTTP/1.1" 200 -
+2026-10-14 16:20:57,432 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=222.815&hi=222.83499999999998 HTTP/1.1" 200 -
+2026-10-14 16:20:58,363 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=221.335&hi=221.355 HTTP/1.1" 200 -
+2026-10-14 16:21:02,335 INFO 10.159.207.243 - "GET /api/spectrum?sample=6PPD_pos3&bin=1 HTTP/1.1" 200 -
+2026-10-14 16:21:05,276 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=233.5&hi=235.5 HTTP/1.1" 200 -
+2026-10-14 16:21:06,495 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=223.5&hi=225.5 HTTP/1.1" 200 -
+2026-10-14 16:21:07,822 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=219.5&hi=221.5 HTTP/1.1" 200 -
+2026-10-14 16:23:44,974 INFO serving /mnt/ceph_drive/processed on http://0.0.0.0:8765/  (log: /home/cloud/tof_sims_driver/sims_server.log)
+2026-10-14 16:23:45,299 INFO 10.159.207.243 - "GET / HTTP/1.1" 200 -
+2026-10-14 16:23:45,372 INFO 10.159.207.243 - "GET /plotly.js HTTP/1.1" 200 -
+2026-10-14 16:23:46,246 INFO 10.159.207.243 - "GET /api/samples HTTP/1.1" 200 -
+2026-10-14 16:23:46,305 INFO 10.159.207.243 - "GET /api/peaks HTTP/1.1" 200 -
+2026-10-14 16:23:47,210 INFO 10.159.207.243 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02 HTTP/1.1" 200 -
+2026-10-14 16:23:48,701 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&all=1 HTTP/1.1" 200 -
+2026-10-14 16:23:49,477 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=0&hi=900 HTTP/1.1" 200 -
+2026-10-14 16:23:52,394 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=205.641&hi=227.198 HTTP/1.1" 200 -
+2026-10-14 16:23:52,903 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=205.641&hi=227.198 HTTP/1.1" 200 -
+2026-10-14 16:23:53,446 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=205.641&hi=227.198 HTTP/1.1" 200 -
+2026-10-14 16:23:54,586 INFO 10.159.207.243 - "DELETE /api/peaks?id=1 HTTP/1.1" 200 -
+2026-10-14 16:23:54,603 INFO 10.159.207.243 - "GET /api/peaks HTTP/1.1" 200 -
+2026-10-14 16:23:56,835 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=253.20207020978182&hi=744.6690541855205 HTTP/1.1" 200 -
+2026-10-14 16:23:57,606 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=233.96937854408122&hi=828.2756311785661 HTTP/1.1" 200 -
+2026-10-14 16:23:58,105 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=254.93829437705912&hi=734.2709152832667 HTTP/1.1" 200 -
+2026-10-14 16:24:38,866 INFO 10.159.207.243 - "POST /api/pca HTTP/1.1" 200 -
+2026-10-14 16:26:00,736 INFO 10.159.207.243 - "GET /api/spectrum?sample=6PPD_pos3&bin=2 HTTP/1.1" 200 -
+2026-10-14 16:26:03,024 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=709&hi=713 HTTP/1.1" 200 -
+2026-10-14 16:26:04,278 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=709&hi=713 HTTP/1.1" 200 -
+2026-10-14 16:26:04,864 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=693&hi=697 HTTP/1.1" 200 -
+2026-10-14 16:26:05,920 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=717&hi=721 HTTP/1.1" 200 -
+2026-10-14 16:26:07,777 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=357.68876770978846&hi=730.9933882232116 HTTP/1.1" 200 -
+2026-10-14 16:26:08,157 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=667.4667639868545&hi=721.1121124248997 HTTP/1.1" 200 -
+2026-10-14 16:26:09,569 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=704.867106494212&hi=718.0299077328466 HTTP/1.1" 200 -
+2026-10-14 16:26:09,968 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=711&hi=715 HTTP/1.1" 200 -
+2026-10-14 16:26:14,071 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=695.5324812634589&hi=727.1083999542191 HTTP/1.1" 200 -
+2026-10-14 16:26:15,905 INFO 10.159.207.243 - "GET /api/spectrum?sample=6PPD_pos3&bin=2&x0=60&y0=109&x1=60&y1=109 HTTP/1.1" 200 -
+2026-10-14 16:26:19,715 INFO 10.159.207.243 - "GET /api/spectrum?sample=6PPD_pos3&bin=2&x0=50&y0=119&x1=50&y1=119 HTTP/1.1" 200 -
+2026-10-14 16:26:23,789 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=685.7139987436398&hi=727.9129244416289 HTTP/1.1" 200 -
+2026-10-14 17:02:35,792 INFO serving /mnt/ceph_drive/processed on http://0.0.0.0:8765/  (log: /home/cloud/tof_sims_driver/sims_server.log)
+2026-10-14 17:03:04,447 INFO 10.159.207.243 - "GET / HTTP/1.1" 200 -
+2026-10-14 17:03:04,524 INFO 10.159.207.243 - "GET /plotly.js HTTP/1.1" 200 -
+2026-10-14 17:03:05,370 INFO 10.159.207.243 - "GET /api/samples HTTP/1.1" 200 -
+2026-10-14 17:03:05,404 INFO 10.159.207.243 - "GET /api/peaks HTTP/1.1" 200 -
+2026-10-14 17:03:06,088 INFO 10.159.207.243 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02 HTTP/1.1" 200 -
+2026-10-14 17:03:07,414 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&all=1 HTTP/1.1" 200 -
+2026-10-14 17:03:08,190 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=0&hi=900 HTTP/1.1" 200 -
+2026-10-14 17:03:39,501 INFO 10.159.207.243 - "POST /api/pca HTTP/1.1" 200 -
+2026-10-14 17:05:57,078 INFO 10.159.207.243 - "POST /api/pca HTTP/1.1" 200 -
+2026-10-15 10:21:44,945 INFO serving /mnt/ceph_drive/processed on http://0.0.0.0:8765/  (log: /home/cloud/tof_sims_driver/sims_server.log)
+2026-10-15 10:34:12,465 INFO serving /mnt/ceph_drive/processed on http://0.0.0.0:8765/  (log: /home/cloud/tof_sims_driver/sims_server.log)
+2026-10-15 10:34:13,470 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&all=1 HTTP/1.1" 200 -
+2026-10-15 10:34:14,851 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=0&hi=900 HTTP/1.1" 200 -
+2026-10-15 10:35:14,470 INFO 10.159.207.243 - "POST /api/pca HTTP/1.1" 200 -
+2026-10-15 10:37:17,856 INFO 10.159.207.243 - "POST /api/pca HTTP/1.1" 200 -
+2026-10-15 11:01:03,429 INFO serving /mnt/ceph_drive/processed on http://0.0.0.0:8765/  (log: /home/cloud/tof_sims_driver/sims_server.log)
+2026-10-15 11:01:04,211 INFO 10.159.207.243 - "GET / HTTP/1.1" 200 -
+2026-10-15 11:01:04,434 INFO 10.159.207.243 - "GET /plotly.js HTTP/1.1" 200 -
+2026-10-15 11:01:05,321 INFO 10.159.207.243 - "GET /api/samples HTTP/1.1" 200 -
+2026-10-15 11:01:05,343 INFO 10.159.207.243 - "GET /api/peaks HTTP/1.1" 200 -
+2026-10-15 11:01:06,223 INFO 10.159.207.243 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02 HTTP/1.1" 200 -
+2026-10-15 11:01:07,847 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&all=1 HTTP/1.1" 200 -
+2026-10-15 11:01:08,956 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=0&hi=900 HTTP/1.1" 200 -
+2026-10-15 11:01:54,438 INFO 10.159.207.243 - "POST /api/pca HTTP/1.1" 200 -
+2026-10-15 11:05:46,936 INFO 10.159.207.243 - "POST /api/pca HTTP/1.1" 200 -
+2026-10-15 15:12:57,893 INFO 10.159.207.243 - "GET / HTTP/1.1" 200 -
+2026-10-15 15:12:57,999 INFO 10.159.207.243 - "GET /plotly.js HTTP/1.1" 200 -
+2026-10-15 15:12:58,978 INFO 10.159.207.243 - "GET /api/samples HTTP/1.1" 200 -
+2026-10-15 15:12:59,030 INFO 10.159.207.243 - "GET /api/peaks HTTP/1.1" 200 -
+2026-10-15 15:12:59,034 INFO 10.159.207.243 - "GET /favicon.ico HTTP/1.1" 404 -
+2026-10-15 15:12:59,668 INFO 10.159.207.243 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02 HTTP/1.1" 200 -
+2026-10-15 15:13:00,975 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&all=1 HTTP/1.1" 200 -
+2026-10-15 15:13:02,117 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=0&hi=900 HTTP/1.1" 200 -
+2026-10-15 15:35:54,104 INFO 10.159.195.252 - code 400, message Bad request version ('¬\x8c\x12\x81Î\x8d°')
+2026-10-15 15:35:54,104 INFO 10.159.195.252 - " (M§a´{VR;Ö½8¥2Oz_ùudke$Cd+ UðØ¢ÈZ¬Î°" 400 -
+2026-10-15 15:35:54,111 INFO 10.159.195.252 - code 400, message Bad request version ('\x1a\x1a\x13\x01\x13\x02\x13\x03À+À/À,À0Ì©Ì¨À\x13À\x14\x00\x9c\x00\x9d\x00/\x005\x01\x00\x07Yªª\x00\x00\x00')
+2026-10-15 15:35:54,111 INFO 10.159.195.252 - "Æ Â=åÜÌ÷î q,zv41Ôá	þGD2Ï5º: ²{¤sâlwE¨}èÍÐzEûëQADJÚÉ  À+À/À,À0Ì©Ì¨ÀÀ   / 5 Yªª   " 400 -
+2026-10-15 15:35:57,878 INFO 10.159.195.252 - "GET / HTTP/1.1" 200 -
+2026-10-15 15:35:57,922 INFO 10.159.195.252 - "GET /plotly.js HTTP/1.1" 200 -
+2026-10-15 15:35:58,459 INFO 10.159.195.252 - "GET /api/samples HTTP/1.1" 200 -
+2026-10-15 15:35:58,511 INFO 10.159.195.252 - "GET /api/peaks HTTP/1.1" 200 -
+2026-10-15 15:35:58,552 INFO 10.159.195.252 - "GET /favicon.ico HTTP/1.1" 404 -
+2026-10-15 15:35:58,969 INFO 10.159.195.252 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02 HTTP/1.1" 200 -
+2026-10-15 15:35:59,940 INFO 10.159.195.252 - "GET /api/image?sample=6PPD_pos3&all=1 HTTP/1.1" 200 -
+2026-10-15 15:36:00,667 INFO 10.159.195.252 - "GET /api/image?sample=6PPD_pos3&lo=0&hi=900 HTTP/1.1" 200 -
+2026-10-15 15:39:55,461 INFO 10.159.195.252 - "POST /api/pca HTTP/1.1" 200 -
+2026-10-15 15:53:03,001 INFO 10.159.195.252 - "POST /api/pca HTTP/1.1" 200 -
+2026-10-15 16:22:46,397 INFO 127.0.0.1 - "GET / HTTP/1.1" 200 -
+2026-10-15 16:22:46,757 INFO 127.0.0.1 - "GET /plotly.js HTTP/1.1" 200 -
+2026-10-15 16:22:47,284 INFO 127.0.0.1 - "GET /api/samples HTTP/1.1" 200 -
+2026-10-15 16:22:47,593 INFO 127.0.0.1 - "GET /api/peaks HTTP/1.1" 200 -
+2026-10-15 16:22:48,479 INFO 127.0.0.1 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02 HTTP/1.1" 200 -
+2026-10-15 16:22:49,834 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&all=1 HTTP/1.1" 200 -
+2026-10-15 16:22:51,205 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&lo=0&hi=900 HTTP/1.1" 200 -
+2026-11-02 14:59:49,950 INFO serving /mnt/ceph_drive/processed on http://0.0.0.0:8765/  (log: /home/cloud/tof_sims_driver/sims_server.log)
+2026-11-02 14:59:56,278 INFO 127.0.0.1 - "GET / HTTP/1.1" 200 -
+2026-11-02 14:59:56,289 INFO 127.0.0.1 - "GET /api/pca/steps?mode=mine HTTP/1.1" 200 -
+2026-11-02 14:59:56,300 INFO 127.0.0.1 - "GET / HTTP/1.1" 200 -
+2026-11-02 16:04:54,963 INFO 127.0.0.1 - "GET / HTTP/1.1" 200 -
+2026-11-02 16:04:55,218 INFO 127.0.0.1 - "GET /plotly.js HTTP/1.1" 200 -
+2026-11-02 16:04:56,690 INFO 127.0.0.1 - "GET /api/samples HTTP/1.1" 200 -
+2026-11-02 16:04:56,694 INFO 127.0.0.1 - "GET /api/pca/steps?mode=all HTTP/1.1" 200 -
+2026-11-02 16:04:56,695 INFO 127.0.0.1 - "GET /api/pca/steps?mode=mine HTTP/1.1" 200 -
+2026-11-02 16:04:56,782 INFO 127.0.0.1 - "GET /favicon.ico HTTP/1.1" 404 -
+2026-11-02 16:04:56,858 INFO 127.0.0.1 - "GET /api/peaks HTTP/1.1" 200 -
+2026-11-02 16:04:57,627 INFO 127.0.0.1 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02 HTTP/1.1" 200 -
+2026-11-02 16:04:59,575 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&all=1 HTTP/1.1" 200 -
+2026-11-02 16:05:00,456 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&lo=0&hi=900 HTTP/1.1" 200 -
+2026-11-02 16:05:52,742 INFO 127.0.0.1 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-02 16:06:59,383 INFO 127.0.0.1 - "GET / HTTP/1.1" 200 -
+2026-11-02 16:06:59,391 INFO 127.0.0.1 - "GET /plotly.js HTTP/1.1" 200 -
+2026-11-02 16:07:00,282 INFO 127.0.0.1 - "GET /api/pca/steps?mode=all HTTP/1.1" 200 -
+2026-11-02 16:07:00,284 INFO 127.0.0.1 - "GET /api/pca/steps?mode=mine HTTP/1.1" 200 -
+2026-11-02 16:07:00,285 INFO 127.0.0.1 - "GET /api/samples HTTP/1.1" 200 -
+2026-11-02 16:07:00,304 INFO 127.0.0.1 - "GET /api/peaks HTTP/1.1" 200 -
+2026-11-02 16:07:00,977 INFO 127.0.0.1 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02 HTTP/1.1" 200 -
+2026-11-02 16:07:01,862 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&all=1 HTTP/1.1" 200 -
+2026-11-02 16:07:02,928 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&lo=0&hi=900 HTTP/1.1" 200 -
+2026-11-02 16:07:19,081 INFO 127.0.0.1 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-02 16:08:28,391 INFO 127.0.0.1 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-02 16:08:41,442 INFO 127.0.0.1 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-02 16:09:02,557 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&lo=137.19003661798664&hi=699.692113835335 HTTP/1.1" 200 -
+2026-11-02 16:09:03,864 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&lo=34.18088483270145&hi=804.9545908159232 HTTP/1.1" 200 -
+2026-11-02 16:09:13,746 INFO 127.0.0.1 - "GET / HTTP/1.1" 200 -
+2026-11-02 16:13:26,375 INFO 127.0.0.1 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-02 16:17:00,671 INFO 127.0.0.1 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-02 16:32:05,206 INFO serving /mnt/ceph_drive/processed on http://0.0.0.0:8765/  (log: /home/cloud/tof_sims_driver/sims_server.log)
+2026-11-02 16:32:09,261 INFO 127.0.0.1 - "GET / HTTP/1.1" 200 -
+2026-11-02 16:33:32,914 INFO 127.0.0.1 - "GET / HTTP/1.1" 200 -
+2026-11-02 16:33:33,085 INFO 127.0.0.1 - "GET /plotly.js HTTP/1.1" 200 -
+2026-11-02 16:33:34,099 INFO 127.0.0.1 - "GET /api/pca/steps?mode=all HTTP/1.1" 200 -
+2026-11-02 16:33:34,109 INFO 127.0.0.1 - "GET /api/samples HTTP/1.1" 200 -
+2026-11-02 16:33:34,118 INFO 127.0.0.1 - "GET /api/pca/steps?mode=mine HTTP/1.1" 200 -
+2026-11-02 16:33:34,228 INFO 127.0.0.1 - "GET /api/peaks HTTP/1.1" 200 -
+2026-11-02 16:33:35,165 INFO 127.0.0.1 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02 HTTP/1.1" 200 -
+2026-11-02 16:33:36,885 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&all=1 HTTP/1.1" 200 -
+2026-11-02 16:33:38,081 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&lo=0&hi=900 HTTP/1.1" 200 -
+2026-11-02 16:34:44,037 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&lo=0&hi=329.6754250386399 HTTP/1.1" 200 -
+2026-11-02 16:34:44,773 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&lo=35.15858474136964&hi=100.88985186653895 HTTP/1.1" 200 -
+2026-11-02 16:34:46,984 INFO 127.0.0.1 - "GET /api/spectrum?sample=6PPD_pos3&bin=2 HTTP/1.1" 200 -
+2026-11-02 16:34:50,852 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&lo=-69.08889960183782&hi=151.33989589501778 HTTP/1.1" 200 -
+2026-11-02 16:34:51,496 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&lo=-219.67419430411852&hi=224.2148894321307 HTTP/1.1" 200 -
+2026-11-02 16:34:53,292 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&lo=-5356.937292093807&hi=2710.36744363769 HTTP/1.1" 200 -
+2026-11-02 16:34:53,453 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&lo=-2130.81803411016&hi=1149.1033073199167 HTTP/1.1" 200 -
+2026-11-02 16:34:53,781 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&lo=-913.6854998645506&hi=560.0781588661928 HTTP/1.1" 200 -
+2026-11-02 16:41:53,604 INFO 127.0.0.1 - "GET / HTTP/1.1" 200 -
+2026-11-02 16:41:53,806 INFO 127.0.0.1 - "GET /plotly.js HTTP/1.1" 200 -
+2026-11-02 16:41:54,900 INFO 127.0.0.1 - "GET /api/pca/steps?mode=all HTTP/1.1" 200 -
+2026-11-02 16:41:54,900 INFO 127.0.0.1 - "GET /api/samples HTTP/1.1" 200 -
+2026-11-02 16:41:54,906 INFO 127.0.0.1 - "GET /api/pca/steps?mode=mine HTTP/1.1" 200 -
+2026-11-02 16:41:55,083 INFO 127.0.0.1 - "GET /api/peaks HTTP/1.1" 200 -
+2026-11-02 16:41:55,846 INFO 127.0.0.1 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02 HTTP/1.1" 200 -
+2026-11-02 16:41:57,138 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&all=1 HTTP/1.1" 200 -
+2026-11-02 16:41:58,070 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&lo=0&hi=900 HTTP/1.1" 200 -
+2026-11-02 16:43:11,822 INFO 127.0.0.1 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-02 16:43:31,763 INFO 127.0.0.1 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-02 16:47:53,398 INFO 127.0.0.1 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-02 16:48:41,050 INFO 127.0.0.1 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-03 14:02:55,695 INFO serving /mnt/ceph_drive/processed on http://0.0.0.0:8765/  (log: /home/cloud/tof_sims_driver/sims_server.log)
+2026-11-03 14:02:55,696 INFO uploads enabled -> /mnt/ceph_drive/processed_uploads (anyone who can reach this port can upload; use --no-upload to disable)
+2026-11-03 14:03:03,158 INFO 127.0.0.1 - "GET / HTTP/1.1" 200 -
+2026-11-03 14:03:03,166 INFO 127.0.0.1 - "GET /api/config HTTP/1.1" 200 -
+2026-11-03 14:03:03,188 INFO 127.0.0.1 - "GET /api/samples HTTP/1.1" 200 -
+2026-11-03 14:12:23,516 INFO 127.0.0.1 - "GET / HTTP/1.1" 200 -
+2026-11-03 14:12:23,741 INFO 127.0.0.1 - "GET /plotly.js HTTP/1.1" 200 -
+2026-11-03 14:12:24,867 INFO 127.0.0.1 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-03 14:12:24,868 INFO 127.0.0.1 - "GET /api/config HTTP/1.1" 200 -
+2026-11-03 14:12:24,880 INFO 127.0.0.1 - "GET /api/samples HTTP/1.1" 200 -
+2026-11-03 14:12:24,943 INFO 127.0.0.1 - "GET /favicon.ico HTTP/1.1" 404 -
+2026-11-03 14:12:25,034 INFO 127.0.0.1 - "GET /api/peaks HTTP/1.1" 200 -
+2026-11-03 14:12:25,998 INFO 127.0.0.1 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02 HTTP/1.1" 200 -
+2026-11-03 14:12:26,546 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&lo=384.09000000000003&hi=384.13 HTTP/1.1" 200 -
+2026-11-03 14:12:27,414 INFO 127.0.0.1 - "GET /api/identify?sample=6PPD_pos3&lo=0&hi=900&n=14 HTTP/1.1" 200 -
+2026-11-03 14:12:27,427 INFO 127.0.0.1 - "GET /api/identify?sample=6PPD_pos3&lo=384.09000000000003&hi=384.13&n=4 HTTP/1.1" 200 -
+2026-11-03 14:12:27,691 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&all=1 HTTP/1.1" 200 -
+2026-11-03 14:12:28,944 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&lo=0&hi=900 HTTP/1.1" 200 -
+2026-11-03 14:12:37,503 INFO 127.0.0.1 - "GET /api/pca/steps?mode=all HTTP/1.1" 200 -
+2026-11-03 14:12:37,511 INFO 127.0.0.1 - "GET /api/pca/steps?mode=mine HTTP/1.1" 200 -
+2026-11-03 14:12:53,284 INFO 127.0.0.1 - "GET /api/identify?sample=6PPD_pos3&lo=-22.06614352540103&hi=1023.5846686974893&n=14 HTTP/1.1" 200 -
+2026-11-03 14:12:53,916 INFO 127.0.0.1 - "GET /api/identify?sample=6PPD_pos3&lo=35.96885697785706&hi=698.5511483726714&n=14 HTTP/1.1" 200 -
+2026-11-03 14:12:54,248 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&lo=-22.06614352540103&hi=1023.5846686974893 HTTP/1.1" 200 -
+2026-11-03 14:12:54,442 INFO 127.0.0.1 - "GET /api/identify?sample=6PPD_pos3&lo=35.96885697785706&hi=698.5511483726714&n=14 HTTP/1.1" 200 -
+2026-11-03 14:12:54,756 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&lo=35.96885697785706&hi=698.5511483726714 HTTP/1.1" 200 -
+2026-11-03 14:12:55,273 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&lo=35.96885697785706&hi=698.5511483726714 HTTP/1.1" 200 -
+2026-11-03 14:12:55,381 INFO 127.0.0.1 - "GET /api/identify?sample=6PPD_pos3&lo=42.63819442582654&hi=661.1985471811549&n=14 HTTP/1.1" 200 -
+2026-11-03 14:12:55,840 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&lo=42.63819442582654&hi=661.1985471811549 HTTP/1.1" 200 -
+2026-11-03 14:12:58,804 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&lo=77.9949951270094&hi=78.0949951270094 HTTP/1.1" 200 -
+2026-11-03 14:12:58,963 INFO 127.0.0.1 - "GET /api/identify?sample=6PPD_pos3&lo=77.9949951270094&hi=78.0949951270094&n=4 HTTP/1.1" 200 -
+2026-11-03 14:13:10,057 INFO 127.0.0.1 - "GET /api/peaks HTTP/1.1" 200 -
+2026-11-03 14:13:10,628 INFO 127.0.0.1 - "GET /api/spectrum?sample=6PPD_neg1&bin=0.02 HTTP/1.1" 200 -
+2026-11-03 14:13:10,848 INFO 127.0.0.1 - "GET /api/peaks HTTP/1.1" 200 -
+2026-11-03 14:13:11,302 INFO 127.0.0.1 - "GET /api/identify?sample=6PPD_neg1&lo=0&hi=900&n=14 HTTP/1.1" 200 -
+2026-11-03 14:13:11,434 INFO 127.0.0.1 - "GET /api/spectrum?sample=6PPD_neg1&bin=0.02 HTTP/1.1" 200 -
+2026-11-03 14:13:11,436 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_neg1&all=1 HTTP/1.1" 200 -
+2026-11-03 14:13:11,607 INFO 127.0.0.1 - "GET /api/identify?sample=6PPD_neg1&lo=0&hi=900&n=14 HTTP/1.1" 200 -
+2026-11-03 14:13:12,048 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_neg1&lo=0&hi=900 HTTP/1.1" 200 -
+2026-11-03 14:13:12,220 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_neg1&all=1 HTTP/1.1" 200 -
+2026-11-03 14:13:12,907 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_neg1&lo=0&hi=900 HTTP/1.1" 200 -
+2026-11-03 14:15:50,202 INFO 127.0.0.1 - "GET /api/peaks HTTP/1.1" 200 -
+2026-11-03 14:15:51,076 INFO 127.0.0.1 - "GET /api/spectrum?sample=6PPD_neg1&bin=0.02 HTTP/1.1" 200 -
+2026-11-03 14:15:51,245 INFO 127.0.0.1 - "GET /api/identify?sample=6PPD_neg1&lo=0&hi=900&n=14 HTTP/1.1" 200 -
+2026-11-03 14:15:51,668 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_neg1&all=1 HTTP/1.1" 200 -
+2026-11-03 14:15:52,477 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_neg1&lo=0&hi=900 HTTP/1.1" 200 -
+2026-11-03 14:15:54,087 INFO 127.0.0.1 - "GET /api/peaks HTTP/1.1" 200 -
+2026-11-03 14:15:54,724 INFO 127.0.0.1 - "GET /api/spectrum?sample=6PPD_neg1&bin=0.02 HTTP/1.1" 200 -
+2026-11-03 14:15:54,957 INFO 127.0.0.1 - "GET /api/identify?sample=6PPD_neg1&lo=0&hi=900&n=14 HTTP/1.1" 200 -
+2026-11-03 14:15:55,537 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_neg1&all=1 HTTP/1.1" 200 -
+2026-11-03 14:15:56,144 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_neg1&lo=0&hi=900 HTTP/1.1" 200 -
+2026-11-03 14:20:20,732 INFO 127.0.0.1 - "GET /api/peaks HTTP/1.1" 200 -
+2026-11-03 14:20:21,596 INFO 127.0.0.1 - "GET /api/spectrum?sample=6PPD_neg4&bin=0.02 HTTP/1.1" 200 -
+2026-11-03 14:20:22,263 INFO 127.0.0.1 - "GET /api/identify?sample=6PPD_neg4&lo=0&hi=900&n=14 HTTP/1.1" 200 -
+2026-11-03 14:20:22,745 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_neg4&all=1 HTTP/1.1" 200 -
+2026-11-03 14:20:23,317 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_neg4&lo=0&hi=900 HTTP/1.1" 200 -
+2026-11-03 14:20:26,678 INFO 127.0.0.1 - "GET /api/identify?sample=6PPD_neg4&lo=0&hi=900&n=14 HTTP/1.1" 200 -
+2026-11-03 14:20:29,862 INFO 127.0.0.1 - "GET /api/identify?sample=6PPD_neg4&lo=0&hi=900&n=14 HTTP/1.1" 200 -
+2026-11-03 14:23:22,449 INFO 127.0.0.1 - "GET / HTTP/1.1" 200 -
+2026-11-03 14:23:22,463 INFO 127.0.0.1 - "GET / HTTP/1.1" 200 -
+2026-11-03 14:26:45,274 INFO 127.0.0.1 - "GET / HTTP/1.1" 200 -
+2026-11-03 14:26:45,334 INFO 127.0.0.1 - "GET /plotly.js HTTP/1.1" 200 -
+2026-11-03 14:26:46,087 INFO 127.0.0.1 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-03 14:26:46,096 INFO 127.0.0.1 - "GET /api/config HTTP/1.1" 200 -
+2026-11-03 14:26:46,112 INFO 127.0.0.1 - "GET /api/samples HTTP/1.1" 200 -
+2026-11-03 14:26:46,265 INFO 127.0.0.1 - "GET /api/peaks HTTP/1.1" 200 -
+2026-11-03 14:26:46,959 INFO 127.0.0.1 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02 HTTP/1.1" 200 -
+2026-11-03 14:26:48,267 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&all=1 HTTP/1.1" 200 -
+2026-11-03 14:26:49,462 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&lo=0&hi=900 HTTP/1.1" 200 -
+2026-11-03 14:26:56,710 INFO 127.0.0.1 - "GET / HTTP/1.1" 200 -
+2026-11-03 14:26:56,804 INFO 127.0.0.1 - "GET /plotly.js HTTP/1.1" 200 -
+2026-11-03 14:26:57,175 INFO 127.0.0.1 - "GET /api/config HTTP/1.1" 200 -
+2026-11-03 14:26:57,175 INFO 127.0.0.1 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-03 14:26:57,198 INFO 127.0.0.1 - "GET /api/samples HTTP/1.1" 200 -
+2026-11-03 14:26:57,300 INFO 127.0.0.1 - "GET /api/peaks HTTP/1.1" 200 -
+2026-11-03 14:26:57,836 INFO 127.0.0.1 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02 HTTP/1.1" 200 -
+2026-11-03 14:26:58,843 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&all=1 HTTP/1.1" 200 -
+2026-11-03 14:26:59,664 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&lo=0&hi=900 HTTP/1.1" 200 -
+2026-11-03 14:27:47,987 INFO 127.0.0.1 - "GET /api/download?sample=6PPD_neg1&kind=peaks HTTP/1.1" 200 -
+2026-11-03 14:27:50,521 INFO 127.0.0.1 - "GET /api/download?sample=6PPD_neg1&kind=spectrum&bin=0.02 HTTP/1.1" 200 -
+2026-11-03 14:27:53,221 INFO 127.0.0.1 - "GET /api/download?sample=6PPD_neg1&kind=package HTTP/1.1" 200 -
+2026-11-03 14:28:03,552 INFO 127.0.0.1 - "GET /api/peaks HTTP/1.1" 200 -
+2026-11-03 14:28:04,332 INFO 127.0.0.1 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02 HTTP/1.1" 200 -
+2026-11-03 14:28:04,846 INFO 127.0.0.1 - "GET /api/pca/steps?mode=all HTTP/1.1" 200 -
+2026-11-03 14:28:04,852 INFO 127.0.0.1 - "GET /api/pca/steps?mode=mine HTTP/1.1" 200 -
+2026-11-03 14:28:05,378 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&all=1 HTTP/1.1" 200 -
+2026-11-03 14:28:06,590 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&lo=0&hi=900 HTTP/1.1" 200 -
+2026-11-03 14:29:18,244 INFO 127.0.0.1 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02&x0=49&y0=103&x1=80&y1=125 HTTP/1.1" 200 -
+2026-11-03 14:32:45,411 INFO 127.0.0.1 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-03 14:36:35,047 INFO serving /mnt/ceph_drive/processed on http://0.0.0.0:8765/  (log: /home/cloud/tof_sims_driver/sims_server.log)
+2026-11-03 14:36:35,047 INFO uploads enabled -> /mnt/ceph_drive/processed_uploads (anyone who can reach this port can upload; use --no-upload to disable)
+2026-11-03 14:36:45,200 INFO 127.0.0.1 - "GET / HTTP/1.1" 200 -
+2026-11-03 14:36:45,208 INFO 127.0.0.1 - "GET /api/identify?sample=6PPD_pos3 HTTP/1.1" 404 -
+2026-11-03 14:36:45,219 INFO 127.0.0.1 - "GET /api/featurepeaks?samples=6PPD_pos3 HTTP/1.1" 404 -
+2026-11-03 14:36:45,227 INFO 127.0.0.1 - "GET / HTTP/1.1" 200 -
+2026-11-03 14:36:45,315 INFO 127.0.0.1 - "GET /api/samples HTTP/1.1" 200 -
+2026-11-03 14:36:53,726 INFO 127.0.0.1 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-03 14:37:21,802 INFO 127.0.0.1 - "GET / HTTP/1.1" 200 -
+2026-11-03 14:37:22,201 INFO 127.0.0.1 - "GET /plotly.js HTTP/1.1" 200 -
+2026-11-03 14:37:22,744 INFO 127.0.0.1 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-03 14:37:22,744 INFO 127.0.0.1 - "GET /api/config HTTP/1.1" 200 -
+2026-11-03 14:37:22,765 INFO 127.0.0.1 - "GET /api/samples HTTP/1.1" 200 -
+2026-11-03 14:37:22,852 INFO 127.0.0.1 - "GET /api/peaks HTTP/1.1" 200 -
+2026-11-03 14:37:23,558 INFO 127.0.0.1 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02 HTTP/1.1" 200 -
+2026-11-03 14:37:25,042 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&all=1 HTTP/1.1" 200 -
+2026-11-03 14:37:25,903 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&lo=0&hi=900 HTTP/1.1" 200 -
+2026-11-03 14:38:12,068 INFO 127.0.0.1 - "GET /api/pca/steps?mode=all HTTP/1.1" 200 -
+2026-11-03 14:38:12,079 INFO 127.0.0.1 - "GET /api/pca/steps?mode=mine HTTP/1.1" 200 -
+2026-11-03 14:38:38,575 INFO 127.0.0.1 - "POST /api/pca HTTP/1.1" 400 -
+2026-11-03 14:39:08,004 INFO 127.0.0.1 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-03 14:40:05,928 INFO 127.0.0.1 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-03 14:43:45,371 INFO 127.0.0.1 - "GET /api/download?sample=6PPD_neg1&kind=spectrum&bin=0.02 HTTP/1.1" 200 -
+2026-11-03 14:47:08,338 INFO 127.0.0.1 - "GET /api/pca/steps?mode=all HTTP/1.1" 200 -
+2026-11-03 14:47:08,344 INFO 127.0.0.1 - "GET /api/pca/steps?mode=mine HTTP/1.1" 200 -
+2026-11-03 14:53:07,058 INFO serving /mnt/ceph_drive/processed on http://0.0.0.0:8765/  (log: /home/cloud/tof_sims_driver/sims_server.log)
+2026-11-03 14:53:07,058 INFO uploads enabled -> /mnt/ceph_drive/processed_uploads (anyone who can reach this port can upload; use --no-upload to disable)
+2026-11-03 14:54:24,582 INFO serving /mnt/ceph_drive/processed on http://0.0.0.0:8765/  (log: /home/cloud/tof_sims_driver/sims_server.log)
+2026-11-03 14:54:24,582 INFO uploads enabled -> /mnt/ceph_drive/processed_uploads (anyone who can reach this port can upload; use --no-upload to disable)
+2026-11-03 14:54:41,176 INFO 127.0.0.1 - "GET / HTTP/1.1" 200 -
+2026-11-03 14:54:41,187 INFO 127.0.0.1 - "GET /api/config HTTP/1.1" 200 -
+2026-11-03 14:54:41,198 INFO 127.0.0.1 - "GET / HTTP/1.1" 200 -
+2026-11-03 14:54:41,206 INFO 127.0.0.1 - "GET /api/download?sample=6PPD_pos3&kind=peaks HTTP/1.1" 404 -
+2026-11-03 14:54:41,301 INFO 127.0.0.1 - "GET /api/samples HTTP/1.1" 200 -
+2026-11-03 14:54:53,214 INFO 127.0.0.1 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-03 15:15:14,160 INFO 127.0.0.1 - "GET / HTTP/1.1" 200 -
+2026-11-03 15:15:14,236 INFO 127.0.0.1 - "GET /plotly.js HTTP/1.1" 200 -
+2026-11-03 15:15:14,936 INFO 127.0.0.1 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-03 15:15:14,937 INFO 127.0.0.1 - "GET /api/config HTTP/1.1" 200 -
+2026-11-03 15:15:15,717 INFO 127.0.0.1 - "GET /api/samples HTTP/1.1" 200 -
+2026-11-03 15:15:15,883 INFO 127.0.0.1 - "GET /api/peaks HTTP/1.1" 200 -
+2026-11-03 15:15:16,451 INFO 127.0.0.1 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02 HTTP/1.1" 200 -
+2026-11-03 15:15:18,089 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&all=1 HTTP/1.1" 200 -
+2026-11-03 15:15:19,277 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&lo=0&hi=900 HTTP/1.1" 200 -
+2026-11-03 15:15:27,845 INFO 127.0.0.1 - "GET /api/peaks HTTP/1.1" 200 -
+2026-11-03 15:15:28,405 INFO 127.0.0.1 - "GET /api/spectrum?sample=6PPD_neg1&bin=0.02 HTTP/1.1" 200 -
+2026-11-03 15:15:29,314 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_neg1&all=1 HTTP/1.1" 200 -
+2026-11-03 15:15:30,114 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_neg1&lo=0&hi=900 HTTP/1.1" 200 -
+2026-11-03 15:16:45,496 INFO uploaded jtFI-sample6-500x500-neg2.itm (70062983 bytes) -> user:jtFI-sample6-500x500-neg2
+2026-11-03 15:16:45,497 INFO 127.0.0.1 - "POST /api/upload?filename=jtFI-sample6-500x500-neg2.itm&label=&polarity=auto HTTP/1.1" 202 -
+2026-11-03 15:16:45,714 INFO 127.0.0.1 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-03 15:16:47,791 INFO 127.0.0.1 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-03 15:16:47,931 INFO 127.0.0.1 - "GET /api/samples HTTP/1.1" 200 -
+2026-11-03 15:16:48,080 INFO 127.0.0.1 - "GET /api/peaks HTTP/1.1" 200 -
+2026-11-03 15:16:48,617 INFO 127.0.0.1 - "GET /api/spectrum?sample=6PPD_neg1&bin=0.02 HTTP/1.1" 200 -
+2026-11-03 15:16:49,370 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_neg1&all=1 HTTP/1.1" 200 -
+2026-11-03 15:16:49,933 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_neg1&lo=0&hi=900 HTTP/1.1" 200 -
+2026-11-03 15:17:58,612 INFO 127.0.0.1 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-03 15:22:58,228 INFO 127.0.0.1 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-03 15:31:58,894 INFO serving /mnt/ceph_drive/processed on http://0.0.0.0:8765/  (log: /home/cloud/tof_sims_driver/sims_server.log)
+2026-11-03 15:31:58,894 INFO uploads enabled -> /mnt/ceph_drive/processed_uploads (anyone who can reach this port can upload; use --no-upload to disable)
+2026-11-03 15:32:10,006 INFO 127.0.0.1 - "GET / HTTP/1.1" 200 -
+2026-11-03 15:32:10,102 INFO 127.0.0.1 - "GET /api/samples HTTP/1.1" 200 -
+2026-11-03 15:32:23,685 INFO 127.0.0.1 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-03 15:32:41,638 INFO 127.0.0.1 - "GET /api/samples HTTP/1.1" 200 -
+2026-11-03 15:32:52,065 INFO 127.0.0.1 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-03 15:38:38,552 INFO 127.0.0.1 - "GET / HTTP/1.1" 200 -
+2026-11-03 15:38:38,671 INFO 127.0.0.1 - "GET /plotly.js HTTP/1.1" 200 -
+2026-11-03 15:38:39,257 INFO 127.0.0.1 - "GET /api/config HTTP/1.1" 200 -
+2026-11-03 15:38:39,258 INFO 127.0.0.1 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-03 15:38:39,267 INFO 127.0.0.1 - "GET /api/samples HTTP/1.1" 200 -
+2026-11-03 15:38:39,416 INFO 127.0.0.1 - "GET /api/peaks HTTP/1.1" 200 -
+2026-11-03 15:38:40,132 INFO 127.0.0.1 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02 HTTP/1.1" 200 -
+2026-11-03 15:38:41,433 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&all=1 HTTP/1.1" 200 -
+2026-11-03 15:38:42,402 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&lo=0&hi=900 HTTP/1.1" 200 -
+2026-11-03 15:39:15,846 INFO 127.0.0.1 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-03 15:42:05,284 INFO serving /mnt/ceph_drive/processed on http://0.0.0.0:8765/  (log: /home/cloud/tof_sims_driver/sims_server.log)
+2026-11-03 15:42:05,284 INFO uploads enabled -> /mnt/ceph_drive/processed_uploads (anyone who can reach this port can upload; use --no-upload to disable)
+2026-11-03 15:42:14,743 INFO 127.0.0.1 - "GET / HTTP/1.1" 200 -
+2026-11-03 15:42:14,830 INFO 127.0.0.1 - "GET /api/samples HTTP/1.1" 200 -
+2026-11-03 15:42:26,278 INFO 127.0.0.1 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-03 15:46:31,017 INFO 127.0.0.1 - "GET / HTTP/1.1" 200 -
+2026-11-03 15:46:31,162 INFO 127.0.0.1 - "GET /plotly.js HTTP/1.1" 200 -
+2026-11-03 15:46:31,865 INFO 127.0.0.1 - "GET /api/config HTTP/1.1" 200 -
+2026-11-03 15:46:31,866 INFO 127.0.0.1 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-03 15:46:31,872 INFO 127.0.0.1 - "GET /api/samples HTTP/1.1" 200 -
+2026-11-03 15:46:32,042 INFO 127.0.0.1 - "GET /api/peaks HTTP/1.1" 200 -
+2026-11-03 15:46:32,638 INFO 127.0.0.1 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02 HTTP/1.1" 200 -
+2026-11-03 15:46:34,069 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&all=1 HTTP/1.1" 200 -
+2026-11-03 15:46:35,019 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&lo=0&hi=900 HTTP/1.1" 200 -
+2026-11-03 15:48:26,734 INFO 127.0.0.1 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-03 16:11:08,097 INFO 127.0.0.1 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-03 16:23:40,148 INFO 127.0.0.1 - "GET /api/spectrum?sample=6PPD_pos3&bin=2 HTTP/1.1" 200 -
+2026-11-03 16:23:44,202 INFO 127.0.0.1 - "GET /api/spectrum?sample=6PPD_pos3&bin=2&x0=53&y0=118&x1=53&y1=118 HTTP/1.1" 200 -
+2026-11-03 16:29:35,797 INFO 127.0.0.1 - "GET / HTTP/1.1" 200 -
+2026-11-03 16:31:12,847 INFO 127.0.0.1 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-03 16:40:15,381 INFO serving /mnt/ceph_drive/processed on http://0.0.0.0:8765/  (log: /home/cloud/tof_sims_driver/sims_server.log)
+2026-11-03 16:40:15,381 INFO uploads enabled -> /mnt/ceph_drive/processed_uploads (anyone who can reach this port can upload; use --no-upload to disable)
+2026-11-03 16:40:37,279 INFO 127.0.0.1 - "GET / HTTP/1.1" 200 -
+2026-11-03 16:43:59,155 INFO 127.0.0.1 - "GET / HTTP/1.1" 200 -
+2026-11-03 16:43:59,268 INFO 127.0.0.1 - "GET /plotly.js HTTP/1.1" 200 -
+2026-11-03 16:43:59,845 INFO 127.0.0.1 - "GET /api/config HTTP/1.1" 200 -
+2026-11-03 16:43:59,850 INFO 127.0.0.1 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-03 16:43:59,863 INFO 127.0.0.1 - "GET /api/samples HTTP/1.1" 200 -
+2026-11-03 16:43:59,976 INFO 127.0.0.1 - "GET /api/peaks HTTP/1.1" 200 -
+2026-11-03 16:44:00,957 INFO 127.0.0.1 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02 HTTP/1.1" 200 -
+2026-11-03 16:44:02,484 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&all=1 HTTP/1.1" 200 -
+2026-11-03 16:44:03,379 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&lo=0&hi=900 HTTP/1.1" 200 -
+2026-11-03 16:44:44,261 INFO 127.0.0.1 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-03 16:46:19,957 INFO 127.0.0.1 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-03 16:48:00,382 INFO 127.0.0.1 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 -
+2026-11-03 16:48:17,505 INFO 127.0.0.1 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-03 16:50:04,202 INFO serving /mnt/ceph_drive/processed on http://0.0.0.0:8765/  (log: /home/cloud/tof_sims_driver/sims_server.log)
+2026-11-03 16:50:04,202 INFO uploads enabled -> /mnt/ceph_drive/processed_uploads (anyone who can reach this port can upload; use --no-upload to disable)
+2026-11-03 16:50:13,667 INFO 127.0.0.1 - "GET / HTTP/1.1" 200 -
+2026-11-03 16:50:13,674 INFO 127.0.0.1 - "GET /api/config HTTP/1.1" 200 -
+2026-11-03 16:50:13,683 INFO 127.0.0.1 - "GET / HTTP/1.1" 200 -
+2026-11-03 16:52:57,191 INFO 127.0.0.1 - "GET / HTTP/1.1" 200 -
+2026-11-03 16:52:57,347 INFO 127.0.0.1 - "GET /plotly.js HTTP/1.1" 200 -
+2026-11-03 16:52:58,031 INFO 127.0.0.1 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-03 16:52:58,038 INFO 127.0.0.1 - "GET /api/config HTTP/1.1" 200 -
+2026-11-03 16:52:58,053 INFO 127.0.0.1 - "GET /api/samples HTTP/1.1" 200 -
+2026-11-03 16:52:58,206 INFO 127.0.0.1 - "GET /api/peaks HTTP/1.1" 200 -
+2026-11-03 16:52:59,218 INFO 127.0.0.1 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02 HTTP/1.1" 200 -
+2026-11-03 16:53:00,770 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&all=1 HTTP/1.1" 200 -
+2026-11-03 16:53:02,031 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&lo=0&hi=900 HTTP/1.1" 200 -
+2026-11-03 16:54:26,310 INFO serving /mnt/ceph_drive/processed on http://0.0.0.0:8765/  (log: /home/cloud/tof_sims_driver/sims_server.log)
+2026-11-03 16:54:26,310 INFO uploads enabled -> /mnt/ceph_drive/processed_uploads (anyone who can reach this port can upload; use --no-upload to disable)
+2026-11-03 16:54:34,849 INFO 127.0.0.1 - "GET / HTTP/1.1" 200 -
+2026-11-03 16:54:34,858 INFO 127.0.0.1 - "GET / HTTP/1.1" 200 -
+2026-11-03 16:55:17,426 INFO 127.0.0.1 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-03 17:02:20,913 INFO 127.0.0.1 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02&x0=57&y0=104&x1=78&y1=121 HTTP/1.1" 200 -
+2026-11-03 17:02:31,461 INFO 127.0.0.1 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02&x0=0&y0=126&x1=0&y1=126 HTTP/1.1" 200 -
+2026-11-03 17:02:34,105 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&lo=90.08894770759501&hi=319.07126464316445 HTTP/1.1" 200 -
+2026-11-03 17:02:37,476 INFO 127.0.0.1 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02&x0=44&y0=105&x1=80&y1=125 HTTP/1.1" 200 -
+2026-11-03 17:02:38,497 INFO 127.0.0.1 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02&x0=52&y0=117&x1=52&y1=117 HTTP/1.1" 200 -
+2026-11-03 17:02:39,347 INFO 127.0.0.1 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02&x0=67&y0=111&x1=67&y1=111 HTTP/1.1" 200 -
+2026-11-03 17:02:42,201 INFO 127.0.0.1 - "GET /api/spectrum?sample=6PPD_pos3&bin=2&x0=67&y0=111&x1=67&y1=111 HTTP/1.1" 200 -
+2026-11-03 17:02:45,537 INFO 127.0.0.1 - "GET /api/spectrum?sample=6PPD_pos3&bin=2&x0=56&y0=115&x1=56&y1=115 HTTP/1.1" 200 -
+2026-11-03 17:02:47,279 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&lo=253&hi=257 HTTP/1.1" 200 -
+2026-11-03 17:02:48,216 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&lo=207&hi=211 HTTP/1.1" 200 -
+2026-11-03 17:02:48,944 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&lo=183&hi=187 HTTP/1.1" 200 -
+2026-11-03 17:02:52,033 INFO 127.0.0.1 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.05&x0=56&y0=115&x1=56&y1=115 HTTP/1.1" 200 -
+2026-11-03 17:02:52,333 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&lo=197.875&hi=197.97500000000002 HTTP/1.1" 200 -
+2026-11-03 17:02:53,259 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&lo=238.925&hi=239.02500000000003 HTTP/1.1" 200 -
+2026-11-03 17:02:53,912 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&lo=205.625&hi=205.72500000000002 HTTP/1.1" 200 -
+2026-11-03 17:02:54,533 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&lo=188.775&hi=188.87500000000003 HTTP/1.1" 200 -
+2026-11-03 17:02:55,223 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&lo=168.125&hi=168.22500000000002 HTTP/1.1" 200 -
+2026-11-03 17:02:56,130 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&lo=153.375&hi=153.47500000000002 HTTP/1.1" 200 -
+2026-11-03 17:08:56,261 INFO serving /mnt/ceph_drive/processed on http://0.0.0.0:8765/  (log: /home/cloud/tof_sims_driver/sims_server.log)
+2026-11-03 17:08:56,261 INFO uploads enabled -> /mnt/ceph_drive/processed_uploads (anyone who can reach this port can upload; use --no-upload to disable)
+2026-11-03 17:09:06,302 INFO 127.0.0.1 - "GET / HTTP/1.1" 200 -
+2026-11-03 17:09:06,311 INFO 127.0.0.1 - "GET / HTTP/1.1" 200 -
+2026-11-03 17:09:06,320 INFO 127.0.0.1 - "POST /api/export HTTP/1.1" 400 -
+2026-11-03 17:10:42,086 INFO 127.0.0.1 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-03 17:12:56,715 INFO 127.0.0.1 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-03 17:26:15,466 INFO 10.159.207.243 - "GET / HTTP/1.1" 200 -
+2026-11-03 17:26:15,619 INFO 10.159.207.243 - "GET /plotly.js HTTP/1.1" 200 -
+2026-11-03 17:26:16,544 INFO 10.159.207.243 - "GET /api/config HTTP/1.1" 200 -
+2026-11-03 17:26:16,545 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-03 17:26:16,561 INFO 10.159.207.243 - "GET /api/samples HTTP/1.1" 200 -
+2026-11-03 17:26:16,606 INFO 10.159.207.243 - "GET /api/peaks HTTP/1.1" 200 -
+2026-11-03 17:26:16,628 INFO 10.159.207.243 - "GET /favicon.ico HTTP/1.1" 404 -
+2026-11-03 17:26:17,465 INFO 10.159.207.243 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02 HTTP/1.1" 200 -
+2026-11-03 17:26:18,868 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&all=1 HTTP/1.1" 200 -
+2026-11-03 17:26:20,052 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=0&hi=900 HTTP/1.1" 200 -
+2026-11-03 17:36:07,837 INFO 10.159.207.243 - "GET / HTTP/1.1" 200 -
+2026-11-03 17:36:07,911 INFO 10.159.207.243 - "GET /plotly.js HTTP/1.1" 200 -
+2026-11-03 17:36:08,682 INFO 10.159.207.243 - "GET /api/config HTTP/1.1" 200 -
+2026-11-03 17:36:08,684 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-03 17:36:08,700 INFO 10.159.207.243 - "GET /api/samples HTTP/1.1" 200 -
+2026-11-03 17:36:08,735 INFO 10.159.207.243 - "GET /api/peaks HTTP/1.1" 200 -
+2026-11-03 17:36:09,358 INFO 10.159.207.243 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02 HTTP/1.1" 200 -
+2026-11-03 17:36:10,461 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&all=1 HTTP/1.1" 200 -
+2026-11-03 17:36:11,523 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=0&hi=900 HTTP/1.1" 200 -
+2026-11-05 13:41:26,209 INFO serving /mnt/ceph_drive/processed on http://0.0.0.0:8765/  (log: /home/cloud/tof_sims_driver/sims_server.log)
+2026-11-05 13:41:26,210 INFO uploads enabled -> /mnt/ceph_drive/processed_uploads (anyone who can reach this port can upload; use --no-upload to disable)
+2026-11-05 13:41:34,621 INFO 10.159.207.243 - "GET / HTTP/1.1" 200 -
+2026-11-05 13:41:34,701 INFO 10.159.207.243 - "GET /plotly.js HTTP/1.1" 200 -
+2026-11-05 13:41:35,547 INFO 10.159.207.243 - "GET /api/config HTTP/1.1" 200 -
+2026-11-05 13:41:35,548 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 13:41:35,566 INFO 10.159.207.243 - "GET /api/samples HTTP/1.1" 200 -
+2026-11-05 13:41:35,586 INFO 10.159.207.243 - "GET /favicon.ico HTTP/1.1" 404 -
+2026-11-05 13:41:35,595 INFO 10.159.207.243 - "GET /api/peaks HTTP/1.1" 200 -
+2026-11-05 13:41:36,604 INFO 10.159.207.243 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02 HTTP/1.1" 200 -
+2026-11-05 13:41:38,012 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&all=1 HTTP/1.1" 200 -
+2026-11-05 13:41:38,841 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=0&hi=900 HTTP/1.1" 200 -
+2026-11-05 13:45:29,473 INFO 10.159.207.243 - "DELETE /api/upload?sample=user%3AjtFI-sample6-500x500-neg2 HTTP/1.1" 200 -
+2026-11-05 13:45:29,512 INFO 10.159.207.243 - "GET /api/samples HTTP/1.1" 200 -
+2026-11-05 13:45:29,539 INFO 10.159.207.243 - "GET /api/peaks HTTP/1.1" 200 -
+2026-11-05 13:45:30,222 INFO 10.159.207.243 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02 HTTP/1.1" 200 -
+2026-11-05 13:45:31,239 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&all=1 HTTP/1.1" 200 -
+2026-11-05 13:45:32,347 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=0&hi=900 HTTP/1.1" 200 -
+2026-11-05 13:49:03,011 INFO 10.159.207.243 - "GET / HTTP/1.1" 200 -
+2026-11-05 13:49:03,244 INFO 10.159.207.243 - "GET /plotly.js HTTP/1.1" 200 -
+2026-11-05 13:49:04,120 INFO 10.159.207.243 - "GET /api/config HTTP/1.1" 200 -
+2026-11-05 13:49:04,121 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 13:49:04,136 INFO 10.159.207.243 - "GET /api/samples HTTP/1.1" 200 -
+2026-11-05 13:49:04,175 INFO 10.159.207.243 - "GET /api/peaks HTTP/1.1" 200 -
+2026-11-05 13:49:04,803 INFO 10.159.207.243 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02 HTTP/1.1" 200 -
+2026-11-05 13:49:06,056 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&all=1 HTTP/1.1" 200 -
+2026-11-05 13:49:07,209 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=0&hi=900 HTTP/1.1" 200 -
+2026-11-05 13:51:08,533 INFO 10.159.207.142 - "GET / HTTP/1.1" 200 -
+2026-11-05 13:51:08,606 INFO 10.159.207.142 - "GET /plotly.js HTTP/1.1" 200 -
+2026-11-05 13:51:09,352 INFO 10.159.207.142 - "GET /api/config HTTP/1.1" 200 -
+2026-11-05 13:51:09,353 INFO 10.159.207.142 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 13:51:09,370 INFO 10.159.207.142 - "GET /api/samples HTTP/1.1" 200 -
+2026-11-05 13:51:09,450 INFO 10.159.207.142 - "GET /api/peaks HTTP/1.1" 200 -
+2026-11-05 13:51:09,452 INFO 10.159.207.142 - "GET /favicon.ico HTTP/1.1" 404 -
+2026-11-05 13:51:10,076 INFO 10.159.207.142 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02 HTTP/1.1" 200 -
+2026-11-05 13:51:11,381 INFO 10.159.207.142 - "GET /api/image?sample=6PPD_pos3&all=1 HTTP/1.1" 200 -
+2026-11-05 13:51:12,446 INFO 10.159.207.142 - "GET /api/image?sample=6PPD_pos3&lo=0&hi=900 HTTP/1.1" 200 -
+2026-11-05 13:51:24,625 INFO 10.159.207.142 - "GET /api/image?sample=6PPD_pos3&lo=11.50389536427884&hi=678.2402939778249 HTTP/1.1" 200 -
+2026-11-05 13:51:24,631 ERROR 500 GET /api/image?sample=6PPD_pos3&lo=11.50389536427884&hi=678.2402939778249:
+Traceback (most recent call last):
+  File "/home/cloud/tof_sims_driver/src/tof_sims_driver/server.py", line 181, in do_GET
+    return self._send(200, img.astype("<u4").tobytes(), "application/octet-stream",
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/cloud/tof_sims_driver/src/tof_sims_driver/server.py", line 114, in _send
+    self.wfile.write(body)
+  File "/usr/lib/python3.12/socketserver.py", line 840, in write
+    self._sock.sendall(b)
+BrokenPipeError: [Errno 32] Broken pipe
+
+2026-11-05 13:51:24,631 INFO 10.159.207.142 - "GET /api/image?sample=6PPD_pos3&lo=11.50389536427884&hi=678.2402939778249 HTTP/1.1" 500 -
+2026-11-05 13:51:24,633 ERROR connection error:
+Traceback (most recent call last):
+  File "/home/cloud/tof_sims_driver/src/tof_sims_driver/server.py", line 181, in do_GET
+    return self._send(200, img.astype("<u4").tobytes(), "application/octet-stream",
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/cloud/tof_sims_driver/src/tof_sims_driver/server.py", line 114, in _send
+    self.wfile.write(body)
+  File "/usr/lib/python3.12/socketserver.py", line 840, in write
+    self._sock.sendall(b)
+BrokenPipeError: [Errno 32] Broken pipe
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/cloud/tof_sims_driver/src/tof_sims_driver/server.py", line 98, in handle_one_request
+    super().handle_one_request()
+  File "/usr/lib/python3.12/http/server.py", line 424, in handle_one_request
+    method()
+  File "/home/cloud/tof_sims_driver/src/tof_sims_driver/server.py", line 189, in do_GET
+    self._json({"error": f"{type(e).__name__}: {e}"}, 500)
+  File "/home/cloud/tof_sims_driver/src/tof_sims_driver/server.py", line 117, in _json
+    self._send(code, json.dumps(obj), "application/json")
+  File "/home/cloud/tof_sims_driver/src/tof_sims_driver/server.py", line 113, in _send
+    self.end_headers()
+  File "/usr/lib/python3.12/http/server.py", line 538, in end_headers
+    self.flush_headers()
+  File "/usr/lib/python3.12/http/server.py", line 542, in flush_headers
+    self.wfile.write(b"".join(self._headers_buffer))
+  File "/usr/lib/python3.12/socketserver.py", line 840, in write
+    self._sock.sendall(b)
+BrokenPipeError: [Errno 32] Broken pipe
+
+2026-11-05 13:51:24,969 INFO 10.159.207.142 - "GET /api/image?sample=6PPD_pos3&lo=25.071173973879713&hi=429.467241679379 HTTP/1.1" 200 -
+2026-11-05 13:51:24,973 ERROR 500 GET /api/image?sample=6PPD_pos3&lo=25.071173973879713&hi=429.467241679379:
+Traceback (most recent call last):
+  File "/home/cloud/tof_sims_driver/src/tof_sims_driver/server.py", line 181, in do_GET
+    return self._send(200, img.astype("<u4").tobytes(), "application/octet-stream",
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/cloud/tof_sims_driver/src/tof_sims_driver/server.py", line 114, in _send
+    self.wfile.write(body)
+  File "/usr/lib/python3.12/socketserver.py", line 840, in write
+    self._sock.sendall(b)
+BrokenPipeError: [Errno 32] Broken pipe
+
+2026-11-05 13:51:24,973 INFO 10.159.207.142 - "GET /api/image?sample=6PPD_pos3&lo=25.071173973879713&hi=429.467241679379 HTTP/1.1" 500 -
+2026-11-05 13:51:24,974 ERROR connection error:
+Traceback (most recent call last):
+  File "/home/cloud/tof_sims_driver/src/tof_sims_driver/server.py", line 181, in do_GET
+    return self._send(200, img.astype("<u4").tobytes(), "application/octet-stream",
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/cloud/tof_sims_driver/src/tof_sims_driver/server.py", line 114, in _send
+    self.wfile.write(body)
+  File "/usr/lib/python3.12/socketserver.py", line 840, in write
+    self._sock.sendall(b)
+BrokenPipeError: [Errno 32] Broken pipe
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/cloud/tof_sims_driver/src/tof_sims_driver/server.py", line 98, in handle_one_request
+    super().handle_one_request()
+  File "/usr/lib/python3.12/http/server.py", line 424, in handle_one_request
+    method()
+  File "/home/cloud/tof_sims_driver/src/tof_sims_driver/server.py", line 189, in do_GET
+    self._json({"error": f"{type(e).__name__}: {e}"}, 500)
+  File "/home/cloud/tof_sims_driver/src/tof_sims_driver/server.py", line 117, in _json
+    self._send(code, json.dumps(obj), "application/json")
+  File "/home/cloud/tof_sims_driver/src/tof_sims_driver/server.py", line 113, in _send
+    self.end_headers()
+  File "/usr/lib/python3.12/http/server.py", line 538, in end_headers
+    self.flush_headers()
+  File "/usr/lib/python3.12/http/server.py", line 542, in flush_headers
+    self.wfile.write(b"".join(self._headers_buffer))
+  File "/usr/lib/python3.12/socketserver.py", line 840, in write
+    self._sock.sendall(b)
+BrokenPipeError: [Errno 32] Broken pipe
+
+2026-11-05 13:51:25,149 INFO 10.159.207.142 - "GET /api/image?sample=6PPD_pos3&lo=33.52202509545951&hi=278.80063882607067 HTTP/1.1" 200 -
+2026-11-05 13:51:26,011 INFO 10.159.207.142 - "GET /api/image?sample=6PPD_pos3&lo=47.47945759151098&hi=119.12761107124186 HTTP/1.1" 200 -
+2026-11-05 13:51:27,560 INFO 10.159.207.142 - "GET /api/image?sample=6PPD_pos3&lo=44.50554659362876&hi=141.2204376148008 HTTP/1.1" 200 -
+2026-11-05 13:51:28,977 INFO 10.159.207.142 - "GET /api/image?sample=6PPD_pos3&lo=40.243886221635805&hi=170.7953336903182 HTTP/1.1" 200 -
+2026-11-05 13:51:29,664 INFO 10.159.207.142 - "GET /api/image?sample=6PPD_pos3&lo=45.66473022905741&hi=133.1759825062839 HTTP/1.1" 200 -
+2026-11-05 13:51:30,034 INFO 10.159.207.142 - "GET /api/image?sample=6PPD_pos3&lo=41.80862046151714&hi=159.9364551099369 HTTP/1.1" 200 -
+2026-11-05 13:51:32,392 INFO 10.159.207.142 - "GET /api/image?sample=6PPD_pos3&lo=55.686633019664086&hi=57.686633019664086 HTTP/1.1" 200 -
+2026-11-05 13:51:33,164 INFO 10.159.207.142 - "GET /api/image?sample=6PPD_pos3&lo=55.686633019664086&hi=133.48329462816181 HTTP/1.1" 200 -
+2026-11-05 13:51:34,971 INFO 10.159.207.142 - "GET /api/image?sample=6PPD_pos3&lo=0&hi=133.48329462816181 HTTP/1.1" 200 -
+2026-11-05 13:51:36,840 INFO 10.159.207.142 - "GET /api/image?sample=6PPD_pos3&lo=0&hi=11.252642124368188 HTTP/1.1" 200 -
+2026-11-05 13:51:37,454 INFO 10.159.207.142 - "GET /api/image?sample=6PPD_pos3&lo=0&hi=0.32699720782797514 HTTP/1.1" 200 -
+2026-11-05 13:51:38,279 INFO 10.159.207.142 - "GET /api/image?sample=6PPD_pos3&lo=0&hi=5.106966858814317 HTTP/1.1" 200 -
+2026-11-05 13:51:48,060 INFO 10.159.207.142 - "GET /api/image?sample=6PPD_pos3&lo=-1.3538518389461833&hi=7.951648487470652 HTTP/1.1" 200 -
+2026-11-05 13:51:50,423 INFO 10.159.207.142 - "GET /api/image?sample=6PPD_pos3&lo=-2.4102564453957207&hi=14.545470646408424 HTTP/1.1" 200 -
+2026-11-05 13:51:50,861 INFO 10.159.207.142 - "GET /api/image?sample=6PPD_pos3&lo=-4.33515113962656&hi=26.56019796864048 HTTP/1.1" 200 -
+2026-11-05 13:51:51,281 INFO 10.159.207.142 - "GET /api/image?sample=6PPD_pos3&lo=-7.842537950756516&hi=48.45245850404505 HTTP/1.1" 200 -
+2026-11-05 13:51:51,768 INFO 10.159.207.142 - "GET /api/image?sample=6PPD_pos3&lo=-12.885479238637924&hi=79.92927885038175 HTTP/1.1" 200 -
+2026-11-05 13:51:52,263 INFO 10.159.207.142 - "GET /api/image?sample=6PPD_pos3&lo=-23.42225152947237&hi=145.6972641382275 HTTP/1.1" 200 -
+2026-11-05 13:51:53,008 INFO 10.159.207.142 - "GET /api/image?sample=6PPD_pos3&lo=-42.6215024160356&hi=265.5343465950177 HTTP/1.1" 200 -
+2026-11-05 13:51:53,012 ERROR 500 GET /api/image?sample=6PPD_pos3&lo=-42.6215024160356&hi=265.5343465950177:
+Traceback (most recent call last):
+  File "/home/cloud/tof_sims_driver/src/tof_sims_driver/server.py", line 181, in do_GET
+    return self._send(200, img.astype("<u4").tobytes(), "application/octet-stream",
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/cloud/tof_sims_driver/src/tof_sims_driver/server.py", line 114, in _send
+    self.wfile.write(body)
+  File "/usr/lib/python3.12/socketserver.py", line 840, in write
+    self._sock.sendall(b)
+BrokenPipeError: [Errno 32] Broken pipe
+
+2026-11-05 13:51:53,012 INFO 10.159.207.142 - "GET /api/image?sample=6PPD_pos3&lo=-42.6215024160356&hi=265.5343465950177 HTTP/1.1" 500 -
+2026-11-05 13:51:53,013 ERROR connection error:
+Traceback (most recent call last):
+  File "/home/cloud/tof_sims_driver/src/tof_sims_driver/server.py", line 181, in do_GET
+    return self._send(200, img.astype("<u4").tobytes(), "application/octet-stream",
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/cloud/tof_sims_driver/src/tof_sims_driver/server.py", line 114, in _send
+    self.wfile.write(body)
+  File "/usr/lib/python3.12/socketserver.py", line 840, in write
+    self._sock.sendall(b)
+BrokenPipeError: [Errno 32] Broken pipe
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/cloud/tof_sims_driver/src/tof_sims_driver/server.py", line 98, in handle_one_request
+    super().handle_one_request()
+  File "/usr/lib/python3.12/http/server.py", line 424, in handle_one_request
+    method()
+  File "/home/cloud/tof_sims_driver/src/tof_sims_driver/server.py", line 189, in do_GET
+    self._json({"error": f"{type(e).__name__}: {e}"}, 500)
+  File "/home/cloud/tof_sims_driver/src/tof_sims_driver/server.py", line 117, in _json
+    self._send(code, json.dumps(obj), "application/json")
+  File "/home/cloud/tof_sims_driver/src/tof_sims_driver/server.py", line 113, in _send
+    self.end_headers()
+  File "/usr/lib/python3.12/http/server.py", line 538, in end_headers
+    self.flush_headers()
+  File "/usr/lib/python3.12/http/server.py", line 542, in flush_headers
+    self.wfile.write(b"".join(self._headers_buffer))
+  File "/usr/lib/python3.12/socketserver.py", line 840, in write
+    self._sock.sendall(b)
+BrokenPipeError: [Errno 32] Broken pipe
+
+2026-11-05 13:51:53,635 INFO 10.159.207.142 - "GET /api/image?sample=6PPD_pos3&lo=-57.67251225700249&hi=358.29437463662896 HTTP/1.1" 200 -
+2026-11-05 13:51:56,456 INFO 10.159.207.142 - "GET /api/image?sample=6PPD_pos3&lo=358.294374636629&hi=365.94135317989617 HTTP/1.1" 200 -
+2026-11-05 13:51:58,697 INFO 10.159.207.142 - "GET /api/image?sample=6PPD_pos3&lo=131.24619274058526&hi=358.294374636629 HTTP/1.1" 200 -
+2026-11-05 13:51:59,827 INFO 10.159.207.142 - "GET /api/image?sample=6PPD_pos3&lo=89.10278931804643&hi=358.294374636629 HTTP/1.1" 200 -
+2026-11-05 13:52:01,414 INFO 10.159.207.142 - "GET /api/image?sample=6PPD_pos3&lo=-57.67251225700249&hi=358.294374636629 HTTP/1.1" 200 -
+2026-11-05 13:52:05,628 INFO 10.159.207.142 - "GET /api/image?sample=6PPD_pos3&lo=309.99235208445674&hi=725.9592389780884 HTTP/1.1" 200 -
+2026-11-05 13:52:06,974 INFO 10.159.207.142 - "GET /api/image?sample=6PPD_pos3&lo=309.99235208445674&hi=900 HTTP/1.1" 200 -
+2026-11-05 13:52:11,876 INFO 10.159.207.142 - "GET /api/image?sample=6PPD_pos3&lo=-57.67251225700249&hi=900 HTTP/1.1" 200 -
+2026-11-05 14:16:03,472 INFO 10.159.207.243 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02&x0=116&y0=69&x1=116&y1=69 HTTP/1.1" 200 -
+2026-11-05 14:17:15,444 INFO 10.159.207.243 - "GET /api/peaks HTTP/1.1" 200 -
+2026-11-05 14:17:16,626 INFO 10.159.207.243 - "GET /api/spectrum?sample=6PPD_pos6&bin=0.02 HTTP/1.1" 200 -
+2026-11-05 14:17:17,915 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos6&all=1 HTTP/1.1" 200 -
+2026-11-05 14:17:18,884 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos6&lo=0&hi=900 HTTP/1.1" 200 -
+2026-11-05 14:17:18,892 INFO 10.159.207.243 - "GET /api/spectrum?sample=6PPD_pos6&bin=0.02&x0=57&y0=98&x1=85&y1=117 HTTP/1.1" 200 -
+2026-11-05 14:17:20,345 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos6&lo=39.81899762045744&hi=365.61085282407737 HTTP/1.1" 200 -
+2026-11-05 14:18:07,944 INFO 10.159.207.243 - "GET /api/spectrum?sample=6PPD_pos6&bin=2&x0=57&y0=98&x1=85&y1=117 HTTP/1.1" 200 -
+2026-11-05 14:23:55,182 INFO 10.159.207.243 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-05 15:01:06,396 INFO 10.159.207.243 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-05 15:12:07,628 INFO 10.159.207.243 - "GET /api/spectrum?sample=6PPD_pos6&bin=2&x0=108&y0=109&x1=108&y1=109 HTTP/1.1" 200 -
+2026-11-05 15:12:09,075 INFO 10.159.207.243 - "GET /api/spectrum?sample=6PPD_pos6&bin=2&x0=87&y0=98&x1=87&y1=98 HTTP/1.1" 200 -
+2026-11-05 15:12:10,383 INFO 10.159.207.243 - "GET /api/spectrum?sample=6PPD_pos6&bin=2&x0=55&y0=101&x1=55&y1=101 HTTP/1.1" 200 -
+2026-11-05 15:12:12,607 INFO 10.159.207.243 - "GET /api/spectrum?sample=6PPD_pos6&bin=0.05&x0=55&y0=101&x1=55&y1=101 HTTP/1.1" 200 -
+2026-11-05 15:12:32,239 INFO 10.159.207.243 - "GET /api/spectrum?sample=6PPD_pos6&bin=0.05&x0=0&y0=126&x1=0&y1=126 HTTP/1.1" 200 -
+2026-11-05 15:12:44,342 INFO 10.159.207.243 - "GET /api/spectrum?sample=6PPD_pos6&bin=0.05&x0=2&y0=56&x1=64&y1=125 HTTP/1.1" 200 -
+2026-11-05 15:12:44,349 ERROR 500 GET /api/spectrum?sample=6PPD_pos6&bin=0.05&x0=2&y0=56&x1=64&y1=125:
+Traceback (most recent call last):
+  File "/home/cloud/tof_sims_driver/src/tof_sims_driver/server.py", line 169, in do_GET
+    return self._json(store.spectrum(name, box, width, mass_max))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/cloud/tof_sims_driver/src/tof_sims_driver/server.py", line 117, in _json
+    self._send(code, json.dumps(obj), "application/json")
+  File "/home/cloud/tof_sims_driver/src/tof_sims_driver/server.py", line 114, in _send
+    self.wfile.write(body)
+  File "/usr/lib/python3.12/socketserver.py", line 840, in write
+    self._sock.sendall(b)
+BrokenPipeError: [Errno 32] Broken pipe
+
+2026-11-05 15:12:44,349 INFO 10.159.207.243 - "GET /api/spectrum?sample=6PPD_pos6&bin=0.05&x0=2&y0=56&x1=64&y1=125 HTTP/1.1" 500 -
+2026-11-05 15:12:44,350 ERROR connection error:
+Traceback (most recent call last):
+  File "/home/cloud/tof_sims_driver/src/tof_sims_driver/server.py", line 169, in do_GET
+    return self._json(store.spectrum(name, box, width, mass_max))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/cloud/tof_sims_driver/src/tof_sims_driver/server.py", line 117, in _json
+    self._send(code, json.dumps(obj), "application/json")
+  File "/home/cloud/tof_sims_driver/src/tof_sims_driver/server.py", line 114, in _send
+    self.wfile.write(body)
+  File "/usr/lib/python3.12/socketserver.py", line 840, in write
+    self._sock.sendall(b)
+BrokenPipeError: [Errno 32] Broken pipe
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/cloud/tof_sims_driver/src/tof_sims_driver/server.py", line 98, in handle_one_request
+    super().handle_one_request()
+  File "/usr/lib/python3.12/http/server.py", line 424, in handle_one_request
+    method()
+  File "/home/cloud/tof_sims_driver/src/tof_sims_driver/server.py", line 189, in do_GET
+    self._json({"error": f"{type(e).__name__}: {e}"}, 500)
+  File "/home/cloud/tof_sims_driver/src/tof_sims_driver/server.py", line 117, in _json
+    self._send(code, json.dumps(obj), "application/json")
+  File "/home/cloud/tof_sims_driver/src/tof_sims_driver/server.py", line 113, in _send
+    self.end_headers()
+  File "/usr/lib/python3.12/http/server.py", line 538, in end_headers
+    self.flush_headers()
+  File "/usr/lib/python3.12/http/server.py", line 542, in flush_headers
+    self.wfile.write(b"".join(self._headers_buffer))
+  File "/usr/lib/python3.12/socketserver.py", line 840, in write
+    self._sock.sendall(b)
+BrokenPipeError: [Errno 32] Broken pipe
+
+2026-11-05 15:12:44,722 INFO 10.159.207.243 - "GET /api/spectrum?sample=6PPD_pos6&bin=0.05&x0=2&y0=125&x1=2&y1=125 HTTP/1.1" 200 -
+2026-11-05 15:12:48,194 INFO 10.159.207.243 - "GET /api/spectrum?sample=6PPD_pos6&bin=0.05&x0=1&y0=63&x1=58&y1=126 HTTP/1.1" 200 -
+2026-11-05 15:15:06,663 INFO 10.159.207.243 - "GET /api/spectrum?sample=6PPD_pos6&bin=2&x0=1&y0=63&x1=58&y1=126 HTTP/1.1" 200 -
+2026-11-05 15:15:11,323 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos6&lo=193&hi=197 HTTP/1.1" 200 -
+2026-11-05 15:15:12,404 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos6&lo=203&hi=207 HTTP/1.1" 200 -
+2026-11-05 15:15:15,234 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos6&lo=219&hi=223 HTTP/1.1" 200 -
+2026-11-05 15:23:38,876 INFO uploaded jtttFI-sample6-500x500-pos2.itm (77022221 bytes) -> user:jtttFI-sample6-500x500-pos2
+2026-11-05 15:23:38,876 INFO 10.159.207.243 - "POST /api/upload?filename=jtttFI-sample6-500x500-pos2.itm&label=&polarity=auto HTTP/1.1" 202 -
+2026-11-05 15:23:39,178 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 15:23:41,216 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 15:23:42,410 INFO 10.159.207.243 - "GET /api/samples HTTP/1.1" 200 -
+2026-11-05 15:23:42,464 INFO 10.159.207.243 - "GET /api/peaks HTTP/1.1" 200 -
+2026-11-05 15:23:43,080 INFO 10.159.207.243 - "GET /api/spectrum?sample=6PPD_pos3&bin=2 HTTP/1.1" 200 -
+2026-11-05 15:23:43,781 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&all=1 HTTP/1.1" 200 -
+2026-11-05 15:23:44,539 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=0&hi=900 HTTP/1.1" 200 -
+2026-11-05 15:23:54,881 INFO 10.159.207.243 - "DELETE /api/upload?sample=user%3AjtttFI-sample6-500x500-pos2 HTTP/1.1" 200 -
+2026-11-05 15:23:54,917 INFO 10.159.207.243 - "GET /api/samples HTTP/1.1" 200 -
+2026-11-05 15:23:54,950 INFO 10.159.207.243 - "GET /api/peaks HTTP/1.1" 200 -
+2026-11-05 15:23:55,443 INFO 10.159.207.243 - "GET /api/spectrum?sample=6PPD_pos3&bin=2 HTTP/1.1" 200 -
+2026-11-05 15:23:56,133 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&all=1 HTTP/1.1" 200 -
+2026-11-05 15:23:56,869 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=0&hi=900 HTTP/1.1" 200 -
+2026-11-05 15:26:30,286 INFO 10.159.207.243 - "GET / HTTP/1.1" 200 -
+2026-11-05 15:26:30,660 INFO 10.159.207.243 - "GET /plotly.js HTTP/1.1" 200 -
+2026-11-05 15:26:31,777 INFO 10.159.207.243 - "GET /api/config HTTP/1.1" 200 -
+2026-11-05 15:26:31,778 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 15:26:31,792 INFO 10.159.207.243 - "GET /api/samples HTTP/1.1" 200 -
+2026-11-05 15:26:31,842 INFO 10.159.207.243 - "GET /api/peaks HTTP/1.1" 200 -
+2026-11-05 15:26:32,433 INFO 10.159.207.243 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02 HTTP/1.1" 200 -
+2026-11-05 15:26:33,625 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&all=1 HTTP/1.1" 200 -
+2026-11-05 15:26:34,372 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=0&hi=900 HTTP/1.1" 200 -
+2026-11-05 15:28:02,183 INFO 10.159.207.243 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-05 16:43:37,385 INFO 10.159.207.243 - "GET / HTTP/1.1" 200 -
+2026-11-05 16:43:37,463 INFO 10.159.207.243 - "GET /plotly.js HTTP/1.1" 200 -
+2026-11-05 16:43:38,462 INFO 10.159.207.243 - "GET /api/config HTTP/1.1" 200 -
+2026-11-05 16:43:38,462 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 16:43:38,479 INFO 10.159.207.243 - "GET /api/samples HTTP/1.1" 200 -
+2026-11-05 16:43:38,558 INFO 10.159.207.243 - "GET /api/peaks HTTP/1.1" 200 -
+2026-11-05 16:43:39,177 INFO 10.159.207.243 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02 HTTP/1.1" 200 -
+2026-11-05 16:43:40,673 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&all=1 HTTP/1.1" 200 -
+2026-11-05 16:43:41,723 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=0&hi=900 HTTP/1.1" 200 -
+2026-11-05 16:43:57,075 INFO 10.159.207.243 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02&x0=52&y0=98&x1=79&y1=122 HTTP/1.1" 200 -
+2026-11-05 16:43:57,089 ERROR 500 GET /api/spectrum?sample=6PPD_pos3&bin=0.02&x0=52&y0=98&x1=79&y1=122:
+Traceback (most recent call last):
+  File "/home/cloud/tof_sims_driver/src/tof_sims_driver/server.py", line 169, in do_GET
+    return self._json(store.spectrum(name, box, width, mass_max))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/cloud/tof_sims_driver/src/tof_sims_driver/server.py", line 117, in _json
+    self._send(code, json.dumps(obj), "application/json")
+  File "/home/cloud/tof_sims_driver/src/tof_sims_driver/server.py", line 114, in _send
+    self.wfile.write(body)
+  File "/usr/lib/python3.12/socketserver.py", line 840, in write
+    self._sock.sendall(b)
+BrokenPipeError: [Errno 32] Broken pipe
+
+2026-11-05 16:43:57,089 INFO 10.159.207.243 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02&x0=52&y0=98&x1=79&y1=122 HTTP/1.1" 500 -
+2026-11-05 16:43:57,090 ERROR connection error:
+Traceback (most recent call last):
+  File "/home/cloud/tof_sims_driver/src/tof_sims_driver/server.py", line 169, in do_GET
+    return self._json(store.spectrum(name, box, width, mass_max))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/cloud/tof_sims_driver/src/tof_sims_driver/server.py", line 117, in _json
+    self._send(code, json.dumps(obj), "application/json")
+  File "/home/cloud/tof_sims_driver/src/tof_sims_driver/server.py", line 114, in _send
+    self.wfile.write(body)
+  File "/usr/lib/python3.12/socketserver.py", line 840, in write
+    self._sock.sendall(b)
+BrokenPipeError: [Errno 32] Broken pipe
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/cloud/tof_sims_driver/src/tof_sims_driver/server.py", line 98, in handle_one_request
+    super().handle_one_request()
+  File "/usr/lib/python3.12/http/server.py", line 424, in handle_one_request
+    method()
+  File "/home/cloud/tof_sims_driver/src/tof_sims_driver/server.py", line 189, in do_GET
+    self._json({"error": f"{type(e).__name__}: {e}"}, 500)
+  File "/home/cloud/tof_sims_driver/src/tof_sims_driver/server.py", line 117, in _json
+    self._send(code, json.dumps(obj), "application/json")
+  File "/home/cloud/tof_sims_driver/src/tof_sims_driver/server.py", line 113, in _send
+    self.end_headers()
+  File "/usr/lib/python3.12/http/server.py", line 538, in end_headers
+    self.flush_headers()
+  File "/usr/lib/python3.12/http/server.py", line 542, in flush_headers
+    self.wfile.write(b"".join(self._headers_buffer))
+  File "/usr/lib/python3.12/socketserver.py", line 840, in write
+    self._sock.sendall(b)
+BrokenPipeError: [Errno 32] Broken pipe
+
+2026-11-05 16:43:57,311 INFO 10.159.207.243 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02&x0=52&y0=122&x1=52&y1=122 HTTP/1.1" 200 -
+2026-11-05 16:45:56,713 INFO 10.159.207.243 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-05 16:49:45,448 INFO uploaded spectra-sample1-500x500-neg2.itm (129727372 bytes) -> user:spectra-sample1-500x500-neg2
+2026-11-05 16:49:45,448 INFO 10.159.207.243 - "POST /api/upload?filename=spectra-sample1-500x500-neg2.itm&label=&polarity=auto HTTP/1.1" 202 -
+2026-11-05 16:49:45,688 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 16:49:47,870 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 16:49:49,894 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 16:49:51,921 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 16:49:53,949 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 16:49:55,986 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 16:49:57,858 INFO uploaded spectra-sample1-500x500-neg1.itm (135143374 bytes) -> user:spectra-sample1-500x500-neg1
+2026-11-05 16:49:57,858 INFO 10.159.207.243 - "POST /api/upload?filename=spectra-sample1-500x500-neg1.itm&label=&polarity=auto HTTP/1.1" 202 -
+2026-11-05 16:49:57,877 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 16:49:59,906 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 16:50:01,932 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 16:50:02,012 INFO 10.159.207.243 - "GET /api/samples HTTP/1.1" 200 -
+2026-11-05 16:50:02,074 INFO 10.159.207.243 - "GET /api/peaks HTTP/1.1" 200 -
+2026-11-05 16:50:02,616 INFO 10.159.207.243 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02 HTTP/1.1" 200 -
+2026-11-05 16:50:03,400 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&all=1 HTTP/1.1" 200 -
+2026-11-05 16:50:04,181 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=0&hi=900 HTTP/1.1" 200 -
+2026-11-05 16:51:39,686 INFO 10.159.207.243 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-05 16:54:41,870 INFO uploaded spectra-sample1-500x500-neg3.itm (152139806 bytes) -> user:spectra-sample1-500x500-neg3
+2026-11-05 16:54:41,870 INFO 10.159.207.243 - "POST /api/upload?filename=spectra-sample1-500x500-neg3.itm&label=&polarity=auto HTTP/1.1" 202 -
+2026-11-05 16:54:41,983 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 16:54:44,398 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 16:54:46,413 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 16:54:48,432 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 16:54:48,460 INFO 10.159.207.243 - "GET /api/samples HTTP/1.1" 200 -
+2026-11-05 16:54:48,480 INFO 10.159.207.243 - "GET /api/peaks HTTP/1.1" 200 -
+2026-11-05 16:54:49,110 INFO 10.159.207.243 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02 HTTP/1.1" 200 -
+2026-11-05 16:54:50,000 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&all=1 HTTP/1.1" 200 -
+2026-11-05 16:54:50,969 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=0&hi=900 HTTP/1.1" 200 -
+2026-11-05 16:55:30,967 INFO uploaded spectra-sample1-500x500-neg3_2.itm (152139806 bytes) -> user:spectra-sample1-500x500-neg3_2
+2026-11-05 16:55:30,967 INFO 10.159.207.243 - "POST /api/upload?filename=spectra-sample1-500x500-neg3.itm&label=&polarity=auto HTTP/1.1" 202 -
+2026-11-05 16:55:31,064 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 16:55:33,079 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 16:55:35,096 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 16:55:37,125 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 16:55:37,154 INFO 10.159.207.243 - "GET /api/samples HTTP/1.1" 200 -
+2026-11-05 16:55:37,179 INFO 10.159.207.243 - "GET /api/peaks HTTP/1.1" 200 -
+2026-11-05 16:55:37,675 INFO 10.159.207.243 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02 HTTP/1.1" 200 -
+2026-11-05 16:55:38,574 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&all=1 HTTP/1.1" 200 -
+2026-11-05 16:55:39,559 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=0&hi=900 HTTP/1.1" 200 -
+2026-11-05 16:55:43,087 INFO 10.159.207.243 - "DELETE /api/upload?sample=user%3Aspectra-sample1-500x500-neg3_2 HTTP/1.1" 200 -
+2026-11-05 16:55:43,117 INFO 10.159.207.243 - "GET /api/samples HTTP/1.1" 200 -
+2026-11-05 16:55:43,146 INFO 10.159.207.243 - "GET /api/peaks HTTP/1.1" 200 -
+2026-11-05 16:55:43,600 INFO 10.159.207.243 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02 HTTP/1.1" 200 -
+2026-11-05 16:55:44,406 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&all=1 HTTP/1.1" 200 -
+2026-11-05 16:55:45,280 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=0&hi=900 HTTP/1.1" 200 -
+2026-11-05 16:55:49,784 INFO uploaded spectra-sample1-500x500-neg4.itm (124471290 bytes) -> user:spectra-sample1-500x500-neg4
+2026-11-05 16:55:49,785 INFO 10.159.207.243 - "POST /api/upload?filename=spectra-sample1-500x500-neg4.itm&label=&polarity=auto HTTP/1.1" 202 -
+2026-11-05 16:55:49,806 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 16:55:51,827 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 16:55:53,842 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 16:55:53,870 INFO 10.159.207.243 - "GET /api/samples HTTP/1.1" 200 -
+2026-11-05 16:55:53,897 INFO 10.159.207.243 - "GET /api/peaks HTTP/1.1" 200 -
+2026-11-05 16:55:54,311 INFO 10.159.207.243 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02 HTTP/1.1" 200 -
+2026-11-05 16:55:55,185 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&all=1 HTTP/1.1" 200 -
+2026-11-05 16:55:56,153 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=0&hi=900 HTTP/1.1" 200 -
+2026-11-05 16:56:17,026 INFO uploaded spectra-sample1-500x500-neg5.itm (134569183 bytes) -> user:spectra-sample1-500x500-neg5
+2026-11-05 16:56:17,027 INFO 10.159.207.243 - "POST /api/upload?filename=spectra-sample1-500x500-neg5.itm&label=&polarity=auto HTTP/1.1" 202 -
+2026-11-05 16:56:17,040 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 16:56:19,067 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 16:56:21,093 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 16:56:21,121 INFO 10.159.207.243 - "GET /api/samples HTTP/1.1" 200 -
+2026-11-05 16:56:21,144 INFO 10.159.207.243 - "GET /api/peaks HTTP/1.1" 200 -
+2026-11-05 16:56:21,778 INFO 10.159.207.243 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02 HTTP/1.1" 200 -
+2026-11-05 16:56:22,672 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&all=1 HTTP/1.1" 200 -
+2026-11-05 16:56:23,643 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=0&hi=900 HTTP/1.1" 200 -
+2026-11-05 16:58:08,389 INFO 10.159.207.243 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-05 17:00:21,766 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=289.61359757138786&hi=764.1767792101315 HTTP/1.1" 200 -
+2026-11-05 17:00:22,965 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=177.92318234235796&hi=844.6595809559036 HTTP/1.1" 200 -
+2026-11-05 17:01:57,233 INFO uploaded spectra-sample2-500x500-neg1.itm (136008515 bytes) -> user:spectra-sample2-500x500-neg1
+2026-11-05 17:01:57,234 INFO 10.159.207.243 - "POST /api/upload?filename=spectra-sample2-500x500-neg1.itm&label=&polarity=auto HTTP/1.1" 202 -
+2026-11-05 17:01:57,341 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:01:59,364 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:02:01,400 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:02:01,438 INFO 10.159.207.243 - "GET /api/samples HTTP/1.1" 200 -
+2026-11-05 17:02:01,482 INFO 10.159.207.243 - "GET /api/peaks HTTP/1.1" 200 -
+2026-11-05 17:02:02,063 INFO 10.159.207.243 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02 HTTP/1.1" 200 -
+2026-11-05 17:02:03,024 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&all=1 HTTP/1.1" 200 -
+2026-11-05 17:02:04,089 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=0&hi=900 HTTP/1.1" 200 -
+2026-11-05 17:02:15,534 INFO uploaded spectra-sample2-500x500-neg2.itm (142273082 bytes) -> user:spectra-sample2-500x500-neg2
+2026-11-05 17:02:15,534 INFO 10.159.207.243 - "POST /api/upload?filename=spectra-sample2-500x500-neg2.itm&label=&polarity=auto HTTP/1.1" 202 -
+2026-11-05 17:02:15,555 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:02:17,590 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:02:19,625 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:02:19,665 INFO 10.159.207.243 - "GET /api/samples HTTP/1.1" 200 -
+2026-11-05 17:02:19,711 INFO 10.159.207.243 - "GET /api/peaks HTTP/1.1" 200 -
+2026-11-05 17:02:20,304 INFO 10.159.207.243 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02 HTTP/1.1" 200 -
+2026-11-05 17:02:21,262 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&all=1 HTTP/1.1" 200 -
+2026-11-05 17:02:22,317 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=0&hi=900 HTTP/1.1" 200 -
+2026-11-05 17:02:36,560 INFO uploaded spectra-sample2-500x500-neg3.itm (152694375 bytes) -> user:spectra-sample2-500x500-neg3
+2026-11-05 17:02:36,560 INFO 10.159.207.243 - "POST /api/upload?filename=spectra-sample2-500x500-neg3.itm&label=&polarity=auto HTTP/1.1" 202 -
+2026-11-05 17:02:36,580 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:02:38,601 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:02:40,631 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:02:42,675 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:02:42,711 INFO 10.159.207.243 - "GET /api/samples HTTP/1.1" 200 -
+2026-11-05 17:02:42,760 INFO 10.159.207.243 - "GET /api/peaks HTTP/1.1" 200 -
+2026-11-05 17:02:43,449 INFO 10.159.207.243 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02 HTTP/1.1" 200 -
+2026-11-05 17:02:44,437 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&all=1 HTTP/1.1" 200 -
+2026-11-05 17:02:45,455 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=0&hi=900 HTTP/1.1" 200 -
+2026-11-05 17:02:56,881 INFO uploaded spectra-sample2-500x500-neg4.itm (193737433 bytes) -> user:spectra-sample2-500x500-neg4
+2026-11-05 17:02:56,882 INFO 10.159.207.243 - "POST /api/upload?filename=spectra-sample2-500x500-neg4.itm&label=&polarity=auto HTTP/1.1" 202 -
+2026-11-05 17:02:56,904 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:02:58,945 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:03:00,972 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:03:02,992 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:03:05,011 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:03:07,090 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:03:07,593 INFO uploaded spectra-sample2-500x500-neg5.itm (161849097 bytes) -> user:spectra-sample2-500x500-neg5
+2026-11-05 17:03:07,593 INFO 10.159.207.243 - "POST /api/upload?filename=spectra-sample2-500x500-neg5.itm&label=&polarity=auto HTTP/1.1" 202 -
+2026-11-05 17:03:07,615 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:03:09,634 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:03:11,681 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:03:13,718 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:03:13,750 INFO 10.159.207.243 - "GET /api/samples HTTP/1.1" 200 -
+2026-11-05 17:03:13,784 INFO 10.159.207.243 - "GET /api/peaks HTTP/1.1" 200 -
+2026-11-05 17:03:14,412 INFO 10.159.207.243 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02 HTTP/1.1" 200 -
+2026-11-05 17:03:15,393 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&all=1 HTTP/1.1" 200 -
+2026-11-05 17:03:16,422 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=0&hi=900 HTTP/1.1" 200 -
+2026-11-05 17:03:21,737 INFO uploaded spectra-sample6-500x500-neg5.itax (48389343 bytes) -> user:spectra-sample6-500x500-neg5
+2026-11-05 17:03:21,738 INFO 10.159.207.243 - "POST /api/upload?filename=spectra-sample6-500x500-neg5.itax&label=&polarity=auto HTTP/1.1" 202 -
+2026-11-05 17:03:21,754 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:03:23,771 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:03:25,792 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:03:27,807 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:03:29,835 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:03:31,859 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:03:33,890 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:03:35,917 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:03:36,385 INFO uploaded spectra-sample6-500x500-neg5_2.itmx (165139069 bytes) -> user:spectra-sample6-500x500-neg5_2
+2026-11-05 17:03:36,385 INFO 10.159.207.243 - "POST /api/upload?filename=spectra-sample6-500x500-neg5.itmx&label=&polarity=auto HTTP/1.1" 202 -
+2026-11-05 17:03:36,411 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:03:38,442 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:03:40,469 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:03:42,504 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:03:44,527 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:03:46,559 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:03:48,581 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:03:50,599 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:03:51,096 INFO uploaded spectra-sample6-500x500-neg5.itm (163073351 bytes) -> user:spectra-sample6-500x500-neg5
+2026-11-05 17:03:51,096 INFO 10.159.207.243 - "POST /api/upload?filename=spectra-sample6-500x500-neg5.itm&label=&polarity=auto HTTP/1.1" 202 -
+2026-11-05 17:03:51,117 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:03:53,149 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:03:55,176 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:03:55,648 INFO uploaded spectra-sample6-500x500-neg4.itax (49613687 bytes) -> user:spectra-sample6-500x500-neg4
+2026-11-05 17:03:55,649 INFO 10.159.207.243 - "POST /api/upload?filename=spectra-sample6-500x500-neg4.itax&label=&polarity=auto HTTP/1.1" 202 -
+2026-11-05 17:03:55,666 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:03:57,696 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:03:59,722 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:04:01,740 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:04:03,798 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:04:05,832 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:04:07,876 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:04:09,895 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:04:11,921 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:04:13,955 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:04:16,027 INFO uploaded spectra-sample6-500x500-neg4_2.itmx (231378239 bytes) -> user:spectra-sample6-500x500-neg4_2
+2026-11-05 17:04:16,028 INFO 10.159.207.243 - "POST /api/upload?filename=spectra-sample6-500x500-neg4.itmx&label=&polarity=auto HTTP/1.1" 202 -
+2026-11-05 17:04:16,069 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:04:16,114 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:04:18,116 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:04:20,144 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:04:22,177 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:04:24,210 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:04:26,226 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:04:28,252 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:04:30,338 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:04:32,422 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:04:32,547 INFO uploaded spectra-sample6-500x500-neg4.itm (229221432 bytes) -> user:spectra-sample6-500x500-neg4
+2026-11-05 17:04:32,548 INFO 10.159.207.243 - "POST /api/upload?filename=spectra-sample6-500x500-neg4.itm&label=&polarity=auto HTTP/1.1" 202 -
+2026-11-05 17:04:32,562 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:04:34,584 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:04:36,608 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:04:37,019 INFO uploaded spectra-sample6-500x500-neg3.itax (49315332 bytes) -> user:spectra-sample6-500x500-neg3
+2026-11-05 17:04:37,020 INFO 10.159.207.243 - "POST /api/upload?filename=spectra-sample6-500x500-neg3.itax&label=&polarity=auto HTTP/1.1" 202 -
+2026-11-05 17:04:37,039 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:04:39,060 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:04:41,088 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:04:43,202 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:04:45,220 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:04:47,237 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:04:49,259 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:04:51,293 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:04:53,312 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:04:55,336 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:04:55,504 INFO uploaded spectra-sample6-500x500-neg3_2.itmx (204978079 bytes) -> user:spectra-sample6-500x500-neg3_2
+2026-11-05 17:04:55,504 INFO 10.159.207.243 - "POST /api/upload?filename=spectra-sample6-500x500-neg3.itmx&label=&polarity=auto HTTP/1.1" 202 -
+2026-11-05 17:04:55,525 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:04:57,562 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:04:59,596 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:05:01,625 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:05:03,650 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:05:05,683 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:05:07,711 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:05:09,737 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:05:11,758 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:05:13,782 INFO uploaded spectra-sample6-500x500-neg3.itm (202571015 bytes) -> user:spectra-sample6-500x500-neg3
+2026-11-05 17:05:13,782 INFO 10.159.207.243 - "POST /api/upload?filename=spectra-sample6-500x500-neg3.itm&label=&polarity=auto HTTP/1.1" 202 -
+2026-11-05 17:05:13,790 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:05:13,802 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:05:15,818 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:05:17,841 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:05:18,201 INFO uploaded spectra-sample6-500x500-neg2.itax (49084893 bytes) -> user:spectra-sample6-500x500-neg2
+2026-11-05 17:05:18,202 INFO 10.159.207.243 - "POST /api/upload?filename=spectra-sample6-500x500-neg2.itax&label=&polarity=auto HTTP/1.1" 202 -
+2026-11-05 17:05:18,218 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:05:20,247 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:05:22,286 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:05:24,318 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:05:26,393 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:05:26,500 INFO uploaded spectra-sample6-500x500-neg2_2.itmx (194635270 bytes) -> user:spectra-sample6-500x500-neg2_2
+2026-11-05 17:05:26,500 INFO 10.159.207.243 - "POST /api/upload?filename=spectra-sample6-500x500-neg2.itmx&label=&polarity=auto HTTP/1.1" 202 -
+2026-11-05 17:05:26,523 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:05:28,566 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:05:30,603 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:05:32,621 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:05:34,643 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:05:36,677 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:05:38,703 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:05:40,720 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:05:42,756 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:05:44,216 INFO uploaded spectra-sample6-500x500-neg2.itm (192743161 bytes) -> user:spectra-sample6-500x500-neg2
+2026-11-05 17:05:44,216 INFO 10.159.207.243 - "POST /api/upload?filename=spectra-sample6-500x500-neg2.itm&label=&polarity=auto HTTP/1.1" 202 -
+2026-11-05 17:05:44,235 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:05:46,265 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:05:48,298 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:05:48,645 INFO uploaded spectra-sample6-500x500-neg1.itax (49128718 bytes) -> user:spectra-sample6-500x500-neg1
+2026-11-05 17:05:48,646 INFO 10.159.207.243 - "POST /api/upload?filename=spectra-sample6-500x500-neg1.itax&label=&polarity=auto HTTP/1.1" 202 -
+2026-11-05 17:05:48,661 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:05:50,697 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:05:52,723 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:05:54,752 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:05:56,780 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:05:58,801 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:06:00,829 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:06:02,860 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:06:04,893 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:06:06,917 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:06:08,947 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:06:10,977 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:06:13,008 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:06:15,028 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:06:17,057 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:06:19,091 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:06:21,109 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:06:23,137 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:06:25,166 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:06:27,195 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:06:29,230 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:06:31,257 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:06:33,284 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:06:35,302 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:06:36,421 INFO uploaded spectra-sample6-500x500-neg1_2.itmx (199310433 bytes) -> user:spectra-sample6-500x500-neg1_2
+2026-11-05 17:06:36,421 INFO 10.159.207.243 - "POST /api/upload?filename=spectra-sample6-500x500-neg1.itmx&label=&polarity=auto HTTP/1.1" 202 -
+2026-11-05 17:06:36,442 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:06:38,470 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:06:40,496 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:06:42,524 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:06:44,555 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:06:46,574 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:06:48,599 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:06:50,632 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:06:52,650 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:06:54,249 INFO uploaded spectra-sample6-500x500-neg1.itm (197148583 bytes) -> user:spectra-sample6-500x500-neg1
+2026-11-05 17:06:54,249 INFO 10.159.207.243 - "POST /api/upload?filename=spectra-sample6-500x500-neg1.itm&label=&polarity=auto HTTP/1.1" 202 -
+2026-11-05 17:06:54,268 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:06:56,299 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:06:58,318 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:06:58,696 INFO uploaded spectra-sample5-500x500-neg5.itax (49085900 bytes) -> user:spectra-sample5-500x500-neg5
+2026-11-05 17:06:58,697 INFO 10.159.207.243 - "POST /api/upload?filename=spectra-sample5-500x500-neg5.itax&label=&polarity=auto HTTP/1.1" 202 -
+2026-11-05 17:06:58,727 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:07:00,748 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:07:02,895 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:07:04,963 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:07:07,031 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:07:07,935 INFO uploaded spectra-sample5-500x500-neg5_2.itmx (193866476 bytes) -> user:spectra-sample5-500x500-neg5_2
+2026-11-05 17:07:07,936 INFO 10.159.207.243 - "POST /api/upload?filename=spectra-sample5-500x500-neg5.itmx&label=&polarity=auto HTTP/1.1" 202 -
+2026-11-05 17:07:07,954 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:07:09,973 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:07:11,994 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:07:14,014 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:07:16,033 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:07:18,060 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:07:20,084 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:07:22,103 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:07:24,674 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:07:25,128 INFO uploaded spectra-sample5-500x500-neg5.itm (191389764 bytes) -> user:spectra-sample5-500x500-neg5
+2026-11-05 17:07:25,128 INFO 10.159.207.243 - "POST /api/upload?filename=spectra-sample5-500x500-neg5.itm&label=&polarity=auto HTTP/1.1" 202 -
+2026-11-05 17:07:25,147 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:07:27,174 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:07:29,195 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:07:29,641 INFO uploaded spectra-sample5-500x500-neg4.itax (48529382 bytes) -> user:spectra-sample5-500x500-neg4
+2026-11-05 17:07:29,641 INFO 10.159.207.243 - "POST /api/upload?filename=spectra-sample5-500x500-neg4.itax&label=&polarity=auto HTTP/1.1" 202 -
+2026-11-05 17:07:29,656 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:07:31,686 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:07:33,713 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:07:35,754 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:07:37,789 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:07:39,819 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:07:41,848 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:07:43,877 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:07:44,742 INFO uploaded spectra-sample5-500x500-neg4_2.itmx (165131332 bytes) -> user:spectra-sample5-500x500-neg4_2
+2026-11-05 17:07:44,742 INFO 10.159.207.243 - "POST /api/upload?filename=spectra-sample5-500x500-neg4.itmx&label=&polarity=auto HTTP/1.1" 202 -
+2026-11-05 17:07:44,765 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:07:46,801 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:07:48,830 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:07:50,863 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:07:52,885 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:07:54,911 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:07:56,933 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:07:58,963 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:07:59,399 INFO uploaded spectra-sample5-500x500-neg4.itm (161200264 bytes) -> user:spectra-sample5-500x500-neg4
+2026-11-05 17:07:59,399 INFO 10.159.207.243 - "POST /api/upload?filename=spectra-sample5-500x500-neg4.itm&label=&polarity=auto HTTP/1.1" 202 -
+2026-11-05 17:07:59,413 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:08:01,435 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:08:03,452 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:08:03,766 INFO uploaded spectra-sample5-500x500-neg3.itax (48645243 bytes) -> user:spectra-sample5-500x500-neg3
+2026-11-05 17:08:03,766 INFO 10.159.207.243 - "POST /api/upload?filename=spectra-sample5-500x500-neg3.itax&label=&polarity=auto HTTP/1.1" 202 -
+2026-11-05 17:08:03,780 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:08:05,795 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:08:06,281 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=49.19&hi=49.230000000000004 HTTP/1.1" 200 -
+2026-11-05 17:08:06,430 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=3.1674139100501977&hi=341.1764636838059 HTTP/1.1" 200 -
+2026-11-05 17:08:06,434 ERROR 500 GET /api/image?sample=6PPD_pos3&lo=3.1674139100501977&hi=341.1764636838059:
+Traceback (most recent call last):
+  File "/home/cloud/tof_sims_driver/src/tof_sims_driver/server.py", line 181, in do_GET
+    return self._send(200, img.astype("<u4").tobytes(), "application/octet-stream",
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/cloud/tof_sims_driver/src/tof_sims_driver/server.py", line 114, in _send
+    self.wfile.write(body)
+  File "/usr/lib/python3.12/socketserver.py", line 840, in write
+    self._sock.sendall(b)
+BrokenPipeError: [Errno 32] Broken pipe
+
+2026-11-05 17:08:06,435 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=3.1674139100501977&hi=341.1764636838059 HTTP/1.1" 500 -
+2026-11-05 17:08:06,436 ERROR connection error:
+Traceback (most recent call last):
+  File "/home/cloud/tof_sims_driver/src/tof_sims_driver/server.py", line 181, in do_GET
+    return self._send(200, img.astype("<u4").tobytes(), "application/octet-stream",
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/cloud/tof_sims_driver/src/tof_sims_driver/server.py", line 114, in _send
+    self.wfile.write(body)
+  File "/usr/lib/python3.12/socketserver.py", line 840, in write
+    self._sock.sendall(b)
+BrokenPipeError: [Errno 32] Broken pipe
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/cloud/tof_sims_driver/src/tof_sims_driver/server.py", line 98, in handle_one_request
+    super().handle_one_request()
+  File "/usr/lib/python3.12/http/server.py", line 424, in handle_one_request
+    method()
+  File "/home/cloud/tof_sims_driver/src/tof_sims_driver/server.py", line 189, in do_GET
+    self._json({"error": f"{type(e).__name__}: {e}"}, 500)
+  File "/home/cloud/tof_sims_driver/src/tof_sims_driver/server.py", line 117, in _json
+    self._send(code, json.dumps(obj), "application/json")
+  File "/home/cloud/tof_sims_driver/src/tof_sims_driver/server.py", line 113, in _send
+    self.end_headers()
+  File "/usr/lib/python3.12/http/server.py", line 538, in end_headers
+    self.flush_headers()
+  File "/usr/lib/python3.12/http/server.py", line 542, in flush_headers
+    self.wfile.write(b"".join(self._headers_buffer))
+  File "/usr/lib/python3.12/socketserver.py", line 840, in write
+    self._sock.sendall(b)
+BrokenPipeError: [Errno 32] Broken pipe
+
+2026-11-05 17:08:06,971 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=75.21000000000001&hi=75.25 HTTP/1.1" 200 -
+2026-11-05 17:08:07,624 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=120.07000000000001&hi=120.11 HTTP/1.1" 200 -
+2026-11-05 17:08:07,818 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:08:09,840 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:08:11,858 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:08:13,881 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:08:15,902 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:08:17,737 INFO uploaded spectra-sample5-500x500-neg3_2.itmx (167651223 bytes) -> user:spectra-sample5-500x500-neg3_2
+2026-11-05 17:08:17,738 INFO 10.159.207.243 - "POST /api/upload?filename=spectra-sample5-500x500-neg3.itmx&label=&polarity=auto HTTP/1.1" 202 -
+2026-11-05 17:08:17,753 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:08:20,659 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:08:22,692 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:08:24,709 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:08:26,724 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:08:28,738 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:08:30,757 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:08:32,510 INFO uploaded spectra-sample5-500x500-neg3.itm (163292527 bytes) -> user:spectra-sample5-500x500-neg3
+2026-11-05 17:08:32,510 INFO 10.159.207.243 - "POST /api/upload?filename=spectra-sample5-500x500-neg3.itm&label=&polarity=auto HTTP/1.1" 202 -
+2026-11-05 17:08:32,523 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:08:34,544 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:08:36,575 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:08:37,045 INFO uploaded spectra-sample5-500x500-neg2.itax (49267676 bytes) -> user:spectra-sample5-500x500-neg2
+2026-11-05 17:08:37,045 INFO 10.159.207.243 - "POST /api/upload?filename=spectra-sample5-500x500-neg2.itax&label=&polarity=auto HTTP/1.1" 202 -
+2026-11-05 17:08:37,057 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:08:39,077 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:08:41,092 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:08:43,107 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:08:45,123 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:08:47,139 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:08:49,155 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:08:51,671 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:08:53,794 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:08:53,943 INFO uploaded spectra-sample5-500x500-neg2_2.itmx (203287315 bytes) -> user:spectra-sample5-500x500-neg2_2
+2026-11-05 17:08:53,944 INFO 10.159.207.243 - "POST /api/upload?filename=spectra-sample5-500x500-neg2.itmx&label=&polarity=auto HTTP/1.1" 202 -
+2026-11-05 17:08:53,960 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:08:56,041 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:08:58,168 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:09:00,331 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:09:02,436 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:09:04,624 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:09:06,890 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:09:09,131 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:09:11,217 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:09:13,239 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:09:14,101 INFO uploaded spectra-sample5-500x500-neg2.itm (201500736 bytes) -> user:spectra-sample5-500x500-neg2
+2026-11-05 17:09:14,101 INFO 10.159.207.243 - "POST /api/upload?filename=spectra-sample5-500x500-neg2.itm&label=&polarity=auto HTTP/1.1" 202 -
+2026-11-05 17:09:14,114 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:09:16,140 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:09:18,156 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:09:18,344 INFO uploaded spectra-sample5-500x500-neg1.itax (47030758 bytes) -> user:spectra-sample5-500x500-neg1
+2026-11-05 17:09:18,344 INFO 10.159.207.243 - "POST /api/upload?filename=spectra-sample5-500x500-neg1.itax&label=&polarity=auto HTTP/1.1" 202 -
+2026-11-05 17:09:18,361 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:09:20,396 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:09:22,425 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:09:24,439 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:09:26,460 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:09:28,492 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:09:29,975 INFO uploaded spectra-sample5-500x500-neg1_2.itmx (128630833 bytes) -> user:spectra-sample5-500x500-neg1_2
+2026-11-05 17:09:29,975 INFO 10.159.207.243 - "POST /api/upload?filename=spectra-sample5-500x500-neg1.itmx&label=&polarity=auto HTTP/1.1" 202 -
+2026-11-05 17:09:29,992 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:09:32,007 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:09:34,667 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:09:36,693 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:09:38,716 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:09:40,744 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:09:41,515 INFO uploaded spectra-sample5-500x500-neg1.itm (127458657 bytes) -> user:spectra-sample5-500x500-neg1
+2026-11-05 17:09:41,515 INFO 10.159.207.243 - "POST /api/upload?filename=spectra-sample5-500x500-neg1.itm&label=&polarity=auto HTTP/1.1" 202 -
+2026-11-05 17:09:41,528 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:09:43,551 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:09:45,570 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:09:45,840 INFO uploaded spectra-sample5-500x500-pos5.itax (48104601 bytes) -> user:spectra-sample5-500x500-pos5
+2026-11-05 17:09:45,840 INFO 10.159.207.243 - "POST /api/upload?filename=spectra-sample5-500x500-pos5.itax&label=&polarity=auto HTTP/1.1" 202 -
+2026-11-05 17:09:45,857 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:09:47,874 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:09:49,895 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:09:51,927 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:09:53,952 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:09:55,970 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:09:57,987 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:09:59,059 INFO uploaded spectra-sample5-500x500-pos5_2.itmx (147888093 bytes) -> user:spectra-sample5-500x500-pos5_2
+2026-11-05 17:09:59,060 INFO 10.159.207.243 - "POST /api/upload?filename=spectra-sample5-500x500-pos5.itmx&label=&polarity=auto HTTP/1.1" 202 -
+2026-11-05 17:09:59,072 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:10:01,098 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:10:03,125 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:10:05,143 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:10:07,166 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:10:09,180 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:10:11,202 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:10:12,075 INFO uploaded spectra-sample5-500x500-pos5.itm (146324036 bytes) -> user:spectra-sample5-500x500-pos5
+2026-11-05 17:10:12,076 INFO 10.159.207.243 - "POST /api/upload?filename=spectra-sample5-500x500-pos5.itm&label=&polarity=auto HTTP/1.1" 202 -
+2026-11-05 17:10:12,093 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:10:14,113 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:10:16,141 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:10:16,455 INFO uploaded spectra-sample5-500x500-pos4.itax (48190444 bytes) -> user:spectra-sample5-500x500-pos4
+2026-11-05 17:10:16,455 INFO 10.159.207.243 - "POST /api/upload?filename=spectra-sample5-500x500-pos4.itax&label=&polarity=auto HTTP/1.1" 202 -
+2026-11-05 17:10:16,468 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:10:16,770 INFO 10.159.207.243 - "GET / HTTP/1.1" 200 -
+2026-11-05 17:10:16,812 INFO 10.159.207.243 - "POST /api/upload?filename=spectra-sample5-500x500-pos4.itmx&label=&polarity=auto HTTP/1.1" 400 -
+2026-11-05 17:10:16,863 INFO 10.159.207.243 - "GET /plotly.js HTTP/1.1" 200 -
+2026-11-05 17:10:17,321 INFO 10.159.207.243 - "GET /api/config HTTP/1.1" 200 -
+2026-11-05 17:10:17,322 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:10:17,339 INFO 10.159.207.243 - "GET /api/samples HTTP/1.1" 200 -
+2026-11-05 17:10:17,371 INFO 10.159.207.243 - "GET /api/peaks HTTP/1.1" 200 -
+2026-11-05 17:10:17,802 INFO 10.159.207.243 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02 HTTP/1.1" 200 -
+2026-11-05 17:10:18,545 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&all=1 HTTP/1.1" 200 -
+2026-11-05 17:10:19,230 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=0&hi=900 HTTP/1.1" 200 -
+2026-11-05 17:10:19,354 INFO 10.159.207.243 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-05 17:10:19,387 INFO 10.159.207.243 - "GET /api/samples HTTP/1.1" 200 -
+2026-11-05 17:10:19,409 INFO 10.159.207.243 - "GET /api/peaks HTTP/1.1" 200 -
+2026-11-05 17:10:19,868 INFO 10.159.207.243 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02 HTTP/1.1" 200 -
+2026-11-05 17:10:20,501 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&all=1 HTTP/1.1" 200 -
+2026-11-05 17:10:21,206 INFO 10.159.207.243 - "GET /api/image?sample=6PPD_pos3&lo=0&hi=900 HTTP/1.1" 200 -
+2026-11-05 17:14:31,140 INFO 10.159.207.243 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-05 17:15:13,853 INFO 10.159.207.243 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-05 17:17:26,647 INFO 10.159.207.243 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-05 17:18:05,884 INFO 10.159.207.243 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-05 17:24:53,192 INFO 10.159.207.243 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-05 17:25:29,031 INFO 10.159.207.243 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-05 17:31:02,371 INFO 10.159.207.243 - "POST /api/export HTTP/1.1" 200 -
+2026-11-09 10:23:38,520 INFO serving /mnt/ceph_drive/processed on http://0.0.0.0:8765/  (log: /home/cloud/tof_sims_driver/sims_server.log)
+2026-11-09 10:23:38,520 INFO uploads enabled -> /mnt/ceph_drive/processed_uploads (anyone who can reach this port can upload; use --no-upload to disable)
+2026-11-09 10:27:18,688 INFO 127.0.0.1 - "GET / HTTP/1.1" 200 -
+2026-11-09 10:27:18,692 INFO 10.159.201.121 - "GET / HTTP/1.1" 200 -
+2026-11-09 10:27:18,849 INFO 10.159.201.121 - "GET /plotly.js HTTP/1.1" 200 -
+2026-11-09 10:27:19,012 INFO 127.0.0.1 - "GET /plotly.js HTTP/1.1" 200 -
+2026-11-09 10:27:19,837 INFO 10.159.201.121 - "GET /api/config HTTP/1.1" 200 -
+2026-11-09 10:27:19,838 INFO 10.159.201.121 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-09 10:27:19,854 INFO 10.159.201.121 - "GET /api/samples HTTP/1.1" 200 -
+2026-11-09 10:27:19,954 INFO 10.159.201.121 - "GET /api/peaks HTTP/1.1" 200 -
+2026-11-09 10:27:20,180 INFO 127.0.0.1 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-09 10:27:20,190 INFO 127.0.0.1 - "GET /api/config HTTP/1.1" 200 -
+2026-11-09 10:27:20,210 INFO 127.0.0.1 - "GET /api/samples HTTP/1.1" 200 -
+2026-11-09 10:27:20,359 INFO 127.0.0.1 - "GET /favicon.ico HTTP/1.1" 404 -
+2026-11-09 10:27:20,522 INFO 127.0.0.1 - "GET /api/peaks HTTP/1.1" 200 -
+2026-11-09 10:27:20,908 INFO 10.159.201.121 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02 HTTP/1.1" 200 -
+2026-11-09 10:27:21,181 INFO 127.0.0.1 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02 HTTP/1.1" 200 -
+2026-11-09 10:27:22,583 INFO 10.159.201.121 - "GET /api/image?sample=6PPD_pos3&all=1 HTTP/1.1" 200 -
+2026-11-09 10:27:22,837 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&all=1 HTTP/1.1" 200 -
+2026-11-09 10:27:23,351 INFO 10.159.201.121 - "GET /api/image?sample=6PPD_pos3&lo=0&hi=900 HTTP/1.1" 200 -
+2026-11-09 10:27:24,020 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&lo=0&hi=900 HTTP/1.1" 200 -
+2026-11-09 10:28:39,660 INFO 10.159.201.121 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-09 10:33:52,841 INFO 10.159.201.121 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-09 10:42:09,707 INFO 10.159.201.121 - "GET / HTTP/1.1" 200 -
+2026-11-09 10:42:10,000 INFO 10.159.201.121 - "GET /plotly.js HTTP/1.1" 200 -
+2026-11-09 10:42:10,950 INFO 10.159.201.121 - "GET /api/config HTTP/1.1" 200 -
+2026-11-09 10:42:10,951 INFO 10.159.201.121 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-09 10:42:10,970 INFO 10.159.201.121 - "GET /api/samples HTTP/1.1" 200 -
+2026-11-09 10:42:11,017 INFO 10.159.201.121 - "GET /api/peaks HTTP/1.1" 200 -
+2026-11-09 10:42:11,460 INFO 10.159.201.121 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02 HTTP/1.1" 200 -
+2026-11-09 10:42:12,717 INFO 10.159.201.121 - "GET /api/image?sample=6PPD_pos3&all=1 HTTP/1.1" 200 -
+2026-11-09 10:42:13,470 INFO 10.159.201.121 - "GET /api/image?sample=6PPD_pos3&lo=0&hi=900 HTTP/1.1" 200 -
+2026-11-09 10:44:05,865 INFO 10.159.201.121 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-09 10:46:13,007 INFO serving /mnt/ceph_drive/processed on http://0.0.0.0:8765/  (log: /home/cloud/tof_sims_driver/sims_server.log)
+2026-11-09 10:46:13,007 INFO uploads enabled -> /mnt/ceph_drive/processed_uploads (anyone who can reach this port can upload; use --no-upload to disable)
+2026-11-09 10:46:16,181 INFO 10.159.201.121 - "GET / HTTP/1.1" 200 -
+2026-11-09 10:46:16,293 INFO 10.159.201.121 - "GET /plotly.js HTTP/1.1" 200 -
+2026-11-09 10:46:17,455 INFO 10.159.201.121 - "GET /api/config HTTP/1.1" 200 -
+2026-11-09 10:46:17,457 INFO 10.159.201.121 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-09 10:46:17,473 INFO 10.159.201.121 - "GET /api/samples HTTP/1.1" 200 -
+2026-11-09 10:46:17,581 INFO 10.159.201.121 - "GET /api/peaks HTTP/1.1" 200 -
+2026-11-09 10:46:18,430 INFO 10.159.201.121 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02 HTTP/1.1" 200 -
+2026-11-09 10:46:20,074 INFO 10.159.201.121 - "GET /api/image?sample=6PPD_pos3&all=1 HTTP/1.1" 200 -
+2026-11-09 10:46:21,162 INFO 10.159.201.121 - "GET /api/image?sample=6PPD_pos3&lo=0&hi=900 HTTP/1.1" 200 -
+2026-11-09 10:46:58,567 INFO 10.159.201.121 - "GET / HTTP/1.1" 200 -
+2026-11-09 10:46:58,844 INFO 10.159.201.121 - "GET /plotly.js HTTP/1.1" 200 -
+2026-11-09 10:46:59,235 INFO 10.159.201.121 - "GET /api/config HTTP/1.1" 200 -
+2026-11-09 10:46:59,236 INFO 10.159.201.121 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-09 10:46:59,252 INFO 10.159.201.121 - "GET /api/samples HTTP/1.1" 200 -
+2026-11-09 10:46:59,310 INFO 10.159.201.121 - "GET /api/peaks HTTP/1.1" 200 -
+2026-11-09 10:46:59,923 INFO 10.159.201.121 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02 HTTP/1.1" 200 -
+2026-11-09 10:47:01,214 INFO 10.159.201.121 - "GET /api/image?sample=6PPD_pos3&all=1 HTTP/1.1" 200 -
+2026-11-09 10:47:02,336 INFO 10.159.201.121 - "GET /api/image?sample=6PPD_pos3&lo=0&hi=900 HTTP/1.1" 200 -
+2026-11-09 10:47:51,056 INFO 10.159.201.121 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-09 11:03:26,459 INFO 10.159.201.121 - "GET / HTTP/1.1" 200 -
+2026-11-09 11:03:26,578 INFO 10.159.201.121 - "GET /plotly.js HTTP/1.1" 200 -
+2026-11-09 11:03:27,559 INFO 10.159.201.121 - "GET /api/config HTTP/1.1" 200 -
+2026-11-09 11:03:27,560 INFO 10.159.201.121 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-09 11:03:27,580 INFO 10.159.201.121 - "GET /api/samples HTTP/1.1" 200 -
+2026-11-09 11:03:27,703 INFO 10.159.201.121 - "GET /api/peaks HTTP/1.1" 200 -
+2026-11-09 11:03:28,378 INFO 10.159.201.121 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02 HTTP/1.1" 200 -
+2026-11-09 11:03:29,736 INFO 10.159.201.121 - "GET /api/image?sample=6PPD_pos3&all=1 HTTP/1.1" 200 -
+2026-11-09 11:03:30,801 INFO 10.159.201.121 - "GET /api/image?sample=6PPD_pos3&lo=0&hi=900 HTTP/1.1" 200 -
+2026-11-09 11:03:56,251 INFO 10.159.201.121 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-09 11:05:32,464 INFO serving /mnt/ceph_drive/processed on http://0.0.0.0:8765/  (log: /home/cloud/tof_sims_driver/sims_server.log)
+2026-11-09 11:05:32,464 INFO uploads enabled -> /mnt/ceph_drive/processed_uploads (anyone who can reach this port can upload; use --no-upload to disable)
+2026-11-09 11:05:36,711 INFO 10.159.201.121 - "GET / HTTP/1.1" 200 -
+2026-11-09 11:05:36,829 INFO 10.159.201.121 - "GET /plotly.js HTTP/1.1" 200 -
+2026-11-09 11:05:37,802 INFO 10.159.201.121 - "GET /api/config HTTP/1.1" 200 -
+2026-11-09 11:05:37,803 INFO 10.159.201.121 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-09 11:05:37,823 INFO 10.159.201.121 - "GET /api/samples HTTP/1.1" 200 -
+2026-11-09 11:05:37,912 INFO 10.159.201.121 - "GET /api/peaks HTTP/1.1" 200 -
+2026-11-09 11:05:38,814 INFO 10.159.201.121 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02 HTTP/1.1" 200 -
+2026-11-09 11:05:40,452 INFO 10.159.201.121 - "GET /api/image?sample=6PPD_pos3&all=1 HTTP/1.1" 200 -
+2026-11-09 11:05:41,639 INFO 10.159.201.121 - "GET /api/image?sample=6PPD_pos3&lo=0&hi=900 HTTP/1.1" 200 -
+2026-11-09 11:10:03,772 INFO 10.159.201.121 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-09 11:45:17,113 INFO serving /mnt/ceph_drive/processed on http://0.0.0.0:8765/  (log: /home/cloud/tof_sims_driver/sims_server.log)
+2026-11-09 11:45:17,113 INFO uploads enabled -> /mnt/ceph_drive/processed_uploads (anyone who can reach this port can upload; use --no-upload to disable)
+2026-11-09 11:45:37,635 INFO 10.159.201.121 - "GET / HTTP/1.1" 200 -
+2026-11-09 11:45:37,803 INFO 10.159.201.121 - "GET /plotly.js HTTP/1.1" 200 -
+2026-11-09 11:45:38,630 INFO 10.159.201.121 - "GET /api/config HTTP/1.1" 200 -
+2026-11-09 11:45:38,630 INFO 10.159.201.121 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-09 11:45:38,648 INFO 10.159.201.121 - "GET /api/samples HTTP/1.1" 200 -
+2026-11-09 11:45:38,675 INFO 10.159.201.121 - "GET /api/peaks HTTP/1.1" 200 -
+2026-11-09 11:45:39,349 INFO 10.159.201.121 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02 HTTP/1.1" 200 -
+2026-11-09 11:45:40,656 INFO 10.159.201.121 - "GET /api/image?sample=6PPD_pos3&all=1 HTTP/1.1" 200 -
+2026-11-09 11:45:41,725 INFO 10.159.201.121 - "GET /api/image?sample=6PPD_pos3&lo=0&hi=900 HTTP/1.1" 200 -
+2026-11-09 11:46:45,351 INFO 10.159.201.121 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-09 12:07:48,868 INFO 10.159.201.121 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-09 12:20:18,758 INFO serving /mnt/ceph_drive/processed on http://0.0.0.0:8765/  (log: /home/cloud/tof_sims_driver/sims_server.log)
+2026-11-09 12:20:18,758 INFO uploads enabled -> /mnt/ceph_drive/processed_uploads (anyone who can reach this port can upload; use --no-upload to disable)
+2026-11-09 12:20:21,880 INFO 10.159.201.121 - "GET / HTTP/1.1" 200 -
+2026-11-09 12:20:22,103 INFO 10.159.201.121 - "GET /plotly.js HTTP/1.1" 200 -
+2026-11-09 12:20:23,560 INFO 10.159.201.121 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-09 12:20:23,561 INFO 10.159.201.121 - "GET /api/config HTTP/1.1" 200 -
+2026-11-09 12:20:23,578 INFO 10.159.201.121 - "GET /api/samples HTTP/1.1" 200 -
+2026-11-09 12:20:23,625 INFO 10.159.201.121 - "GET /api/peaks HTTP/1.1" 200 -
+2026-11-09 12:20:24,326 INFO 10.159.201.121 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02 HTTP/1.1" 200 -
+2026-11-09 12:20:25,705 INFO 10.159.201.121 - "GET /api/image?sample=6PPD_pos3&all=1 HTTP/1.1" 200 -
+2026-11-09 12:20:26,913 INFO 10.159.201.121 - "GET /api/image?sample=6PPD_pos3&lo=0&hi=900 HTTP/1.1" 200 -
+2026-11-09 12:21:16,852 INFO 10.159.201.121 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-09 12:22:26,842 INFO 10.159.201.121 - "GET /api/peaks HTTP/1.1" 200 -
+2026-11-09 12:22:27,301 INFO 10.159.201.121 - "GET /api/spectrum?sample=Si_control_pos2&bin=0.02 HTTP/1.1" 200 -
+2026-11-09 12:22:27,746 INFO 10.159.201.121 - "GET /api/image?sample=Si_control_pos2&all=1 HTTP/1.1" 200 -
+2026-11-09 12:22:27,984 INFO 10.159.201.121 - "GET /api/image?sample=Si_control_pos2&lo=0&hi=900 HTTP/1.1" 200 -
+2026-11-09 12:22:31,025 INFO 10.159.201.121 - "GET /api/spectrum?sample=Si_control_pos2&bin=0.02&x0=2&y0=126&x1=2&y1=126 HTTP/1.1" 200 -
+2026-11-09 12:22:46,560 INFO 10.159.201.121 - "GET / HTTP/1.1" 200 -
+2026-11-09 12:22:46,612 INFO 10.159.201.121 - "GET /plotly.js HTTP/1.1" 200 -
+2026-11-09 12:22:47,429 INFO 10.159.201.121 - "GET /api/config HTTP/1.1" 200 -
+2026-11-09 12:22:47,430 INFO 10.159.201.121 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-09 12:22:47,450 INFO 10.159.201.121 - "GET /api/samples HTTP/1.1" 200 -
+2026-11-09 12:22:47,472 INFO 10.159.201.121 - "GET /api/peaks HTTP/1.1" 200 -
+2026-11-09 12:22:47,931 INFO 10.159.201.121 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02 HTTP/1.1" 200 -
+2026-11-09 12:22:48,726 INFO 10.159.201.121 - "GET /api/image?sample=6PPD_pos3&all=1 HTTP/1.1" 200 -
+2026-11-09 12:22:49,483 INFO 10.159.201.121 - "GET /api/image?sample=6PPD_pos3&lo=0&hi=900 HTTP/1.1" 200 -
+2026-11-09 12:24:14,433 INFO 10.159.201.121 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02&x0=0&y0=102&x1=19&y1=123 HTTP/1.1" 200 -
+2026-11-09 12:24:23,696 INFO 10.159.201.121 - "GET / HTTP/1.1" 200 -
+2026-11-09 12:24:23,751 INFO 10.159.201.121 - "GET /plotly.js HTTP/1.1" 200 -
+2026-11-09 12:24:24,430 INFO 10.159.201.121 - "GET /api/config HTTP/1.1" 200 -
+2026-11-09 12:24:24,431 INFO 10.159.201.121 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-09 12:24:24,451 INFO 10.159.201.121 - "GET /api/samples HTTP/1.1" 200 -
+2026-11-09 12:24:24,472 INFO 10.159.201.121 - "GET /api/peaks HTTP/1.1" 200 -
+2026-11-09 12:24:25,126 INFO 10.159.201.121 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02 HTTP/1.1" 200 -
+2026-11-09 12:24:26,194 INFO 10.159.201.121 - "GET /api/image?sample=6PPD_pos3&all=1 HTTP/1.1" 200 -
+2026-11-09 12:24:27,263 INFO 10.159.201.121 - "GET /api/image?sample=6PPD_pos3&lo=0&hi=900 HTTP/1.1" 200 -
+2026-11-09 12:25:41,891 INFO 10.159.201.121 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-09 13:33:27,975 INFO serving /mnt/ceph_drive/processed on http://0.0.0.0:8765/  (log: /home/cloud/tof_sims_driver/sims_server.log)
+2026-11-09 13:33:27,975 INFO uploads enabled -> /mnt/ceph_drive/processed_uploads (anyone who can reach this port can upload; use --no-upload to disable)
+2026-11-09 13:33:30,507 INFO 10.159.201.121 - "GET / HTTP/1.1" 200 -
+2026-11-09 13:33:30,567 INFO 10.159.201.121 - "GET /plotly.js HTTP/1.1" 200 -
+2026-11-09 13:33:31,418 INFO 10.159.201.121 - "GET /api/config HTTP/1.1" 200 -
+2026-11-09 13:33:31,419 INFO 10.159.201.121 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-09 13:33:31,444 INFO 10.159.201.121 - "GET /api/samples HTTP/1.1" 200 -
+2026-11-09 13:33:31,469 INFO 10.159.201.121 - "GET /api/peaks HTTP/1.1" 200 -
+2026-11-09 13:33:32,181 INFO 10.159.201.121 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02 HTTP/1.1" 200 -
+2026-11-09 13:33:33,521 INFO 10.159.201.121 - "GET /api/image?sample=6PPD_pos3&all=1 HTTP/1.1" 200 -
+2026-11-09 13:33:34,582 INFO 10.159.201.121 - "GET /api/image?sample=6PPD_pos3&lo=0&hi=900 HTTP/1.1" 200 -
+2026-11-09 13:35:53,757 INFO 10.159.201.121 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-09 13:45:01,088 INFO 10.159.201.121 - "POST /api/export HTTP/1.1" 200 -
+2026-11-09 13:48:11,418 INFO 10.159.201.121 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-09 13:57:10,130 INFO serving /mnt/ceph_drive/processed on http://0.0.0.0:8765/  (log: /home/cloud/tof_sims_driver/sims_server.log)
+2026-11-09 13:57:10,130 INFO uploads enabled -> /mnt/ceph_drive/processed_uploads (anyone who can reach this port can upload; use --no-upload to disable)
+2026-11-09 13:57:36,965 INFO 10.159.201.121 - "GET / HTTP/1.1" 200 -
+2026-11-09 13:57:37,102 INFO 10.159.201.121 - "GET /plotly.js HTTP/1.1" 200 -
+2026-11-09 13:57:38,241 INFO 10.159.201.121 - "GET /api/config HTTP/1.1" 200 -
+2026-11-09 13:57:38,242 INFO 10.159.201.121 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-09 13:57:38,269 INFO 10.159.201.121 - "GET /api/samples HTTP/1.1" 200 -
+2026-11-09 13:57:38,350 INFO 10.159.201.121 - "GET /api/peaks HTTP/1.1" 200 -
+2026-11-09 13:57:39,145 INFO 10.159.201.121 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02 HTTP/1.1" 200 -
+2026-11-09 13:57:40,413 INFO 10.159.201.121 - "GET /api/image?sample=6PPD_pos3&all=1 HTTP/1.1" 200 -
+2026-11-09 13:57:41,667 INFO 10.159.201.121 - "GET /api/image?sample=6PPD_pos3&lo=0&hi=900 HTTP/1.1" 200 -
+2026-11-09 13:57:43,844 INFO 10.159.201.121 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02&source=stored HTTP/1.1" 200 -
+2026-11-09 13:57:47,120 INFO 10.159.201.121 - "GET /api/image?sample=6PPD_pos3&lo=91.40270802769726&hi=394.1176401543941 HTTP/1.1" 200 -
+2026-11-09 13:57:48,780 INFO 10.159.201.121 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02 HTTP/1.1" 200 -
+2026-11-09 13:57:50,520 INFO 10.159.201.121 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02&source=stored HTTP/1.1" 200 -
+2026-11-09 13:57:53,408 INFO 10.159.201.121 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02 HTTP/1.1" 200 -
+2026-11-09 13:57:56,521 INFO 10.159.201.121 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02&source=stored HTTP/1.1" 200 -
+2026-11-09 13:57:58,422 INFO 10.159.201.121 - "GET /api/image?sample=6PPD_pos3&lo=50.678726127244765&hi=262.4434320095977 HTTP/1.1" 200 -
+2026-11-09 13:57:59,171 INFO 10.159.201.121 - "GET /api/image?sample=6PPD_pos3&lo=113.37&hi=113.41 HTTP/1.1" 200 -
+2026-11-09 13:57:59,737 INFO 10.159.201.121 - "GET /api/image?sample=6PPD_pos3&lo=153.29&hi=153.33 HTTP/1.1" 200 -
+2026-11-09 13:58:00,530 INFO 10.159.201.121 - "GET /api/image?sample=6PPD_pos3&lo=200.57&hi=200.61 HTTP/1.1" 200 -
+2026-11-09 13:58:03,921 INFO 10.159.201.121 - "GET /api/image?sample=6PPD_pos3&lo=133.2472507450264&hi=256.0372754522879 HTTP/1.1" 200 -
+2026-11-09 13:58:04,553 INFO 10.159.201.121 - "GET /api/peaks HTTP/1.1" 200 -
+2026-11-09 13:58:04,665 INFO 10.159.201.121 - "GET /api/spectrum?sample=6PPD_neg1&bin=0.02&source=stored HTTP/1.1" 200 -
+2026-11-09 13:58:05,425 INFO 10.159.201.121 - "GET /api/peaks HTTP/1.1" 200 -
+2026-11-09 13:58:05,513 INFO 10.159.201.121 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02&source=stored HTTP/1.1" 200 -
+2026-11-09 13:58:05,551 INFO 10.159.201.121 - "GET /api/image?sample=6PPD_neg1&all=1 HTTP/1.1" 200 -
+2026-11-09 13:58:06,564 INFO 10.159.201.121 - "GET /api/image?sample=6PPD_pos3&all=1 HTTP/1.1" 200 -
+2026-11-09 13:58:06,669 INFO 10.159.201.121 - "GET /api/peaks HTTP/1.1" 200 -
+2026-11-09 13:58:06,758 INFO 10.159.201.121 - "GET /api/spectrum?sample=6PPD_neg1&bin=0.02&source=stored HTTP/1.1" 200 -
+2026-11-09 13:58:06,888 INFO 10.159.201.121 - "GET /api/image?sample=6PPD_pos3&lo=0&hi=900 HTTP/1.1" 200 -
+2026-11-09 13:58:07,312 INFO 10.159.201.121 - "GET /api/image?sample=6PPD_neg1&lo=0&hi=900 HTTP/1.1" 200 -
+2026-11-09 13:58:07,683 INFO 10.159.201.121 - "GET /api/image?sample=6PPD_neg1&all=1 HTTP/1.1" 200 -
+2026-11-09 13:58:08,414 INFO 10.159.201.121 - "GET /api/image?sample=6PPD_neg1&lo=0&hi=900 HTTP/1.1" 200 -
+2026-11-09 14:01:55,227 INFO 10.159.201.121 - "GET /api/peaks HTTP/1.1" 200 -
+2026-11-09 14:01:55,461 INFO 10.159.201.121 - "GET /api/spectrum?sample=FI-sample1-500x500-neg1&bin=0.02&source=stored HTTP/1.1" 200 -
+2026-11-09 14:01:55,640 INFO 10.159.201.121 - "GET /api/image?sample=FI-sample1-500x500-neg1&all=1 HTTP/1.1" 200 -
+2026-11-09 14:01:55,768 INFO 10.159.201.121 - "GET /api/image?sample=FI-sample1-500x500-neg1&lo=0&hi=900 HTTP/1.1" 200 -
+2026-11-09 14:01:59,842 INFO 10.159.201.121 - "GET /api/peaks HTTP/1.1" 200 -
+2026-11-09 14:01:59,920 INFO 10.159.201.121 - "GET /api/spectrum?sample=6PPD_neg1&bin=0.02&source=stored HTTP/1.1" 200 -
+2026-11-09 14:02:00,622 INFO 10.159.201.121 - "GET /api/image?sample=6PPD_neg1&all=1 HTTP/1.1" 200 -
+2026-11-09 14:02:01,172 INFO 10.159.201.121 - "GET /api/image?sample=6PPD_neg1&lo=0&hi=900 HTTP/1.1" 200 -
+2026-11-09 14:02:05,366 INFO 10.159.201.121 - "GET /api/peaks HTTP/1.1" 200 -
+2026-11-09 14:02:05,498 INFO 10.159.201.121 - "GET /api/spectrum?sample=FI-6PPD-50x50-neg2&bin=0.02&source=stored HTTP/1.1" 200 -
+2026-11-09 14:02:06,024 INFO 10.159.201.121 - "GET /api/image?sample=FI-6PPD-50x50-neg2&all=1 HTTP/1.1" 200 -
+2026-11-09 14:02:06,505 INFO 10.159.201.121 - "GET /api/image?sample=FI-6PPD-50x50-neg2&lo=0&hi=900 HTTP/1.1" 200 -
+2026-11-09 14:02:09,088 INFO 10.159.201.121 - "GET /api/peaks HTTP/1.1" 200 -
+2026-11-09 14:02:09,249 INFO 10.159.201.121 - "GET /api/spectrum?sample=FI-6PPD-Q-50x50-neg2&bin=0.02&source=stored HTTP/1.1" 200 -
+2026-11-09 14:02:09,613 INFO 10.159.201.121 - "GET /api/image?sample=FI-6PPD-Q-50x50-neg2&all=1 HTTP/1.1" 200 -
+2026-11-09 14:02:09,931 INFO 10.159.201.121 - "GET /api/image?sample=FI-6PPD-Q-50x50-neg2&lo=0&hi=900 HTTP/1.1" 200 -
+2026-11-09 14:02:40,059 INFO 10.159.201.121 - "GET /api/image?sample=FI-6PPD-Q-50x50-neg2&lo=0&hi=178.2805360819959 HTTP/1.1" 200 -
+2026-11-09 14:03:05,303 INFO 10.159.201.121 - "GET /api/image?sample=FI-6PPD-Q-50x50-neg2&lo=25.35&hi=25.39 HTTP/1.1" 200 -
+2026-11-09 14:04:22,574 INFO 10.159.201.121 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-09 14:20:03,399 INFO 10.159.201.121 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-09 14:29:28,798 INFO 10.159.201.121 - "GET / HTTP/1.1" 200 -
+2026-11-09 14:29:28,829 INFO 10.159.201.121 - "GET /plotly.js HTTP/1.1" 200 -
+2026-11-09 14:29:29,582 INFO 10.159.201.121 - "GET / HTTP/1.1" 200 -
+2026-11-09 14:29:29,676 INFO 10.159.201.121 - "GET /plotly.js HTTP/1.1" 200 -
+2026-11-09 14:29:30,422 INFO 10.159.201.121 - "GET /api/config HTTP/1.1" 200 -
+2026-11-09 14:29:30,424 INFO 10.159.201.121 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-09 14:29:30,575 INFO 10.159.201.121 - "GET /api/samples HTTP/1.1" 200 -
+2026-11-09 14:29:30,613 INFO 10.159.201.121 - "GET /api/peaks HTTP/1.1" 200 -
+2026-11-09 14:29:31,216 INFO 10.159.201.121 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02 HTTP/1.1" 200 -
+2026-11-09 14:29:32,553 INFO 10.159.201.121 - "GET /api/image?sample=6PPD_pos3&all=1 HTTP/1.1" 200 -
+2026-11-09 14:29:33,616 INFO 10.159.201.121 - "GET /api/image?sample=6PPD_pos3&lo=0&hi=900 HTTP/1.1" 200 -
+2026-11-09 14:30:15,798 INFO 10.159.201.121 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-09 14:44:02,665 INFO 10.159.201.121 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-09 14:52:56,629 INFO 10.159.201.121 - "GET / HTTP/1.1" 200 -
+2026-11-09 14:52:56,769 INFO 10.159.201.121 - "GET /plotly.js HTTP/1.1" 200 -
+2026-11-09 14:52:57,465 INFO 10.159.201.121 - "GET /api/config HTTP/1.1" 200 -
+2026-11-09 14:52:57,466 INFO 10.159.201.121 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-09 14:52:57,707 INFO 10.159.201.121 - "GET /api/samples HTTP/1.1" 200 -
+2026-11-09 14:52:57,779 INFO 10.159.201.121 - "GET /api/peaks HTTP/1.1" 200 -
+2026-11-09 14:52:58,704 INFO 10.159.201.121 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02 HTTP/1.1" 200 -
+2026-11-09 14:53:00,727 INFO 10.159.201.121 - "GET /api/image?sample=6PPD_pos3&all=1 HTTP/1.1" 200 -
+2026-11-09 14:53:01,871 INFO 10.159.201.121 - "GET /api/image?sample=6PPD_pos3&lo=0&hi=900 HTTP/1.1" 200 -
+2026-11-09 14:53:02,435 INFO 10.159.201.121 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-09 14:57:59,040 INFO 10.159.201.121 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-09 15:03:50,975 INFO 10.159.201.121 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-09 15:07:23,343 INFO 10.159.201.121 - "POST /api/export HTTP/1.1" 200 -
+2026-11-09 15:10:19,310 INFO 10.159.201.121 - "POST /api/export HTTP/1.1" 200 -
+2026-11-10 11:19:55,871 INFO serving /mnt/ceph_drive/processed on http://0.0.0.0:8765/  (log: /home/cloud/tof_sims_driver/sims_server.log)
+2026-11-10 11:19:55,872 INFO uploads enabled -> /mnt/ceph_drive/processed_uploads (anyone who can reach this port can upload; use --no-upload to disable)
+2026-11-10 11:20:04,632 INFO 10.159.201.121 - "GET / HTTP/1.1" 200 -
+2026-11-10 11:20:04,740 INFO 10.159.201.121 - "GET /plotly.js HTTP/1.1" 200 -
+2026-11-10 11:20:05,526 INFO 10.159.201.121 - "GET /api/config HTTP/1.1" 200 -
+2026-11-10 11:20:05,528 INFO 10.159.201.121 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-10 11:20:05,550 INFO 10.159.201.121 - "GET /api/samples HTTP/1.1" 200 -
+2026-11-10 11:20:05,587 INFO 10.159.201.121 - "GET /favicon.ico HTTP/1.1" 404 -
+2026-11-10 11:20:05,608 INFO 10.159.201.121 - "GET /api/peaks HTTP/1.1" 200 -
+2026-11-10 11:20:06,516 INFO 10.159.201.121 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02 HTTP/1.1" 200 -
+2026-11-10 11:20:08,067 INFO 10.159.201.121 - "GET /api/image?sample=6PPD_pos3&all=1 HTTP/1.1" 200 -
+2026-11-10 11:20:08,956 INFO 10.159.201.121 - "GET /api/image?sample=6PPD_pos3&lo=0&hi=900 HTTP/1.1" 200 -
+2026-11-10 13:11:22,747 INFO 10.159.201.121 - "GET / HTTP/1.1" 200 -
+2026-11-10 13:11:22,858 INFO 10.159.201.121 - "GET /plotly.js HTTP/1.1" 200 -
+2026-11-10 13:11:24,428 INFO 10.159.201.121 - "GET /api/config HTTP/1.1" 200 -
+2026-11-10 13:11:24,429 INFO 10.159.201.121 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-10 13:11:24,506 INFO 10.159.201.121 - "GET /api/samples HTTP/1.1" 200 -
+2026-11-10 13:11:24,551 INFO 10.159.201.121 - "GET /api/peaks HTTP/1.1" 200 -
+2026-11-10 13:11:25,043 INFO 10.159.201.121 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02 HTTP/1.1" 200 -
+2026-11-10 13:11:26,269 INFO 10.159.201.121 - "GET /api/image?sample=6PPD_pos3&all=1 HTTP/1.1" 200 -
+2026-11-10 13:11:27,610 INFO 10.159.201.121 - "GET /api/image?sample=6PPD_pos3&lo=0&hi=900 HTTP/1.1" 200 -
+2026-11-10 13:13:09,255 INFO 10.159.201.121 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-10 13:13:27,604 INFO 10.159.201.121 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-10 13:13:48,459 INFO 10.159.201.121 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-10 13:14:06,790 INFO 10.159.201.121 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-10 13:17:17,231 INFO 10.159.201.121 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-10 13:18:58,878 INFO 10.159.201.121 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-10 13:19:53,766 INFO 10.159.201.121 - "POST /api/pca/tune HTTP/1.1" 404 -
+2026-11-10 13:19:55,255 INFO 10.159.201.121 - "POST /api/pca/tune HTTP/1.1" 404 -
+2026-11-10 13:19:57,235 INFO 10.159.201.121 - "POST /api/pca/tune HTTP/1.1" 404 -
+2026-11-10 13:20:20,305 INFO serving /mnt/ceph_drive/processed on http://0.0.0.0:8765/  (log: /home/cloud/tof_sims_driver/sims_server.log)
+2026-11-10 13:20:20,305 INFO uploads enabled -> /mnt/ceph_drive/processed_uploads (anyone who can reach this port can upload; use --no-upload to disable)
+2026-11-10 13:22:42,644 INFO 10.159.201.121 - "POST /api/pca/tune HTTP/1.1" 200 -
+2026-11-10 13:23:32,680 INFO 10.159.201.121 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-10 14:11:08,810 INFO 10.159.201.121 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-10 14:20:12,926 INFO serving /mnt/ceph_drive/processed on http://0.0.0.0:8765/  (log: /home/cloud/tof_sims_driver/sims_server.log)
+2026-11-10 14:20:12,926 INFO uploads enabled -> /mnt/ceph_drive/processed_uploads (anyone who can reach this port can upload; use --no-upload to disable)
+2026-11-10 14:20:15,355 INFO 127.0.0.1 - "GET / HTTP/1.1" 200 -
+2026-11-10 14:20:15,983 INFO 127.0.0.1 - "GET /plotly.js HTTP/1.1" 200 -
+2026-11-10 14:20:20,420 INFO 127.0.0.1 - "GET / HTTP/1.1" 200 -
+2026-11-10 14:20:20,691 INFO 127.0.0.1 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-10 14:20:20,692 INFO 127.0.0.1 - "GET /api/config HTTP/1.1" 200 -
+2026-11-10 14:20:20,705 INFO 127.0.0.1 - "GET /api/samples HTTP/1.1" 200 -
+2026-11-10 14:20:20,728 INFO 127.0.0.1 - "GET /favicon.ico HTTP/1.1" 404 -
+2026-11-10 14:20:20,738 INFO 127.0.0.1 - "GET /apple-touch-icon-precomposed.png HTTP/1.1" 404 -
+2026-11-10 14:20:20,808 INFO 127.0.0.1 - "GET /plotly.js HTTP/1.1" 200 -
+2026-11-10 14:20:23,124 INFO 127.0.0.1 - "GET /apple-touch-icon.png HTTP/1.1" 404 -
+2026-11-10 14:20:23,234 INFO 127.0.0.1 - "GET /api/config HTTP/1.1" 200 -
+2026-11-10 14:20:23,269 INFO 127.0.0.1 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-10 14:20:23,323 INFO 127.0.0.1 - "GET /api/samples HTTP/1.1" 200 -
+2026-11-10 14:20:23,587 INFO 127.0.0.1 - "GET /favicon.ico HTTP/1.1" 404 -
+2026-11-10 14:20:23,702 INFO 127.0.0.1 - "GET /api/peaks HTTP/1.1" 200 -
+2026-11-10 14:20:25,046 INFO 127.0.0.1 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02 HTTP/1.1" 200 -
+2026-11-10 14:20:27,048 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&all=1 HTTP/1.1" 200 -
+2026-11-10 14:20:28,490 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&lo=0&hi=900 HTTP/1.1" 200 -
+2026-11-10 14:33:48,924 INFO serving /mnt/ceph_drive/processed on http://0.0.0.0:8765/  (log: /home/cloud/tof_sims_driver/sims_server.log)
+2026-11-10 14:33:48,925 INFO uploads enabled -> /mnt/ceph_drive/processed_uploads (anyone who can reach this port can upload; use --no-upload to disable)
+2026-11-10 14:39:01,425 INFO 127.0.0.1 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-10 14:41:22,044 INFO 127.0.0.1 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-10 14:51:47,446 INFO 127.0.0.1 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-10 14:56:55,415 INFO 127.0.0.1 - "GET / HTTP/1.1" 200 -
+2026-11-10 14:56:55,823 INFO 127.0.0.1 - "GET /plotly.js HTTP/1.1" 200 -
+2026-11-10 14:56:56,612 INFO 127.0.0.1 - "GET /api/config HTTP/1.1" 200 -
+2026-11-10 14:56:56,645 INFO 127.0.0.1 - "GET /api/samples HTTP/1.1" 200 -
+2026-11-10 14:56:56,665 INFO 127.0.0.1 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-10 14:56:57,013 INFO 127.0.0.1 - "GET /api/peaks HTTP/1.1" 200 -
+2026-11-10 14:56:57,974 INFO 127.0.0.1 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02 HTTP/1.1" 200 -
+2026-11-10 14:56:59,601 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&all=1 HTTP/1.1" 200 -
+2026-11-10 14:57:01,021 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&lo=0&hi=900 HTTP/1.1" 200 -
+2026-11-10 15:00:14,441 INFO 127.0.0.1 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-10 15:11:16,102 INFO 127.0.0.1 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-10 15:17:50,219 INFO 127.0.0.1 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-10 15:20:15,069 INFO 127.0.0.1 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-10 15:28:02,920 INFO 127.0.0.1 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-10 15:37:06,573 INFO 127.0.0.1 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-10 16:30:56,299 INFO 127.0.0.1 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-10 16:31:26,385 INFO 127.0.0.1 - "GET / HTTP/1.1" 200 -
+2026-11-10 16:31:26,848 INFO 127.0.0.1 - "GET /plotly.js HTTP/1.1" 200 -
+2026-11-10 16:31:27,603 INFO 127.0.0.1 - "GET /api/config HTTP/1.1" 200 -
+2026-11-10 16:31:27,605 INFO 127.0.0.1 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-10 16:31:28,286 INFO 127.0.0.1 - "GET /api/samples HTTP/1.1" 200 -
+2026-11-10 16:31:28,636 INFO 127.0.0.1 - "GET /api/peaks HTTP/1.1" 200 -
+2026-11-10 16:31:29,543 INFO 127.0.0.1 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02 HTTP/1.1" 200 -
+2026-11-10 16:31:31,025 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&all=1 HTTP/1.1" 200 -
+2026-11-10 16:31:32,152 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&lo=0&hi=900 HTTP/1.1" 200 -
+2026-11-10 16:32:43,191 INFO 127.0.0.1 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-10 16:40:19,757 INFO 127.0.0.1 - "POST /api/pca HTTP/1.1" 200 -

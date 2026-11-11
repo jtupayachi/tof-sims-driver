@@ -3,7 +3,7 @@
 Target file: `../sims_server.py` (the `check_manualannotatedspectra.py` shim just launches it).
 Reference: Yang et al., *Biointerphases* 14, 051004 (2019) — see `PCA_preprocessing_Yang_2019.md`.
 
-Status: **implemented** in `sims_server.py` (smoke-tested on `processed/`).
+Status: **implemented** in `src/tof_sims_driver/pca.py` (UI: Selected-peak PCA tab) (smoke-tested on `processed/`).
 
 ## What are the PCA axes?
 
