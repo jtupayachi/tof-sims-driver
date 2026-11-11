@@ -1756,3 +1756,83 @@ BrokenPipeError: [Errno 32] Broken pipe
 2026-11-10 16:31:32,152 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&lo=0&hi=900 HTTP/1.1" 200 -
 2026-11-10 16:32:43,191 INFO 127.0.0.1 - "POST /api/pca HTTP/1.1" 200 -
 2026-11-10 16:40:19,757 INFO 127.0.0.1 - "POST /api/pca HTTP/1.1" 200 -
+2026-11-11 11:33:02,880 INFO serving /mnt/ceph_drive/processed on http://0.0.0.0:8765/  (log: /home/cloud/tof_sims_driver/sims_server.log)
+2026-11-11 11:33:02,880 INFO uploads enabled -> /mnt/ceph_drive/processed_uploads (anyone who can reach this port can upload; use --no-upload to disable)
+2026-11-11 11:33:46,772 INFO 127.0.0.1 - "GET / HTTP/1.1" 200 -
+2026-11-11 11:33:47,010 INFO 127.0.0.1 - "GET /plotly.js HTTP/1.1" 200 -
+2026-11-11 11:33:48,727 INFO 127.0.0.1 - "GET /api/config HTTP/1.1" 200 -
+2026-11-11 11:33:48,728 INFO 127.0.0.1 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-11 11:33:50,466 INFO 127.0.0.1 - "GET /api/samples HTTP/1.1" 200 -
+2026-11-11 11:33:50,809 INFO 127.0.0.1 - "GET /api/peaks HTTP/1.1" 200 -
+2026-11-11 11:33:51,923 INFO 127.0.0.1 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02 HTTP/1.1" 200 -
+2026-11-11 11:33:53,631 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&all=1 HTTP/1.1" 200 -
+2026-11-11 11:33:54,568 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&lo=0&hi=900 HTTP/1.1" 200 -
+2026-11-11 11:35:22,209 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&lo=244.26703847385957&hi=452.2372308034568 HTTP/1.1" 200 -
+2026-11-11 11:35:22,591 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&lo=306.59000000000003&hi=306.63 HTTP/1.1" 200 -
+2026-11-11 11:35:23,139 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&lo=326.01&hi=326.04999999999995 HTTP/1.1" 200 -
+2026-11-11 11:35:23,669 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&lo=347.69&hi=347.72999999999996 HTTP/1.1" 200 -
+2026-11-11 11:35:29,709 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&lo=325.25&hi=325.28999999999996 HTTP/1.1" 200 -
+2026-11-11 11:35:30,332 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&lo=351.59000000000003&hi=351.63 HTTP/1.1" 200 -
+2026-11-11 11:35:31,069 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&lo=401.91&hi=401.95 HTTP/1.1" 200 -
+2026-11-11 11:35:31,811 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&lo=410.47&hi=410.51 HTTP/1.1" 200 -
+2026-11-11 11:35:58,091 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&lo=436.27000000000004&hi=436.31 HTTP/1.1" 200 -
+2026-11-11 11:36:00,377 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&lo=342.59000000000003&hi=342.63 HTTP/1.1" 200 -
+2026-11-11 11:36:00,517 INFO 127.0.0.1 - "GET /api/spectrum?sample=6PPD_pos3&bin=2 HTTP/1.1" 200 -
+2026-11-11 11:36:01,305 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&lo=365&hi=369 HTTP/1.1" 200 -
+2026-11-11 11:36:01,942 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&lo=387&hi=391 HTTP/1.1" 200 -
+2026-11-11 11:36:02,597 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&lo=403&hi=407 HTTP/1.1" 200 -
+2026-11-11 11:36:03,192 INFO 127.0.0.1 - "GET /api/image?sample=6PPD_pos3&lo=311&hi=315 HTTP/1.1" 200 -
+2026-11-11 12:13:30,858 INFO 10.53.32.110 - "GET / HTTP/1.1" 200 -
+2026-11-11 12:13:30,990 INFO 10.53.32.110 - "GET /plotly.js HTTP/1.1" 200 -
+2026-11-11 12:13:31,309 ERROR 500 GET /plotly.js:
+Traceback (most recent call last):
+  File "/home/cloud/tof_sims_driver/src/tof_sims_driver/server.py", line 145, in do_GET
+    if u.path == "/api/samples":
+               ^^^^^^^^^^^^^^^^^^
+  File "/home/cloud/tof_sims_driver/src/tof_sims_driver/server.py", line 125, in _send
+  File "/usr/lib/python3.12/socketserver.py", line 840, in write
+    self._sock.sendall(b)
+BrokenPipeError: [Errno 32] Broken pipe
+
+2026-11-11 12:13:31,309 INFO 10.53.32.110 - "GET /plotly.js HTTP/1.1" 500 -
+2026-11-11 12:13:31,309 INFO 10.53.32.110 - "GET / HTTP/1.1" 200 -
+2026-11-11 12:13:31,310 ERROR connection error:
+Traceback (most recent call last):
+  File "/home/cloud/tof_sims_driver/src/tof_sims_driver/server.py", line 145, in do_GET
+    if u.path == "/api/samples":
+               ^^^^^^^^^^^^^^^^^^
+  File "/home/cloud/tof_sims_driver/src/tof_sims_driver/server.py", line 125, in _send
+  File "/usr/lib/python3.12/socketserver.py", line 840, in write
+    self._sock.sendall(b)
+BrokenPipeError: [Errno 32] Broken pipe
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/cloud/tof_sims_driver/src/tof_sims_driver/server.py", line 109, in handle_one_request
+    except Exception:
+        ^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/http/server.py", line 424, in handle_one_request
+    method()
+  File "/home/cloud/tof_sims_driver/src/tof_sims_driver/server.py", line 208, in do_GET
+  File "/home/cloud/tof_sims_driver/src/tof_sims_driver/server.py", line 128, in _json
+  File "/home/cloud/tof_sims_driver/src/tof_sims_driver/server.py", line 124, in _send
+    self.wfile.write(body)
+    ^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/http/server.py", line 538, in end_headers
+    self.flush_headers()
+  File "/usr/lib/python3.12/http/server.py", line 542, in flush_headers
+    self.wfile.write(b"".join(self._headers_buffer))
+  File "/usr/lib/python3.12/socketserver.py", line 840, in write
+    self._sock.sendall(b)
+BrokenPipeError: [Errno 32] Broken pipe
+
+2026-11-11 12:13:31,373 INFO 10.53.32.110 - "GET /plotly.js HTTP/1.1" 200 -
+2026-11-11 12:13:32,511 INFO 10.53.32.110 - "GET /api/config HTTP/1.1" 200 -
+2026-11-11 12:13:32,512 INFO 10.53.32.110 - "GET /api/upload/status HTTP/1.1" 200 -
+2026-11-11 12:13:32,547 INFO 10.53.32.110 - "GET /api/samples HTTP/1.1" 200 -
+2026-11-11 12:13:32,567 INFO 10.53.32.110 - "GET /favicon.ico HTTP/1.1" 404 -
+2026-11-11 12:13:32,620 INFO 10.53.32.110 - "GET /api/peaks HTTP/1.1" 200 -
+2026-11-11 12:13:33,107 INFO 10.53.32.110 - "GET /api/spectrum?sample=6PPD_pos3&bin=0.02 HTTP/1.1" 200 -
+2026-11-11 12:13:34,330 INFO 10.53.32.110 - "GET /api/image?sample=6PPD_pos3&all=1 HTTP/1.1" 200 -
+2026-11-11 12:13:35,172 INFO 10.53.32.110 - "GET /api/image?sample=6PPD_pos3&lo=0&hi=900 HTTP/1.1" 200 -
